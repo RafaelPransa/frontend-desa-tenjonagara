@@ -163,7 +163,7 @@ export default function Beranda() {
                   {item.konten}
                 </p>
                 <div className="pt-4 mt-auto">
-                  <Link to={`/berita`} className="text-primary font-semibold text-sm flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                  <Link to={`/berita/${item.slug}`} className="text-primary font-semibold text-sm flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                     <span>Baca Selengkapnya</span>
                     <ChevronRight className="w-4 h-4 text-accent" />
                   </Link>

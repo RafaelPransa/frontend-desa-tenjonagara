@@ -6,6 +6,7 @@ import ProfilDesa from './pages/ProfilDesa';
 import BangunanDesa from './pages/BangunanDesa';
 import DetailBangunan from './pages/DetailBangunan';
 import Berita from './pages/Berita';
+import DetailBerita from './pages/DetailBerita';
 import PotensiDesa from './pages/PotensiDesa';
 import LayananPublik from './pages/LayananPublik';
 import Statistik from './pages/Statistik';
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/bangunan" element={<BangunanDesa />} />
           <Route path="/bangunan/:id" element={<DetailBangunan />} />
           <Route path="/berita" element={<Berita />} />
+          <Route path="/berita/:slug" element={<DetailBerita />} />
           <Route path="/potensi" element={<PotensiDesa />} />
           <Route path="/layanan" element={<LayananPublik />} />
           <Route path="/statistik" element={<Statistik />} />

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Newspaper, Calendar, User, Search, ChevronRight } from 'lucide-react';
 import { getBerita } from '../services/desaService';
 
@@ -52,7 +53,7 @@ export default function Berita() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredBerita.map((item) => (
             <article key={item.id} className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-slate-200 flex flex-col group">
-              <div className="h-48 overflow-hidden relative">
+              <Link to={`/berita/${item.slug}`} className="h-48 overflow-hidden relative block">
                 <img
                   src={item.gambar_url || "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=600&q=80"}
                   alt={item.judul}
@@ -61,7 +62,7 @@ export default function Berita() {
                 <span className="absolute top-3 left-3 bg-primary text-white text-xs px-3 py-1 rounded-md font-medium shadow-sm">
                   Publikasi Resmi
                 </span>
-              </div>
+              </Link>
               <div className="p-6 flex flex-col flex-grow space-y-3">
                 <div className="flex items-center gap-4 text-xs text-slate-400">
                   <span className="flex items-center gap-1">
@@ -75,7 +76,9 @@ export default function Berita() {
                 </div>
 
                 <h2 className="font-bold text-lg text-slate-800 group-hover:text-primary transition-colors line-clamp-2">
-                  {item.judul}
+                  <Link to={`/berita/${item.slug}`}>
+                    {item.judul}
+                  </Link>
                 </h2>
                 
                 <p className="text-slate-600 text-sm line-clamp-4 leading-relaxed">
@@ -83,10 +86,13 @@ export default function Berita() {
                 </p>
 
                 <div className="pt-4 mt-auto border-t border-slate-100">
-                  <button className="text-primary font-semibold text-sm flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                  <Link
+                    to={`/berita/${item.slug}`}
+                    className="text-primary font-semibold text-sm flex items-center gap-1 group-hover:translate-x-1 transition-transform inline-flex"
+                  >
                     <span>Baca Artikel Lengkap</span>
                     <ChevronRight className="w-4 h-4 text-accent" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             </article>
