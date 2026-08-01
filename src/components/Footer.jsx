@@ -54,7 +54,7 @@ export default function Footer() {
               <li><Link to="/berita" className="hover:text-accent transition-colors">Kabar & Berita Desa</Link></li>
               <li><Link to="/potensi" className="hover:text-accent transition-colors">Potensi Pertanian & Wisata</Link></li>
               <li><Link to="/layanan" className="hover:text-accent transition-colors">Pengajuan Layanan Surat</Link></li>
-              <li><Link to="/statistik" className="hover:text-accent transition-colors">Statistik & Transparansi APBDES</Link></li>
+              <li><Link to="/statistik" className="hover:text-accent transition-colors">Statistik Penduduk Desa</Link></li>
             </ul>
           </div>
 

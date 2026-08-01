@@ -9,7 +9,7 @@ const navItems = [
   { name: 'Berita', path: '/berita' },
   { name: 'Potensi Desa', path: '/potensi' },
   { name: 'Layanan Publik', path: '/layanan' },
-  { name: 'Statistik & APBDES', path: '/statistik' },
+  { name: 'Statistik Penduduk', path: '/statistik' },
   { name: 'Kontak', path: '/kontak' },
 ];
 
