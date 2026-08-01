@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { TreePine, Users, Map, Landmark, ArrowRight, ShieldCheck, Sparkles, FileText, CheckCircle2, ChevronRight } from 'lucide-react';
+import { TreePine, Users, Map, Landmark, ArrowRight, ShieldCheck, Sparkles, FileText, CheckCircle2, ChevronRight, Home, GraduationCap } from 'lucide-react';
 import { getProfilDesa, getBerita, getPotensiDesa, getPerangkatDesa } from '../services/desaService';
 
 export default function Beranda() {
@@ -65,27 +65,27 @@ export default function Beranda() {
             </div>
           </div>
 
-          {/* Quick Stats Cards */}
+          {/* Quick Stats Cards (Data Terbaru) */}
           <div className="lg:col-span-5 grid grid-cols-2 gap-4">
             <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 text-center hover:bg-white/15 transition-all">
               <Users className="w-8 h-8 text-accent mx-auto mb-2" />
-              <div className="text-2xl font-bold font-serif text-white">4,250+</div>
+              <div className="text-2xl font-bold font-serif text-white">6,146</div>
               <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Jiwa Penduduk</div>
             </div>
             <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 text-center hover:bg-white/15 transition-all">
-              <Map className="w-8 h-8 text-accent mx-auto mb-2" />
-              <div className="text-2xl font-bold font-serif text-white">{profil?.luas_wilayah || '14.52 km²'}</div>
-              <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Luas Wilayah</div>
+              <Home className="w-8 h-8 text-accent mx-auto mb-2" />
+              <div className="text-2xl font-bold font-serif text-white">2,262</div>
+              <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Kepala Keluarga (KK)</div>
             </div>
             <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 text-center hover:bg-white/15 transition-all">
-              <Landmark className="w-8 h-8 text-accent mx-auto mb-2" />
-              <div className="text-2xl font-bold font-serif text-white">{profil?.jumlah_dusun || 4} Dusun</div>
-              <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Wilayah Dusun</div>
+              <Users className="w-8 h-8 text-accent mx-auto mb-2" />
+              <div className="text-2xl font-bold font-serif text-white">2.70</div>
+              <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Rata-rata Anggota/KK</div>
             </div>
             <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 text-center hover:bg-white/15 transition-all">
-              <ShieldCheck className="w-8 h-8 text-accent mx-auto mb-2" />
-              <div className="text-2xl font-bold font-serif text-white">{profil?.jumlah_rt || 22} RT / {profil?.jumlah_rw || 6} RW</div>
-              <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Kelembagaan</div>
+              <GraduationCap className="w-8 h-8 text-accent mx-auto mb-2" />
+              <div className="text-2xl font-bold font-serif text-white">3,288</div>
+              <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Terdata Pendidikan</div>
             </div>
           </div>
         </div>
