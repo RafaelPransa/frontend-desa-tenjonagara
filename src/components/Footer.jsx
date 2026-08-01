@@ -50,6 +50,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><Link to="/" className="hover:text-accent transition-colors">Beranda Utama</Link></li>
               <li><Link to="/profil" className="hover:text-accent transition-colors">Profil & Sejarah Desa</Link></li>
+              <li><Link to="/bangunan" className="hover:text-accent transition-colors">Bangunan & Fasilitas Desa</Link></li>
               <li><Link to="/berita" className="hover:text-accent transition-colors">Kabar & Berita Desa</Link></li>
               <li><Link to="/potensi" className="hover:text-accent transition-colors">Potensi Pertanian & Wisata</Link></li>
               <li><Link to="/layanan" className="hover:text-accent transition-colors">Pengajuan Layanan Surat</Link></li>

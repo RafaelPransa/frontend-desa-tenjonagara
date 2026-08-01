@@ -10,6 +10,9 @@ export const getBeritaBySlug = (slug) => api.get(`/berita/${slug}`);
 
 export const getPotensiDesa = (kategori) => api.get('/potensi-desa', { params: { kategori } });
 
+export const getBangunanDesa = (kategori) => api.get('/bangunan-desa', { params: { kategori } });
+export const getBangunanDesaById = (id) => api.get(`/bangunan-desa/${id}`);
+
 export const getLayanan = () => api.get('/layanan');
 export const submitPengajuanLayanan = (data) => api.post('/layanan/pengajuan', data);
 
