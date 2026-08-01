@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart3, Users, Landmark, Home, GraduationCap, Award, PieChart, CheckCircle2 } from 'lucide-react';
+import { BarChart3, Users, Landmark, Home, GraduationCap, Award, CheckCircle2 } from 'lucide-react';
 import { getStatistikPenduduk, getApbdes } from '../services/desaService';
 
 export default function Statistik() {
@@ -9,13 +9,14 @@ export default function Statistik() {
 
   // Data Pendidikan Resmi Desa Tenjonagara
   const dataPendidikan = [
-    { tingkat: 'SD / Sederajat', jumlah: 2317, persentase: 70.47, color: 'bg-primary', barColor: '#2D4B37' },
-    { tingkat: 'SMP / Sederajat', jumlah: 587, persentase: 17.85, color: 'bg-emerald-600', barColor: '#059669' },
-    { tingkat: 'SMA / Sederajat', jumlah: 332, persentase: 10.10, color: 'bg-secondary', barColor: '#7D5C4A' },
-    { tingkat: 'Diploma I (D1)', jumlah: 47, persentase: 1.43, color: 'bg-amber-600', barColor: '#D97706' },
-    { tingkat: 'Sarjana (S1)', jumlah: 5, persentase: 0.15, color: 'bg-accent-dark', barColor: '#A67C0E' }
+    { tingkat: 'SD / Sederajat', short: 'SD', jumlah: 2317, persentase: 70.47, color: 'bg-primary', barColor: '#2D4B37' },
+    { tingkat: 'SMP / Sederajat', short: 'SMP', jumlah: 587, persentase: 17.85, color: 'bg-emerald-600', barColor: '#059669' },
+    { tingkat: 'SMA / Sederajat', short: 'SMA', jumlah: 332, persentase: 10.10, color: 'bg-secondary', barColor: '#7D5C4A' },
+    { tingkat: 'Diploma I (D1)', short: 'D1', jumlah: 47, persentase: 1.43, color: 'bg-amber-600', barColor: '#D97706' },
+    { tingkat: 'Sarjana (S1)', short: 'S1', jumlah: 5, persentase: 0.15, color: 'bg-accent-dark', barColor: '#A67C0E' }
   ];
 
+  const maxJumlah = Math.max(...dataPendidikan.map((d) => d.jumlah)); // 2317
   const totalTercatatPendidikan = dataPendidikan.reduce((acc, curr) => acc + curr.jumlah, 0);
 
   useEffect(() => {
@@ -55,7 +56,7 @@ export default function Statistik() {
           <span className="text-accent font-semibold text-sm uppercase tracking-widest">Transparansi Data Desa</span>
           <h1 className="font-serif text-3xl sm:text-5xl font-bold">Statistik Penduduk & APBDES</h1>
           <p className="text-emerald-100 max-w-2xl mx-auto text-sm sm:text-base">
-            Informasi demografi resmi kependudukan, grafik tingkat pendidikan warga, serta transparansi APBDES Desa Tenjonagara.
+            Informasi demografi resmi kependudukan, grafik batang tingkat pendidikan warga, serta transparansi APBDES Desa Tenjonagara.
           </p>
         </div>
       </section>
@@ -121,16 +122,16 @@ export default function Statistik() {
           </div>
         </section>
 
-        {/* GRAFIK TINGKAT PENDIDIKAN (SD S/D S1) */}
+        {/* GRAFIK BATANG TEGAK (VERTICAL BAR CHART) TINGKAT PENDIDIKAN */}
         <section className="bg-white rounded-3xl p-8 sm:p-10 shadow-xl border border-slate-200 space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-2xl bg-primary text-accent flex items-center justify-center font-bold shadow-md">
-                <GraduationCap className="w-7 h-7 text-accent" />
+                <BarChart3 className="w-7 h-7 text-accent" />
               </div>
               <div>
-                <h2 className="font-serif text-2xl font-bold text-primary">Grafik Tingkat Pendidikan Warga</h2>
-                <p className="text-slate-500 text-xs sm:text-sm">Distribusi jenjang pendidikan terdaftar dari SD sampai Sarjana (S1)</p>
+                <h2 className="font-serif text-2xl font-bold text-primary">Grafik Batang Tingkat Pendidikan Warga</h2>
+                <p className="text-slate-500 text-xs sm:text-sm">Diagram statistik jenjang pendidikan terdaftar di Desa Tenjonagara (SD s/d S1)</p>
               </div>
             </div>
             <div className="bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-200 text-xs text-emerald-800 font-semibold flex items-center gap-2">
@@ -139,40 +140,68 @@ export default function Statistik() {
             </div>
           </div>
 
-          {/* Visual Horizontal Progress Chart */}
-          <div className="space-y-6">
-            {dataPendidikan.map((item, idx) => (
-              <div key={idx} className="space-y-2 group">
-                <div className="flex justify-between items-center text-sm font-medium">
-                  <span className="font-bold text-slate-800 group-hover:text-primary transition-colors flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-mono font-bold">
-                      0{idx + 1}
-                    </span>
+          {/* Visual Vertical Bar Chart (Grafik Batang Tegak) */}
+          <div className="pt-6 pb-2">
+            <div className="h-72 sm:h-80 w-full flex items-end justify-between gap-3 sm:gap-6 px-2 sm:px-8 border-b-2 border-slate-300 relative">
+              
+              {/* Y-Axis Gridlines */}
+              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
+                <div className="border-b border-slate-400 w-full"></div>
+                <div className="border-b border-slate-400 w-full"></div>
+                <div className="border-b border-slate-400 w-full"></div>
+                <div className="border-b border-slate-400 w-full"></div>
+              </div>
+
+              {/* Vertical Bars */}
+              {dataPendidikan.map((item, idx) => {
+                // Calculate percentage height relative to highest value (SD: 2317)
+                const heightPercent = Math.max((item.jumlah / maxJumlah) * 100, 8);
+
+                return (
+                  <div key={idx} className="flex-1 flex flex-col items-center h-full justify-end group z-10">
+                    
+                    {/* Top Label (Count & Percentage Badge) */}
+                    <div className="mb-2 text-center transition-all transform group-hover:-translate-y-1">
+                      <div className="text-xs sm:text-sm font-bold font-mono text-slate-800">
+                        {item.jumlah.toLocaleString('id-ID')}
+                      </div>
+                      <div className="text-[10px] sm:text-xs font-semibold text-primary bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                        {item.persentase}%
+                      </div>
+                    </div>
+
+                    {/* Bar Column */}
+                    <div className="w-full max-w-[64px] bg-slate-100 rounded-t-xl overflow-hidden shadow-sm flex items-end">
+                      <div
+                        className={`w-full rounded-t-xl ${item.color} transition-all duration-700 ease-out group-hover:brightness-110 group-hover:shadow-lg`}
+                        style={{ height: `${heightPercent}%` }}
+                      ></div>
+                    </div>
+
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* X-Axis Labels */}
+            <div className="flex justify-between gap-3 sm:gap-6 px-2 sm:px-8 pt-3 text-center">
+              {dataPendidikan.map((item, idx) => (
+                <div key={idx} className="flex-1">
+                  <span className="font-bold text-xs sm:text-sm text-slate-800 block truncate" title={item.tingkat}>
+                    {item.short}
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-slate-500 hidden sm:block truncate">
                     {item.tingkat}
                   </span>
-                  <div className="text-right">
-                    <span className="font-bold font-mono text-primary text-base mr-2">{item.jumlah.toLocaleString('id-ID')} jiwa</span>
-                    <span className="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full font-mono font-semibold">
-                      ({item.persentase}%)
-                    </span>
-                  </div>
                 </div>
-
-                {/* Animated Progress Bar */}
-                <div className="w-full bg-slate-100 rounded-full h-4 overflow-hidden border border-slate-200/80">
-                  <div
-                    className={`h-full rounded-full ${item.color} transition-all duration-700 ease-out group-hover:brightness-110`}
-                    style={{ width: `${Math.max(item.persentase, 1.5)}%` }}
-                  ></div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
           {/* Grid Cards Summary Ringkasan Grafik */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-4 border-t border-slate-100 text-center">
             {dataPendidikan.map((item, idx) => (
-              <div key={idx} className="bg-surface p-3.5 rounded-xl border border-slate-200 space-y-1">
+              <div key={idx} className="bg-surface p-3.5 rounded-xl border border-slate-200 space-y-1 hover:border-primary transition-colors">
                 <div className="text-xs font-semibold text-slate-500 truncate">{item.tingkat}</div>
                 <div className="text-lg font-bold font-mono text-slate-800">{item.jumlah.toLocaleString('id-ID')}</div>
                 <div className="text-xs font-bold text-primary">{item.persentase}%</div>
