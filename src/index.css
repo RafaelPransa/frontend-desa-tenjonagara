@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#FAF7F2] text-slate-800 font-sans min-h-screen flex flex-col;
+  }
+}
+
+.gradient-hero {
+  background: linear-gradient(135deg, #1C3124 0%, #2D4B37 60%, #7D5C4A 100%);
+}
+
+.gradient-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(250,247,242,0.95) 100%);
+}
