@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import logoPemkab from '../assets/logo-pemkab-tasikmalaya.jpg';
+import logoPemkab from '../assets/logo-pemkab-tasikmalaya.png';
 
 const navItems = [
   { name: 'Beranda', path: '/' },
@@ -12,6 +12,7 @@ const navItems = [
   { name: 'Layanan Publik', path: '/layanan' },
   { name: 'Statistik Penduduk', path: '/statistik' },
   { name: 'Kontak', path: '/kontak' },
+  { name: 'Login', path: '/login' },
 ];
 
 export default function Navbar() {
@@ -20,14 +21,6 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-primary shadow-lg border-b border-primary-light/30 text-white">
-      {/* Topbar Banner */}
-      <div className="bg-primary-dark/80 px-4 py-1 text-xs text-center border-b border-white/10 flex justify-between items-center max-w-7xl mx-auto">
-        <span className="truncate">Desa Tenjonagara, Kec. Cigalontang, Kab. Tasikmalaya</span>
-        <Link to="/login" className="hover:text-accent transition-colors font-medium ml-2">
-          <span>Admin Portal</span>
-        </Link>
-      </div>
-
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo & Brand */}
@@ -105,3 +98,4 @@ export default function Navbar() {
     </header>
   );
 }
+

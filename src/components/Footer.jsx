@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Clock, Activity } from 'lucide-react';
 import { checkHealth } from '../services/desaService';
-import logoPemkab from '../assets/logo-pemkab-tasikmalaya.jpg';
+import logoPemkab from '../assets/logo-pemkab-tasikmalaya.png';
 
 export default function Footer() {
   const [apiStatus, setApiStatus] = useState({ online: false, message: 'Memeriksa koneksi server...' });
@@ -23,7 +23,7 @@ export default function Footer() {
     <footer className="bg-[#1A1C1A] text-slate-300 mt-auto border-t-4 border-accent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
-          
+
           {/* Col 1: Identity */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
