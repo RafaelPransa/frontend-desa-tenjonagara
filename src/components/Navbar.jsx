@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import logoPemkab from '../assets/logo-pemkab-tasikmalaya.jpg';
 
 const navItems = [
   { name: 'Beranda', path: '/' },
@@ -31,9 +32,11 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo & Brand */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-accent text-primary flex items-center justify-center font-bold text-lg sm:text-xl shadow-md group-hover:scale-105 transition-transform">
-              DT
-            </div>
+            <img
+              src={logoPemkab}
+              alt="Logo Pemkab Tasikmalaya"
+              className="w-10 h-10 sm:w-11 sm:h-11 object-contain drop-shadow-md group-hover:scale-105 transition-transform rounded-lg"
+            />
             <div>
               <h1 className="font-serif font-bold text-lg sm:text-xl tracking-tight text-white leading-none">
                 DESA TENJONAGARA

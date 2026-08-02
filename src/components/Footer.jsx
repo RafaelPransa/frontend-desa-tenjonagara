@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail, Clock, TreePine, Activity } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Activity } from 'lucide-react';
 import { checkHealth } from '../services/desaService';
+import logoPemkab from '../assets/logo-pemkab-tasikmalaya.jpg';
 
 export default function Footer() {
   const [apiStatus, setApiStatus] = useState({ online: false, message: 'Memeriksa koneksi server...' });
@@ -26,9 +27,11 @@ export default function Footer() {
           {/* Col 1: Identity */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-accent text-primary flex items-center justify-center font-bold">
-                <TreePine className="w-6 h-6 text-primary-dark" />
-              </div>
+              <img
+                src={logoPemkab}
+                alt="Logo Pemkab Tasikmalaya"
+                className="w-10 h-10 object-contain rounded-lg drop-shadow"
+              />
               <h2 className="font-serif font-bold text-lg text-white">Desa Tenjonagara</h2>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed">
