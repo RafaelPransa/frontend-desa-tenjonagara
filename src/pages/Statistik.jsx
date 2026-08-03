@@ -54,7 +54,27 @@ export default function Statistik() {
     return themes[idx % themes.length];
   };
 
-  const rawPendidikan = Array.isArray(statTerbaru.pendidikan) ? statTerbaru.pendidikan : [];
+  const defaultPendidikan = [
+    { tingkat: 'SD / Sederajat', jumlah: 2317, persentase: 70.47 },
+    { tingkat: 'SMP / Sederajat', jumlah: 587, persentase: 17.85 },
+    { tingkat: 'SMA / Sederajat', jumlah: 332, persentase: 10.1 },
+    { tingkat: 'Diploma I (D1)', jumlah: 47, persentase: 1.43 },
+    { tingkat: 'Sarjana (S1)', jumlah: 5, persentase: 0.15 }
+  ];
+
+  let rawPendidikan = defaultPendidikan;
+  if (Array.isArray(statTerbaru.pendidikan) && statTerbaru.pendidikan.length > 0) {
+    rawPendidikan = statTerbaru.pendidikan;
+  } else if (typeof statTerbaru.pendidikan === 'string') {
+    try {
+      const parsed = JSON.parse(statTerbaru.pendidikan);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        rawPendidikan = parsed;
+      }
+    } catch (e) {
+      // fallback
+    }
+  }
 
   const dataPendidikan = rawPendidikan.map((item, idx) => {
     const theme = getThemeProps(idx);

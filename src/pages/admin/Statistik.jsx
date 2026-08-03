@@ -7,7 +7,8 @@ import {
   AlertCircle,
   CheckCircle,
   Loader2,
-  RefreshCw
+  RefreshCw,
+  Calculator
 } from 'lucide-react';
 import { getAdminStatistik, updateAdminStatistik } from '../../services/adminService';
 
@@ -21,10 +22,10 @@ export default function AdminStatistik() {
     jumlah_kk: 2262,
     rata_anggota_keluarga: 2.7,
     pendidikan: [
-      { tingkat: 'SD / Sederajat', jumlah: 2317, persentase: 70.5 },
-      { tingkat: 'SMP / Sederajat', jumlah: 587, persentase: 17.9 },
+      { tingkat: 'SD / Sederajat', jumlah: 2317, persentase: 70.47 },
+      { tingkat: 'SMP / Sederajat', jumlah: 587, persentase: 17.85 },
       { tingkat: 'SMA / Sederajat', jumlah: 332, persentase: 10.1 },
-      { tingkat: 'Diploma I (D1)', jumlah: 47, persentase: 1.4 },
+      { tingkat: 'Diploma I (D1)', jumlah: 47, persentase: 1.43 },
       { tingkat: 'Sarjana (S1)', jumlah: 5, persentase: 0.15 }
     ]
   });
@@ -34,6 +35,20 @@ export default function AdminStatistik() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
+  // Helper untuk menghitung ulang persentase secara otomatis
+  const recalculatePercentages = (listPendidikan) => {
+    const totalPendidikan = listPendidikan.reduce((acc, curr) => acc + (Number(curr.jumlah) || 0), 0);
+    return listPendidikan.map((item) => {
+      const jml = Number(item.jumlah) || 0;
+      const pct = totalPendidikan > 0 ? Number(((jml / totalPendidikan) * 100).toFixed(2)) : 0;
+      return {
+        ...item,
+        jumlah: jml,
+        persentase: pct
+      };
+    });
+  };
+
   const fetchStatistik = async () => {
     setFetching(true);
     setError(null);
@@ -42,6 +57,7 @@ export default function AdminStatistik() {
       const list = res.data?.data || res.data || [];
       const item = Array.isArray(list) ? list[0] : list;
       if (item) {
+        const rawEdu = Array.isArray(item.pendidikan) ? item.pendidikan : formData.pendidikan;
         setFormData({
           id: item.id || 1,
           tahun: item.tahun || 2026,
@@ -50,7 +66,7 @@ export default function AdminStatistik() {
           jumlah_perempuan: item.jumlah_perempuan || 3026,
           jumlah_kk: item.jumlah_kk || 2262,
           rata_anggota_keluarga: item.rata_anggota_keluarga || 2.7,
-          pendidikan: Array.isArray(item.pendidikan) ? item.pendidikan : formData.pendidikan
+          pendidikan: recalculatePercentages(rawEdu)
         });
       }
     } catch (err) {
@@ -69,11 +85,24 @@ export default function AdminStatistik() {
     setFormData((prev) => ({ ...prev, [name]: Number(value) || value }));
   };
 
-  const handlePendidikanChange = (index, field, value) => {
+  const handlePendidikanChange = (index, value) => {
     const updated = [...formData.pendidikan];
-    updated[index][field] = field === 'tingkat' ? value : Number(value) || 0;
-    setFormData((prev) => ({ ...prev, pendidikan: updated }));
+    updated[index].jumlah = Math.max(0, Number(value) || 0);
+    
+    // Hitung ulang persentase secara otomatis di belakang layar
+    const recalculated = recalculatePercentages(updated);
+
+    // Hitung ulang total terdata pendidikan
+    const newTotalPendidikan = recalculated.reduce((sum, item) => sum + item.jumlah, 0);
+
+    setFormData((prev) => ({
+      ...prev,
+      jumlah_total: newTotalPendidikan,
+      pendidikan: recalculated
+    }));
   };
+
+  const totalTerdataPendidikan = formData.pendidikan.reduce((sum, item) => sum + (Number(item.jumlah) || 0), 0);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,8 +110,13 @@ export default function AdminStatistik() {
     setSuccess(false);
     setLoading(true);
 
+    const payload = {
+      ...formData,
+      pendidikan: recalculatePercentages(formData.pendidikan)
+    };
+
     try {
-      await updateAdminStatistik(formData.id, formData);
+      await updateAdminStatistik(formData.id, payload);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
@@ -164,7 +198,7 @@ export default function AdminStatistik() {
                   name="jumlah_total"
                   value={formData.jumlah_total}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm font-bold text-slate-900"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm font-bold text-slate-900 bg-slate-50"
                   required
                 />
               </div>
@@ -221,35 +255,47 @@ export default function AdminStatistik() {
 
           {/* Section 2: Tingkat Pendidikan */}
           <div className="space-y-4">
-            <h2 className="text-base font-bold text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-2">
-              <GraduationCap className="w-5 h-5 text-primary" />
-              <span>Tingkat Pendidikan Penduduk</span>
-            </h2>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2">
+              <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                <GraduationCap className="w-5 h-5 text-primary" />
+                <span>Tingkat Pendidikan Penduduk</span>
+              </h2>
+              <div className="text-xs text-emerald-800 font-semibold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5 self-start sm:self-auto">
+                <Calculator className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Persentase dihitung otomatis (Total: {totalTerdataPendidikan.toLocaleString('id-ID')} Jiwa)</span>
+              </div>
+            </div>
 
             <div className="space-y-3">
               {formData.pendidikan.map((edu, idx) => (
-                <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
-                  <div className="font-bold text-slate-800 text-xs sm:text-sm">
+                <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="font-bold text-slate-900 text-sm sm:text-base w-48 shrink-0">
                     {edu.tingkat}
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">Jumlah Penduduk</label>
-                    <input
-                      type="number"
-                      value={edu.jumlah}
-                      onChange={(e) => handlePendidikanChange(idx, 'jumlah', e.target.value)}
-                      className="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-800"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">Persentase (%)</label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      value={edu.persentase}
-                      onChange={(e) => handlePendidikanChange(idx, 'persentase', e.target.value)}
-                      className="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs text-slate-800"
-                    />
+
+                  <div className="flex-1 w-full sm:w-auto grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        Jumlah Penduduk (Jiwa)
+                      </label>
+                      <input
+                        type="number"
+                        value={edu.jumlah}
+                        onChange={(e) => handlePendidikanChange(idx, e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-primary"
+                        min={0}
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                        Hasil Kalkulasi Persentase
+                      </label>
+                      <div className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-sm font-bold text-primary flex items-center justify-between">
+                        <span>{edu.persentase}%</span>
+                        <span className="text-[10px] text-slate-400 font-normal">otomatis</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
