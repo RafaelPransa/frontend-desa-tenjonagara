@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Lock, Mail, Key, ShieldCheck, AlertCircle } from 'lucide-react';
 import { loginAdmin } from '../services/desaService';
 
@@ -8,6 +8,14 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/admin', { replace: true });
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -23,8 +31,8 @@ export default function Login() {
       if (res.success && res.data?.token) {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('user', JSON.stringify(res.data.user));
-        alert(`Selamat datang kembali, ${res.data.user.nama}! (Token JWT disimpan)`);
-        navigate('/');
+        const redirectPath = location.state?.from?.pathname || '/admin';
+        navigate(redirectPath, { replace: true });
       }
     } catch (err) {
       setError(err.message || 'Login gagal. Periksa email & password.');
@@ -32,6 +40,7 @@ export default function Login() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
