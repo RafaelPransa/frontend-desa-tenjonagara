@@ -202,6 +202,7 @@ export default function PerangkatForm() {
                 value={formData.urutan}
                 onChange={handleChange}
                 className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm text-slate-800"
+                min={1}
               />
             </div>
           </div>

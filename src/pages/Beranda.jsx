@@ -27,26 +27,26 @@ export default function Beranda() {
 
   return (
     <div className="space-y-16 pb-16">
-      
+
       {/* HERO SECTION */}
       <section className="gradient-hero text-white relative overflow-hidden py-20 lg:py-28 px-4 sm:px-6 lg:px-8">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#D4A017_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        
+
         <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-accent backdrop-blur-md border border-white/20 text-xs font-semibold uppercase tracking-wider">
               <Sparkles className="w-4 h-4 text-accent" />
               Selamat Datang di Portal Resmi
             </div>
-            
+
             <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight">
               Website Profil <span className="text-accent underline decoration-accent/40">Desa Tenjonagara</span>
             </h1>
-            
+
             <p className="text-emerald-100 text-base sm:text-lg max-w-2xl leading-relaxed font-light">
               Pusat informasi publik, layanan administrasi digital warga, dan potensi ekonomi lokal Kecamatan Cigalontang, Kabupaten Tasikmalaya.
             </p>
-            
+
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
               <Link
                 to="/layanan"
@@ -111,7 +111,7 @@ export default function Beranda() {
           <div className="lg:col-span-8 space-y-4">
             <div className="inline-block text-secondary font-bold text-sm tracking-wider uppercase">Sambutan Kuwu / Kepala Desa</div>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-primary">
-              {perangkatList[0]?.nama || 'Asep Saepulloh, S.IP'}
+              Heri Priana
             </h2>
             <p className="text-slate-600 leading-relaxed italic border-l-4 border-accent pl-4 py-1">
               "Sampurasun warga Desa Tenjonagara. Selamat datang di portal resmi desa kami. Website ini kami hadirkan sebagai bentuk transparansi tata kelola pemerintahan desa serta memudahkan seluruh warga dalam mendapatkan informasi dan layanan administrasi tanpa hambatan."
