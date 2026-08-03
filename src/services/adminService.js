@@ -107,3 +107,10 @@ export const getAdminStatistik = () =>
 
 export const updateAdminStatistik = (id, data) =>
   api.put(`/statistik/penduduk/${id || 1}`, data, getAuthHeaders());
+
+// ── KELOLA PESAN KONTAK ──
+export const getAdminKontak = () =>
+  api.get('/kontak', getAuthHeaders());
+
+export const deleteAdminKontak = (id) =>
+  api.delete(`/kontak/${id}`, getAuthHeaders());

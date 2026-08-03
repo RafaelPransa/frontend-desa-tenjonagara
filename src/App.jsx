@@ -30,6 +30,7 @@ import LayananForm from './pages/admin/LayananForm';
 import AdminPerangkat from './pages/admin/Perangkat';
 import PerangkatForm from './pages/admin/PerangkatForm';
 import AdminStatistik from './pages/admin/Statistik';
+import AdminKontak from './pages/admin/Kontak';
 
 export default function App() {
   return (
@@ -81,6 +82,7 @@ export default function App() {
           <Route path="perangkat/:id" element={<PerangkatForm />} />
 
           <Route path="statistik" element={<AdminStatistik />} />
+          <Route path="kontak" element={<AdminKontak />} />
         </Route>
       </Routes>
     </Router>
