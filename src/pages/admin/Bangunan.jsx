@@ -8,7 +8,6 @@ import {
   Trash2,
   ExternalLink,
   MapPin,
-  Calendar,
   AlertCircle,
   CheckCircle,
   RefreshCw
@@ -159,7 +158,7 @@ export default function AdminBangunan() {
         </div>
       </div>
 
-      {/* Bangunan Table / Grid */}
+      {/* Bangunan Table */}
       <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-slate-400 space-y-3">
@@ -182,7 +181,6 @@ export default function AdminBangunan() {
                   <th className="py-3.5 px-4 sm:px-6">Nama Bangunan</th>
                   <th className="py-3.5 px-4">Kategori</th>
                   <th className="py-3.5 px-4 hidden md:table-cell">Alamat / Lokasi</th>
-                  <th className="py-3.5 px-4 hidden sm:table-cell">Tahun</th>
                   <th className="py-3.5 px-4 text-right pr-6">Aksi</th>
                 </tr>
               </thead>
@@ -223,13 +221,6 @@ export default function AdminBangunan() {
                       <div className="flex items-center gap-1.5 text-xs">
                         <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                         <span className="truncate max-w-xs">{item.alamat || 'Desa Tenjonagara'}</span>
-                      </div>
-                    </td>
-
-                    <td className="py-4 px-4 hidden sm:table-cell text-slate-500 text-xs">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                        <span>{item.tahun_dibangun || '-'}</span>
                       </div>
                     </td>
 

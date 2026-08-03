@@ -29,8 +29,7 @@ export default function BangunanForm() {
     kategori: 'fasilitas_umum',
     deskripsi: '',
     gambar_url: '',
-    alamat: '',
-    tahun_dibangun: ''
+    alamat: ''
   });
 
   const [loading, setLoading] = useState(false);
@@ -52,8 +51,7 @@ export default function BangunanForm() {
               kategori: data.kategori || 'fasilitas_umum',
               deskripsi: data.deskripsi || '',
               gambar_url: data.gambar_url || '',
-              alamat: data.alamat || '',
-              tahun_dibangun: data.tahun_dibangun || ''
+              alamat: data.alamat || ''
             });
           }
         } catch (err) {
@@ -186,35 +184,20 @@ export default function BangunanForm() {
               </select>
             </div>
 
-            {/* Tahun Dibangun */}
+            {/* Alamat / Lokasi */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                Tahun Dibangun / Renovasi
+                Alamat / Dusun / Lokasi Fisik
               </label>
               <input
-                type="number"
-                name="tahun_dibangun"
-                placeholder="Contoh: 2018"
-                value={formData.tahun_dibangun}
+                type="text"
+                name="alamat"
+                placeholder="Contoh: Dusun 1 RT 02 RW 04 Desa Tenjonagara"
+                value={formData.alamat}
                 onChange={handleChange}
                 className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm text-slate-800"
               />
             </div>
-          </div>
-
-          {/* Alamat / Lokasi */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-              Alamat / Dusun / Lokasi Fisik
-            </label>
-            <input
-              type="text"
-              name="alamat"
-              placeholder="Contoh: Dusun 1 RT 02 RW 04 Desa Tenjonagara"
-              value={formData.alamat}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm text-slate-800"
-            />
           </div>
 
           {/* Image Uploader */}
@@ -227,12 +210,12 @@ export default function BangunanForm() {
           {/* Deskripsi */}
           <div className="space-y-1.5">
             <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-              Deskripsi & Fasilitas Bangunan <span className="text-rose-500">*</span>
+              Deskripsi & Sejarah / Fasilitas Bangunan <span className="text-rose-500">*</span>
             </label>
             <textarea
               name="deskripsi"
               rows={6}
-              placeholder="Jelaskan fungsi, kapasitas, atau fasilitas yang ada di bangunan ini..."
+              placeholder="Jelaskan fungsi, kapasitas, sejarah berdiri, atau fasilitas yang ada di bangunan ini..."
               value={formData.deskripsi}
               onChange={handleChange}
               className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm text-slate-800 leading-relaxed"
