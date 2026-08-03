@@ -76,9 +76,19 @@ export default function AdminPotensi() {
     return matchSearch && matchCategory;
   });
 
-  const getCategoryLabel = (catKey) => {
-    const found = categories.find((c) => c.key === catKey);
-    return found ? found.label : catKey;
+  const getCategoryMeta = (catKey) => {
+    switch (catKey) {
+      case 'pertanian':
+        return { label: 'Pertanian & Perkebunan', badgeClass: 'bg-emerald-100 text-emerald-900 border-emerald-200' };
+      case 'umkm':
+        return { label: 'UMKM & Kerajinan', badgeClass: 'bg-amber-100 text-amber-900 border-amber-200' };
+      case 'wisata':
+        return { label: 'Wisata & Alam', badgeClass: 'bg-teal-100 text-teal-900 border-teal-200' };
+      case 'perikanan':
+        return { label: 'Perikanan & Peternakan', badgeClass: 'bg-blue-100 text-blue-900 border-blue-200' };
+      default:
+        return { label: catKey || 'Lainnya', badgeClass: 'bg-purple-100 text-purple-900 border-purple-200' };
+    }
   };
 
   return (
@@ -182,59 +192,63 @@ export default function AdminPotensi() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
-                {filteredList.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-4 px-4 sm:px-6">
-                      <div className="flex items-center gap-3">
-                        {item.gambar_url ? (
-                          <img
-                            src={item.gambar_url}
-                            alt={item.nama}
-                            className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0">
-                            <Sparkles className="w-5 h-5 text-amber-600" />
+                {filteredList.map((item) => {
+                  const meta = getCategoryMeta(item.kategori);
+
+                  return (
+                    <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-4 px-4 sm:px-6">
+                        <div className="flex items-center gap-3">
+                          {item.gambar_url ? (
+                            <img
+                              src={item.gambar_url}
+                              alt={item.nama}
+                              className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0">
+                              <Sparkles className="w-5 h-5 text-amber-600" />
+                            </div>
+                          )}
+                          <div className="font-bold text-slate-900 line-clamp-1 max-w-xs sm:max-w-md">
+                            {item.nama}
                           </div>
-                        )}
-                        <div className="font-bold text-slate-900 line-clamp-1 max-w-xs sm:max-w-md">
-                          {item.nama}
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    <td className="py-4 px-4">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 text-[11px] font-bold border border-amber-200">
-                        {getCategoryLabel(item.kategori)}
-                      </span>
-                    </td>
+                      <td className="py-4 px-4">
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold border ${meta.badgeClass}`}>
+                          {meta.label}
+                        </span>
+                      </td>
 
-                    <td className="py-4 px-4 hidden md:table-cell text-slate-600">
-                      <span className="line-clamp-2 max-w-md text-xs">{item.deskripsi}</span>
-                    </td>
+                      <td className="py-4 px-4 hidden md:table-cell text-slate-600">
+                        <span className="line-clamp-2 max-w-md text-xs">{item.deskripsi}</span>
+                      </td>
 
-                    <td className="py-4 px-4 text-right pr-6">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <Link
-                          to={`/admin/potensi/${item.id}`}
-                          className="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors"
-                          title="Edit Potensi"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Link>
+                      <td className="py-4 px-4 text-right pr-6">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Link
+                            to={`/admin/potensi/${item.id}`}
+                            className="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors"
+                            title="Edit Potensi"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Link>
 
-                        <button
-                          onClick={() => handleDelete(item.id, item.nama)}
-                          disabled={deletingId === item.id}
-                          className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
-                          title="Hapus Potensi"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          <button
+                            onClick={() => handleDelete(item.id, item.nama)}
+                            disabled={deletingId === item.id}
+                            className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
+                            title="Hapus Potensi"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
