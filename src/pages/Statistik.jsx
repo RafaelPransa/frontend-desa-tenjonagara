@@ -19,48 +19,51 @@ export default function Statistik() {
       });
   }, []);
 
+  const defaultPendidikan = [
+    { tingkat: 'Tidak/Belum sekolah', jumlah: 500, persentase: 8.14 },
+    { tingkat: 'Tamat SD/Sederajat', jumlah: 2793, persentase: 45.44 },
+    { tingkat: 'Tamat SMP/Sederajat', jumlah: 1343, persentase: 21.85 },
+    { tingkat: 'Tamat SLTA/Sederajat', jumlah: 971, persentase: 15.8 },
+    { tingkat: 'Tamat Diploma I-II', jumlah: 20, persentase: 0.33 },
+    { tingkat: 'Tamat Diploma III', jumlah: 35, persentase: 0.57 },
+    { tingkat: 'Tamat S1', jumlah: 470, persentase: 7.65 },
+    { tingkat: 'Tamat S2', jumlah: 14, persentase: 0.23 }
+  ];
+
   const statTerbaru = (Array.isArray(statistik) && statistik[0]) || {
     tahun: 2026,
     jumlah_total: 6146,
     jumlah_kk: 2262,
     rata_anggota_keluarga: 2.7,
-    pendidikan: [
-      { tingkat: 'SD / Sederajat', jumlah: 2317, persentase: 70.47 },
-      { tingkat: 'SMP / Sederajat', jumlah: 587, persentase: 17.85 },
-      { tingkat: 'SMA / Sederajat', jumlah: 332, persentase: 10.1 },
-      { tingkat: 'Diploma I (D1)', jumlah: 47, persentase: 1.43 },
-      { tingkat: 'Sarjana (S1)', jumlah: 5, persentase: 0.15 }
-    ]
+    pendidikan: defaultPendidikan
   };
 
   const getShortName = (tingkat) => {
     if (!tingkat) return '';
+    if (tingkat.includes('Tidak') || tingkat.includes('Belum')) return 'Blm/Tdk';
     if (tingkat.includes('SD')) return 'SD';
     if (tingkat.includes('SMP')) return 'SMP';
-    if (tingkat.includes('SMA')) return 'SMA';
-    if (tingkat.includes('D1') || tingkat.includes('Diploma')) return 'D1';
+    if (tingkat.includes('SLTA') || tingkat.includes('SMA')) return 'SLTA';
+    if (tingkat.includes('Diploma I-II') || tingkat.includes('D1-D2') || tingkat.includes('I-II')) return 'D1-D2';
+    if (tingkat.includes('Diploma III') || tingkat.includes('D3') || tingkat.includes('III')) return 'D3';
     if (tingkat.includes('S1') || tingkat.includes('Sarjana')) return 'S1';
-    return tingkat.slice(0, 4);
+    if (tingkat.includes('S2') || tingkat.includes('Magister')) return 'S2';
+    return tingkat.slice(0, 5);
   };
 
   const getThemeProps = (idx) => {
     const themes = [
+      { gradient: 'linear-gradient(180deg, #475569 0%, #1E293B 100%)', badgeBg: 'bg-slate-100 text-slate-800 border-slate-300' },
       { gradient: 'linear-gradient(180deg, #3F664C 0%, #2D4B37 100%)', badgeBg: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
       { gradient: 'linear-gradient(180deg, #10B981 0%, #047857 100%)', badgeBg: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
       { gradient: 'linear-gradient(180deg, #9E7761 0%, #7D5C4A 100%)', badgeBg: 'bg-amber-50 text-amber-900 border-amber-200' },
       { gradient: 'linear-gradient(180deg, #E5B83B 0%, #D4A017 100%)', badgeBg: 'bg-yellow-50 text-yellow-900 border-yellow-200' },
-      { gradient: 'linear-gradient(180deg, #334155 0%, #0F172A 100%)', badgeBg: 'bg-slate-100 text-slate-800 border-slate-300' }
+      { gradient: 'linear-gradient(180deg, #14B8A6 0%, #0F766E 100%)', badgeBg: 'bg-teal-50 text-teal-800 border-teal-200' },
+      { gradient: 'linear-gradient(180deg, #6366F1 0%, #4338CA 100%)', badgeBg: 'bg-indigo-50 text-indigo-800 border-indigo-200' },
+      { gradient: 'linear-gradient(180deg, #8B5CF6 0%, #6D28D9 100%)', badgeBg: 'bg-purple-50 text-purple-800 border-purple-200' }
     ];
     return themes[idx % themes.length];
   };
-
-  const defaultPendidikan = [
-    { tingkat: 'SD / Sederajat', jumlah: 2317, persentase: 70.47 },
-    { tingkat: 'SMP / Sederajat', jumlah: 587, persentase: 17.85 },
-    { tingkat: 'SMA / Sederajat', jumlah: 332, persentase: 10.1 },
-    { tingkat: 'Diploma I (D1)', jumlah: 47, persentase: 1.43 },
-    { tingkat: 'Sarjana (S1)', jumlah: 5, persentase: 0.15 }
-  ];
 
   let rawPendidikan = defaultPendidikan;
   if (Array.isArray(statTerbaru.pendidikan) && statTerbaru.pendidikan.length > 0) {
@@ -169,20 +172,20 @@ export default function Statistik() {
         </section>
 
         {/* GRAFIK BATANG TEGAK (VERTICAL BAR CHART) TINGKAT PENDIDIKAN */}
-        <section className="bg-white rounded-3xl p-8 sm:p-10 shadow-xl border border-slate-200 space-y-8">
+        <section className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200 space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-primary text-accent flex items-center justify-center font-bold shadow-md">
+              <div className="w-12 h-12 rounded-2xl bg-primary text-accent flex items-center justify-center font-bold shadow-md shrink-0">
                 <BarChart3 className="w-7 h-7 text-accent" />
               </div>
               <div>
                 <h2 className="font-serif text-2xl font-bold text-primary">Grafik Batang Tingkat Pendidikan Warga</h2>
                 <p className="text-slate-500 text-xs sm:text-sm">
-                  Diagram statistik jenjang pendidikan terdaftar di Desa Tenjonagara
+                  Diagram statistik jenjang pendidikan terdaftar di Desa Tenjonagara (8 Kategori)
                 </p>
               </div>
             </div>
-            <div className="bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-200 text-xs text-emerald-800 font-semibold flex items-center gap-2">
+            <div className="bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-200 text-xs text-emerald-800 font-semibold flex items-center gap-2 shrink-0">
               <Award className="w-4 h-4 text-emerald-600" />
               <span>Total Terdata: {totalTercatatPendidikan.toLocaleString('id-ID')} Jiwa</span>
             </div>
@@ -190,7 +193,7 @@ export default function Statistik() {
 
           {/* Visual Vertical Bar Chart (Grafik Batang Tegak) */}
           <div className="pt-6 pb-2">
-            <div className="w-full flex items-end justify-between gap-3 sm:gap-6 px-2 sm:px-8 border-b-2 border-slate-300 relative">
+            <div className="w-full flex items-end justify-between gap-1.5 sm:gap-4 px-1 sm:px-4 border-b-2 border-slate-300 relative">
               {/* Y-Axis Gridlines */}
               <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
                 <div className="border-b border-slate-400 w-full"></div>
@@ -206,20 +209,20 @@ export default function Statistik() {
                 return (
                   <div key={idx} className="flex-1 flex flex-col items-center justify-end group z-10">
                     {/* Top Label (Count & Percentage Badge) */}
-                    <div className="mb-3 text-center transition-all transform group-hover:-translate-y-1">
-                      <div className="text-xs sm:text-sm font-bold font-mono text-slate-800">
+                    <div className="mb-2.5 text-center transition-all transform group-hover:-translate-y-1">
+                      <div className="text-[11px] sm:text-xs font-bold font-mono text-slate-800">
                         {item.jumlah.toLocaleString('id-ID')}
                       </div>
-                      <div className={`text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded border mt-0.5 ${item.badgeBg}`}>
+                      <div className={`text-[9px] sm:text-[11px] font-semibold px-1.5 py-0.5 rounded border mt-0.5 whitespace-nowrap ${item.badgeBg}`}>
                         {item.persentase}%
                       </div>
                     </div>
 
-                    {/* Outer Track with explicit Height (h-56 = 224px) */}
-                    <div className="w-full max-w-[56px] h-48 sm:h-60 bg-slate-100/90 rounded-t-2xl overflow-hidden shadow-inner flex items-end border border-slate-200">
+                    {/* Outer Track with explicit Height (h-48 sm:h-60) */}
+                    <div className="w-full max-w-[48px] h-44 sm:h-60 bg-slate-100/90 rounded-t-xl overflow-hidden shadow-inner flex items-end border border-slate-200">
                       {/* Inner Filled Bar */}
                       <div
-                        className="w-full rounded-t-xl transition-all duration-700 ease-out group-hover:brightness-110 group-hover:shadow-lg"
+                        className="w-full rounded-t-lg transition-all duration-700 ease-out group-hover:brightness-110 group-hover:shadow-lg"
                         style={{
                           height: `${heightPercent}%`,
                           background: item.gradient
@@ -232,13 +235,13 @@ export default function Statistik() {
             </div>
 
             {/* X-Axis Labels */}
-            <div className="flex justify-between gap-3 sm:gap-6 px-2 sm:px-8 pt-4 text-center">
+            <div className="flex justify-between gap-1.5 sm:gap-4 px-1 sm:px-4 pt-4 text-center">
               {dataPendidikan.map((item, idx) => (
                 <div key={idx} className="flex-1">
-                  <span className="font-bold text-xs sm:text-sm text-slate-800 block truncate" title={item.tingkat}>
+                  <span className="font-bold text-[11px] sm:text-xs text-slate-800 block truncate" title={item.tingkat}>
                     {item.short}
                   </span>
-                  <span className="text-[10px] sm:text-xs text-slate-500 hidden sm:block truncate">
+                  <span className="text-[9px] sm:text-[11px] text-slate-500 hidden md:block truncate">
                     {item.tingkat}
                   </span>
                 </div>
@@ -247,11 +250,11 @@ export default function Statistik() {
           </div>
 
           {/* Grid Cards Summary Ringkasan Grafik */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-4 border-t border-slate-100 text-center">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 pt-4 border-t border-slate-100 text-center">
             {dataPendidikan.map((item, idx) => (
-              <div key={idx} className="bg-surface p-3.5 rounded-xl border border-slate-200 space-y-1 hover:border-primary transition-colors">
-                <div className="text-xs font-semibold text-slate-500 truncate">{item.tingkat}</div>
-                <div className="text-lg font-bold font-mono text-slate-800">{item.jumlah.toLocaleString('id-ID')}</div>
+              <div key={idx} className="bg-surface p-3 rounded-xl border border-slate-200 space-y-1 hover:border-primary transition-colors">
+                <div className="text-[11px] font-semibold text-slate-500 truncate" title={item.tingkat}>{item.tingkat}</div>
+                <div className="text-base font-bold font-mono text-slate-800">{item.jumlah.toLocaleString('id-ID')}</div>
                 <div className="text-xs font-bold text-primary">{item.persentase}%</div>
               </div>
             ))}

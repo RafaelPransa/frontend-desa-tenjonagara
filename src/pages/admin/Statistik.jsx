@@ -22,11 +22,14 @@ export default function AdminStatistik() {
     jumlah_kk: 2262,
     rata_anggota_keluarga: 2.7,
     pendidikan: [
-      { tingkat: 'SD / Sederajat', jumlah: 2317, persentase: 70.47 },
-      { tingkat: 'SMP / Sederajat', jumlah: 587, persentase: 17.85 },
-      { tingkat: 'SMA / Sederajat', jumlah: 332, persentase: 10.1 },
-      { tingkat: 'Diploma I (D1)', jumlah: 47, persentase: 1.43 },
-      { tingkat: 'Sarjana (S1)', jumlah: 5, persentase: 0.15 }
+      { tingkat: 'Tidak/Belum sekolah', jumlah: 500, persentase: 8.14 },
+      { tingkat: 'Tamat SD/Sederajat', jumlah: 2793, persentase: 45.44 },
+      { tingkat: 'Tamat SMP/Sederajat', jumlah: 1343, persentase: 21.85 },
+      { tingkat: 'Tamat SLTA/Sederajat', jumlah: 971, persentase: 15.8 },
+      { tingkat: 'Tamat Diploma I-II', jumlah: 20, persentase: 0.33 },
+      { tingkat: 'Tamat Diploma III', jumlah: 35, persentase: 0.57 },
+      { tingkat: 'Tamat S1', jumlah: 470, persentase: 7.65 },
+      { tingkat: 'Tamat S2', jumlah: 14, persentase: 0.23 }
     ]
   });
 
