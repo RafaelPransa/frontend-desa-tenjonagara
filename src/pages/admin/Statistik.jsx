@@ -1,0 +1,283 @@
+import React, { useEffect, useState } from 'react';
+import {
+  BarChart3,
+  Save,
+  Users,
+  GraduationCap,
+  AlertCircle,
+  CheckCircle,
+  Loader2,
+  RefreshCw
+} from 'lucide-react';
+import { getAdminStatistik, updateAdminStatistik } from '../../services/adminService';
+
+export default function AdminStatistik() {
+  const [formData, setFormData] = useState({
+    id: 1,
+    tahun: 2026,
+    jumlah_total: 6146,
+    jumlah_laki: 3120,
+    jumlah_perempuan: 3026,
+    jumlah_kk: 2262,
+    rata_anggota_keluarga: 2.7,
+    pendidikan: [
+      { tingkat: 'SD / Sederajat', jumlah: 2317, persentase: 70.5 },
+      { tingkat: 'SMP / Sederajat', jumlah: 587, persentase: 17.9 },
+      { tingkat: 'SMA / Sederajat', jumlah: 332, persentase: 10.1 },
+      { tingkat: 'Diploma I (D1)', jumlah: 47, persentase: 1.4 },
+      { tingkat: 'Sarjana (S1)', jumlah: 5, persentase: 0.15 }
+    ]
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+
+  const fetchStatistik = async () => {
+    setFetching(true);
+    setError(null);
+    try {
+      const res = await getAdminStatistik();
+      const list = res.data?.data || res.data || [];
+      const item = Array.isArray(list) ? list[0] : list;
+      if (item) {
+        setFormData({
+          id: item.id || 1,
+          tahun: item.tahun || 2026,
+          jumlah_total: item.jumlah_total || 6146,
+          jumlah_laki: item.jumlah_laki || 3120,
+          jumlah_perempuan: item.jumlah_perempuan || 3026,
+          jumlah_kk: item.jumlah_kk || 2262,
+          rata_anggota_keluarga: item.rata_anggota_keluarga || 2.7,
+          pendidikan: Array.isArray(item.pendidikan) ? item.pendidikan : formData.pendidikan
+        });
+      }
+    } catch (err) {
+      console.error('Gagal mengambil data statistik', err);
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStatistik();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: Number(value) || value }));
+  };
+
+  const handlePendidikanChange = (index, field, value) => {
+    const updated = [...formData.pendidikan];
+    updated[index][field] = field === 'tingkat' ? value : Number(value) || 0;
+    setFormData((prev) => ({ ...prev, pendidikan: updated }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(false);
+    setLoading(true);
+
+    try {
+      await updateAdminStatistik(formData.id, formData);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err) {
+      setError(err.message || 'Gagal memperbarui data statistik penduduk.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold shadow-xs">
+            <BarChart3 className="w-6 h-6 text-purple-700" />
+          </div>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Edit Data Statistik Penduduk</h1>
+            <p className="text-xs sm:text-sm text-slate-500">Perbarui statistik demografi, jumlah jiwa, KK, dan tingkat pendidikan</p>
+          </div>
+        </div>
+
+        <button
+          onClick={fetchStatistik}
+          className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors shrink-0"
+          title="Refresh Data"
+        >
+          <RefreshCw className={`w-4 h-4 ${fetching ? 'animate-spin' : ''}`} />
+        </button>
+      </div>
+
+      {/* Status Alerts */}
+      {error && (
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {success && (
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-3">
+          <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
+          <span>Data statistik demografi penduduk berhasil diperbarui!</span>
+        </div>
+      )}
+
+      {fetching ? (
+        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 space-y-3">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />
+          <p className="text-sm font-medium text-slate-500">Memuat data statistik penduduk...</p>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-8">
+          {/* Section 1: Demografi Umum */}
+          <div className="space-y-4">
+            <h2 className="text-base font-bold text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-2">
+              <Users className="w-5 h-5 text-primary" />
+              <span>Ringkasan Demografi Jiwa & KK</span>
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">Tahun Data</label>
+                <input
+                  type="number"
+                  name="tahun"
+                  value={formData.tahun}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm font-bold text-slate-900"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">Total Penduduk (Jiwa)</label>
+                <input
+                  type="number"
+                  name="jumlah_total"
+                  value={formData.jumlah_total}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm font-bold text-slate-900"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">Jumlah Kepala Keluarga (KK)</label>
+                <input
+                  type="number"
+                  name="jumlah_kk"
+                  value={formData.jumlah_kk}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm font-bold text-slate-900"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">Laki-laki (Jiwa)</label>
+                <input
+                  type="number"
+                  name="jumlah_laki"
+                  value={formData.jumlah_laki}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm text-slate-800"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">Perempuan (Jiwa)</label>
+                <input
+                  type="number"
+                  name="jumlah_perempuan"
+                  value={formData.jumlah_perempuan}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm text-slate-800"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">Rata-rata Anggota / KK</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  name="rata_anggota_keluarga"
+                  value={formData.rata_anggota_keluarga}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm text-slate-800"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: Tingkat Pendidikan */}
+          <div className="space-y-4">
+            <h2 className="text-base font-bold text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-2">
+              <GraduationCap className="w-5 h-5 text-primary" />
+              <span>Tingkat Pendidikan Penduduk</span>
+            </h2>
+
+            <div className="space-y-3">
+              {formData.pendidikan.map((edu, idx) => (
+                <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+                  <div className="font-bold text-slate-800 text-xs sm:text-sm">
+                    {edu.tingkat}
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase">Jumlah Penduduk</label>
+                    <input
+                      type="number"
+                      value={edu.jumlah}
+                      onChange={(e) => handlePendidikanChange(idx, 'jumlah', e.target.value)}
+                      className="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-800"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase">Persentase (%)</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={edu.persentase}
+                      onChange={(e) => handlePendidikanChange(idx, 'persentase', e.target.value)}
+                      className="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs text-slate-800"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Form Actions */}
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-end">
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-md transition-all flex items-center gap-2 disabled:opacity-50"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Memproses Update...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  <span>Simpan Perubahan Statistik</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+}

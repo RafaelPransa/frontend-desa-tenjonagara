@@ -25,6 +25,11 @@ import AdminBangunan from './pages/admin/Bangunan';
 import BangunanForm from './pages/admin/BangunanForm';
 import AdminPotensi from './pages/admin/Potensi';
 import PotensiForm from './pages/admin/PotensiForm';
+import AdminLayanan from './pages/admin/Layanan';
+import LayananForm from './pages/admin/LayananForm';
+import AdminPerangkat from './pages/admin/Perangkat';
+import PerangkatForm from './pages/admin/PerangkatForm';
+import AdminStatistik from './pages/admin/Statistik';
 
 export default function App() {
   return (
@@ -66,6 +71,16 @@ export default function App() {
           <Route path="potensi" element={<AdminPotensi />} />
           <Route path="potensi/tambah" element={<PotensiForm />} />
           <Route path="potensi/:id" element={<PotensiForm />} />
+
+          <Route path="layanan" element={<AdminLayanan />} />
+          <Route path="layanan/tambah" element={<LayananForm />} />
+          <Route path="layanan/:id" element={<LayananForm />} />
+
+          <Route path="perangkat" element={<AdminPerangkat />} />
+          <Route path="perangkat/tambah" element={<PerangkatForm />} />
+          <Route path="perangkat/:id" element={<PerangkatForm />} />
+
+          <Route path="statistik" element={<AdminStatistik />} />
         </Route>
       </Routes>
     </Router>

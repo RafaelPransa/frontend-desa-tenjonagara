@@ -68,3 +68,42 @@ export const updatePotensi = (id, data) =>
 
 export const deletePotensi = (id) =>
   api.delete(`/potensi-desa/${id}`, getAuthHeaders());
+
+// ── KELOLA LAYANAN PUBLIK ──
+export const getAdminLayanan = () =>
+  api.get('/layanan', getAuthHeaders());
+
+export const getLayananById = (id) =>
+  api.get(`/layanan/${id}`);
+
+export const createLayanan = (data) =>
+  api.post('/layanan', data, getAuthHeaders());
+
+export const updateLayanan = (id, data) =>
+  api.put(`/layanan/${id}`, data, getAuthHeaders());
+
+export const deleteLayanan = (id) =>
+  api.delete(`/layanan/${id}`, getAuthHeaders());
+
+// ── KELOLA PERANGKAT DESA ──
+export const getAdminPerangkat = () =>
+  api.get('/perangkat-desa', getAuthHeaders());
+
+export const getPerangkatById = (id) =>
+  api.get(`/perangkat-desa/${id}`);
+
+export const createPerangkat = (data) =>
+  api.post('/perangkat-desa', data, getAuthHeaders());
+
+export const updatePerangkat = (id, data) =>
+  api.put(`/perangkat-desa/${id}`, data, getAuthHeaders());
+
+export const deletePerangkat = (id) =>
+  api.delete(`/perangkat-desa/${id}`, getAuthHeaders());
+
+// ── KELOLA STATISTIK PENDUDUK ──
+export const getAdminStatistik = () =>
+  api.get('/statistik/penduduk');
+
+export const updateAdminStatistik = (id, data) =>
+  api.put(`/statistik/penduduk/${id || 1}`, data, getAuthHeaders());
