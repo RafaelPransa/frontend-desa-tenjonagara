@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Building2, ExternalLink, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, MapPin, Building2, ExternalLink } from 'lucide-react';
 import { getBangunanDesaById } from '../services/desaService';
 
 export default function DetailBangunan() {
@@ -15,20 +15,25 @@ export default function DetailBangunan() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const getBadgeLabel = (kategori) => {
+  const getCategoryMeta = (kategori) => {
     switch (kategori) {
+      case 'fasilitas_pendidikan':
       case 'pendidikan':
-        return 'Bangunan Pendidikan';
-      case 'pemerintahan':
-        return 'Bangunan Pemerintahan';
+        return { label: 'Pendidikan', badgeBg: 'bg-blue-600 text-white' };
+      case 'fasilitas_kesehatan':
       case 'kesehatan':
-        return 'Bangunan Kesehatan';
+        return { label: 'Kesehatan', badgeBg: 'bg-rose-600 text-white' };
+      case 'fasilitas_umum':
+      case 'pemerintahan':
+        return { label: 'Umum & Kantor', badgeBg: 'bg-emerald-800 text-white' };
+      case 'fasilitas_ibadah':
       case 'keagamaan':
-        return 'Bangunan Keagamaan';
+        return { label: 'Ibadah', badgeBg: 'bg-amber-600 text-white' };
+      case 'fasilitas_olahraga':
       case 'ekonomi_sosial':
-        return 'Bangunan Ekonomi & Sosial';
+        return { label: 'Olahraga', badgeBg: 'bg-purple-600 text-white' };
       default:
-        return 'Fasilitas Desa';
+        return { label: kategori || 'Fasilitas Desa', badgeBg: 'bg-slate-700 text-white' };
     }
   };
 
@@ -54,9 +59,10 @@ export default function DetailBangunan() {
     );
   }
 
+  const meta = getCategoryMeta(bangunan.kategori);
+
   return (
     <div className="space-y-10 pb-16">
-      
       {/* Top Header Navigation */}
       <section className="bg-primary text-white py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -69,7 +75,6 @@ export default function DetailBangunan() {
       </section>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-        
         {/* Hero Section */}
         <div className="bg-white rounded-3xl overflow-hidden shadow-xl border border-slate-200 space-y-6">
           <div className="h-72 sm:h-96 w-full overflow-hidden relative bg-slate-100">
@@ -80,8 +85,8 @@ export default function DetailBangunan() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-6 sm:p-10">
               <div className="space-y-2 text-white">
-                <span className="inline-block px-4 py-1.5 rounded-full bg-accent text-primary-dark text-xs font-bold shadow-md uppercase tracking-wider">
-                  {getBadgeLabel(bangunan.kategori)}
+                <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-bold shadow-md uppercase tracking-wider ${meta.badgeBg}`}>
+                  {meta.label}
                 </span>
                 <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">
                   {bangunan.nama}
@@ -91,7 +96,6 @@ export default function DetailBangunan() {
           </div>
 
           <div className="p-6 sm:p-10 space-y-8">
-            
             {/* Location & Address Box */}
             <div className="bg-emerald-50/80 p-5 rounded-2xl border border-emerald-200/80 flex items-start gap-4">
               <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
@@ -149,7 +153,6 @@ export default function DetailBangunan() {
 
           </div>
         </div>
-
       </div>
     </div>
   );
