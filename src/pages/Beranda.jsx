@@ -111,7 +111,7 @@ export default function Beranda() {
           <div className="lg:col-span-8 space-y-4">
             <div className="inline-block text-secondary font-bold text-sm tracking-wider uppercase">Sambutan Kuwu / Kepala Desa</div>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-primary">
-              Heri Priana
+              {perangkatList[0]?.nama || 'Asep Saepulloh, S.IP'}
             </h2>
             <p className="text-slate-600 leading-relaxed italic border-l-4 border-accent pl-4 py-1">
               "Sampurasun warga Desa Tenjonagara. Selamat datang di portal resmi desa kami. Website ini kami hadirkan sebagai bentuk transparansi tata kelola pemerintahan desa serta memudahkan seluruh warga dalam mendapatkan informasi dan layanan administrasi tanpa hambatan."
