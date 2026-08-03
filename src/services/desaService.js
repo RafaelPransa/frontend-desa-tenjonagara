@@ -16,6 +16,15 @@ export const getBangunanDesaById = (id) => api.get(`/bangunan-desa/${id}`);
 export const getLayanan = () => api.get('/layanan');
 export const submitPengajuanLayanan = (data) => api.post('/layanan/pengajuan', data);
 
+export const uploadDokumenPublik = (file) => {
+  const formData = new FormData();
+  formData.append('dokumen', file);
+  return api.post('/upload/public', formData, {
+    headers: { 'Content-Type': undefined }
+  });
+};
+
+
 export const getStatistikPenduduk = () => api.get('/statistik/penduduk');
 export const getApbdes = () => api.get('/statistik/apbdes');
 

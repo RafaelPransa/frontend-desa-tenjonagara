@@ -85,6 +85,14 @@ export const updateLayanan = (id, data) =>
 export const deleteLayanan = (id) =>
   api.delete(`/layanan/${id}`, getAuthHeaders());
 
+// ── KELOLA PENGAJUAN SURAT WARGA ──
+export const getAdminPengajuanLayanan = () =>
+  api.get('/layanan/pengajuan/all', getAuthHeaders());
+
+export const updateStatusPengajuanLayanan = (id, status) =>
+  api.patch(`/layanan/pengajuan/${id}/status`, { status }, getAuthHeaders());
+
+
 // ── KELOLA PERANGKAT DESA ──
 export const getAdminPerangkat = () =>
   api.get('/perangkat-desa', getAuthHeaders());

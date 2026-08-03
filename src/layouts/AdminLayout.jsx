@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
+  Inbox,
   Newspaper,
   Building2,
   Sparkles,
@@ -21,10 +22,11 @@ import logoPemkab from '../assets/logo-pemkab-tasikmalaya.png';
 
 const navItems = [
   { name: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
+  { name: 'Pengajuan Surat', path: '/admin/pengajuan', icon: Inbox },
+  { name: 'Master Layanan', path: '/admin/layanan', icon: FileText },
   { name: 'Kelola Berita', path: '/admin/berita', icon: Newspaper },
   { name: 'Bangunan Desa', path: '/admin/bangunan', icon: Building2 },
   { name: 'Potensi Desa', path: '/admin/potensi', icon: Sparkles },
-  { name: 'Layanan Publik', path: '/admin/layanan', icon: FileText },
   { name: 'Perangkat Desa', path: '/admin/perangkat', icon: Users },
   { name: 'Statistik Penduduk', path: '/admin/statistik', icon: BarChart3 },
   { name: 'Pesan Kontak', path: '/admin/kontak', icon: MessageSquare },

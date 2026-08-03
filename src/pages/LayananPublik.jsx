@@ -1,22 +1,57 @@
 import React, { useEffect, useState } from 'react';
-import { FileText, CheckCircle2, Send, AlertCircle, Clock, ShieldCheck } from 'lucide-react';
+import { FileText, CheckCircle2, Send, AlertCircle, ShieldCheck } from 'lucide-react';
 import { getLayanan, submitPengajuanLayanan } from '../services/desaService';
+import DokumenUploader from '../components/DokumenUploader';
+
+/**
+ * Parse string syarat (baris per baris / bernomor) menjadi array persyaratan bersih
+ * Contoh input: "1. Fotokopi KTP\n2. Fotokopi KK\n3. Pengantar RT/RW (jika ada)"
+ * Output: ["Fotokopi KTP", "Fotokopi KK", "Pengantar RT/RW (jika ada)"]
+ */
+function parseSyarat(syaratStr) {
+  if (!syaratStr) return [];
+  return syaratStr
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .map((line) =>
+      // Hapus prefiks nomor: "1.", "1)", "-", "•"
+      line.replace(/^[\d]+[\.\)]\s*/, '').replace(/^[-•]\s*/, '').trim()
+    )
+    .filter((line) => line.length > 0);
+}
+
+/**
+ * Memeriksa apakah sebuah persyaratan bersifat opsional berdasarkan keterangannya
+ */
+function isRequirementOptional(syaratText) {
+  if (!syaratText) return false;
+  const lower = syaratText.toLowerCase();
+  return lower.includes('opsional') || lower.includes('jika ada');
+}
 
 export default function LayananPublik() {
   const [layananList, setLayananList] = useState([]);
   const [selectedLayanan, setSelectedLayanan] = useState(null);
-  
+
   // Form State
   const [formData, setFormData] = useState({
     layanan_id: '',
     nama_pemohon: '',
     nik: '',
-    keterangan: '',
-    dokumen_url: ''
+    keterangan: ''
   });
+
+  // dokumenUrls: { [syaratIndex]: url_string }
+  const [dokumenUrls, setDokumenUrls] = useState({});
+
+  // missingDocIndexes: array indeks dokumen wajib yang belum diunggah
+  const [missingDocIndexes, setMissingDocIndexes] = useState([]);
 
   const [statusMsg, setStatusMsg] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const syaratList = parseSyarat(selectedLayanan?.syarat);
 
   useEffect(() => {
     getLayanan()
@@ -30,14 +65,30 @@ export default function LayananPublik() {
       .catch(() => setLayananList([]));
   }, []);
 
+  // Reset dokumen & status saat ganti jenis layanan
+  useEffect(() => {
+    setDokumenUrls({});
+    setMissingDocIndexes([]);
+    setStatusMsg(null);
+  }, [selectedLayanan]);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleDokumenChange = (index, url) => {
+    setDokumenUrls((prev) => ({ ...prev, [index]: url }));
+    // Hapus dari missing index jika sudah diisi
+    if (url) {
+      setMissingDocIndexes((prev) => prev.filter((i) => i !== index));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatusMsg(null);
 
+    // 1. Validasi Input Utama
     if (!formData.nama_pemohon || !formData.nik || !formData.layanan_id) {
       setStatusMsg({ type: 'error', text: 'Harap lengkapi nama pemohon, NIK, dan jenis layanan.' });
       return;
@@ -48,18 +99,57 @@ export default function LayananPublik() {
       return;
     }
 
+    // 2. Validasi Dokumen Persyaratan Wajib
+    const unuploadedRequired = [];
+    const missingNames = [];
+
+    syaratList.forEach((syarat, i) => {
+      const isOptional = isRequirementOptional(syarat);
+      const url = dokumenUrls[i];
+      if (!isOptional && (!url || !url.trim())) {
+        unuploadedRequired.push(i);
+        missingNames.push(syarat);
+      }
+    });
+
+    if (unuploadedRequired.length > 0) {
+      setMissingDocIndexes(unuploadedRequired);
+      setStatusMsg({
+        type: 'error',
+        text: `Mohon unggah dokumen wajib berikut: ${missingNames.map((n) => `"${n}"`).join(', ')}.`
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      const res = await submitPengajuanLayanan(formData);
-      if (res.success) {
-        setStatusMsg({ type: 'success', text: 'Pengajuan surat berhasil dikirim! Silakan datang ke kantor desa atau tunggu konfirmasi petugas.' });
+      // Gabungkan semua URL dokumen menjadi JSON string untuk dikirim ke backend
+      const dokumenArr = syaratList.map((syarat, i) => ({
+        syarat,
+        url: dokumenUrls[i] || '',
+        is_optional: isRequirementOptional(syarat)
+      }));
+      const dokumenJson = JSON.stringify(dokumenArr);
+
+      const payload = {
+        ...formData,
+        dokumen_url: dokumenJson
+      };
+
+      const res = await submitPengajuanLayanan(payload);
+      if (res.success || res.data) {
+        setStatusMsg({
+          type: 'success',
+          text: 'Pengajuan surat berhasil dikirim! Silakan datang ke kantor desa atau tunggu konfirmasi petugas.'
+        });
         setFormData({
           layanan_id: layananList[0]?.id || '',
           nama_pemohon: '',
           nik: '',
-          keterangan: '',
-          dokumen_url: ''
+          keterangan: ''
         });
+        setDokumenUrls({});
+        setMissingDocIndexes([]);
       }
     } catch (err) {
       setStatusMsg({ type: 'error', text: err.message || 'Gagal mengirim pengajuan. Coba lagi.' });
@@ -70,7 +160,7 @@ export default function LayananPublik() {
 
   return (
     <div className="space-y-12 pb-16">
-      {/* Header */}
+      {/* Header Banner */}
       <section className="bg-primary text-white py-14 px-4 sm:px-6 lg:px-8 shadow-inner">
         <div className="max-w-7xl mx-auto text-center space-y-3">
           <span className="text-accent font-semibold text-sm uppercase tracking-widest">Pelayanan Mandiri Warga</span>
@@ -82,10 +172,10 @@ export default function LayananPublik() {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
+
         {/* Layout Grid: Left Services, Right Form */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
+
           {/* Left Column: Daftar & Syarat Layanan */}
           <div className="lg:col-span-5 space-y-6">
             <h2 className="font-serif text-2xl font-bold text-primary flex items-center gap-2">
@@ -103,11 +193,10 @@ export default function LayananPublik() {
                       setSelectedLayanan(item);
                       setFormData((prev) => ({ ...prev, layanan_id: item.id }));
                     }}
-                    className={`p-5 rounded-2xl cursor-pointer transition-all border ${
-                      isSelected
+                    className={`p-5 rounded-2xl cursor-pointer transition-all border ${isSelected
                         ? 'bg-primary text-white shadow-lg border-primary border-l-8 border-l-accent'
                         : 'bg-white text-slate-800 hover:bg-emerald-50/50 border-slate-200 shadow-sm'
-                    }`}
+                      }`}
                   >
                     <h3 className="font-bold text-lg">{item.nama_layanan}</h3>
                     <p className={`text-sm mt-1 ${isSelected ? 'text-emerald-100' : 'text-slate-600'}`}>
@@ -125,9 +214,30 @@ export default function LayananPublik() {
                   <ShieldCheck className="w-5 h-5 text-accent" />
                   <span>Persyaratan {selectedLayanan.nama_layanan}</span>
                 </h4>
-                <div className="text-slate-700 text-sm whitespace-pre-line leading-relaxed pl-2">
-                  {selectedLayanan.syarat}
-                </div>
+                <ol className="text-slate-700 text-sm leading-relaxed space-y-2 pl-1">
+                  {syaratList.map((syarat, i) => {
+                    const isOptional = isRequirementOptional(syarat);
+                    return (
+                      <li key={i} className="flex items-start gap-2.5">
+                        <span className="w-5 h-5 rounded-full bg-primary text-white text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                          {i + 1}
+                        </span>
+                        <div className="flex-1">
+                          <span>{syarat}</span>
+                          {isOptional ? (
+                            <span className="ml-2 text-[10px] font-semibold text-slate-500 bg-slate-200 px-2 py-0.5 rounded-md">
+                              Opsional
+                            </span>
+                          ) : (
+                            <span className="ml-2 text-[10px] font-bold text-rose-700 bg-rose-100 px-2 py-0.5 rounded-md">
+                              Wajib
+                            </span>
+                          )}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ol>
               </div>
             )}
           </div>
@@ -141,15 +251,19 @@ export default function LayananPublik() {
               </div>
 
               {statusMsg && (
-                <div className={`p-4 rounded-xl text-sm flex items-start gap-3 ${
-                  statusMsg.type === 'success' ? 'bg-emerald-50 text-emerald-800 border border-emerald-300' : 'bg-rose-50 text-rose-800 border border-rose-300'
-                }`}>
-                  {statusMsg.type === 'success' ? <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" /> : <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />}
+                <div className={`p-4 rounded-2xl text-sm flex items-start gap-3 shadow-xs ${statusMsg.type === 'success'
+                    ? 'bg-emerald-50 text-emerald-900 border border-emerald-300'
+                    : 'bg-rose-50 text-rose-900 border border-rose-300 font-medium'
+                  }`}>
+                  {statusMsg.type === 'success'
+                    ? <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                    : <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />}
                   <span>{statusMsg.text}</span>
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Pilih Jenis Layanan */}
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1.5">Pilih Jenis Layanan</label>
                   <select
@@ -170,6 +284,7 @@ export default function LayananPublik() {
                   </select>
                 </div>
 
+                {/* Nama Lengkap */}
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1.5">Nama Lengkap Pemohon</label>
                   <input
@@ -183,6 +298,7 @@ export default function LayananPublik() {
                   />
                 </div>
 
+                {/* NIK */}
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1.5">Nomor Induk Kependudukan (NIK)</label>
                   <input
@@ -197,6 +313,7 @@ export default function LayananPublik() {
                   />
                 </div>
 
+                {/* Keterangan */}
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1.5">Keterangan / Keperluan Surat</label>
                   <textarea
@@ -206,20 +323,49 @@ export default function LayananPublik() {
                     value={formData.keterangan}
                     onChange={handleChange}
                     className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
-                  ></textarea>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">Link Dokumen Pendukung (Opsional)</label>
-                  <input
-                    type="url"
-                    name="dokumen_url"
-                    placeholder="URL Google Drive / Cloud storage foto KTP/KK"
-                    value={formData.dokumen_url}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                    required
                   />
                 </div>
+
+                {/* Upload Dokumen Per Persyaratan */}
+                {syaratList.length > 0 && (
+                  <div className="space-y-4 p-5 bg-slate-50 rounded-2xl border border-slate-200">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="w-5 h-5 text-primary shrink-0" />
+                      <h3 className="font-bold text-sm text-slate-800">Unggah Dokumen Persyaratan</h3>
+                    </div>
+                    <p className="text-xs text-slate-500 -mt-2">
+                      Silakan foto atau scan masing-masing dokumen di bawah ini. Dokumen bertanda <span className="font-bold text-rose-600">Wajib</span> harus diunggah.
+                    </p>
+
+                    <div className="space-y-4">
+                      {syaratList.map((syarat, i) => {
+                        const isOptional = isRequirementOptional(syarat);
+                        const isMissing = missingDocIndexes.includes(i);
+
+                        return (
+                          <DokumenUploader
+                            key={`${selectedLayanan?.id}-${i}`}
+                            label={syarat}
+                            value={dokumenUrls[i] || ''}
+                            onChange={(url) => handleDokumenChange(i, url)}
+                            required={!isOptional}
+                            isMissing={isMissing}
+                            hint={
+                              syarat.toLowerCase().includes('ktp')
+                                ? 'Foto KTP tampak depan secara jelas'
+                                : syarat.toLowerCase().includes('kk') || syarat.toLowerCase().includes('kartu keluarga')
+                                  ? 'Foto halaman depan Kartu Keluarga'
+                                  : syarat.toLowerCase().includes('pengantar') || syarat.toLowerCase().includes('rt')
+                                    ? 'Surat pengantar bertanda tangan RT/RW'
+                                    : null
+                            }
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 <button
                   type="submit"

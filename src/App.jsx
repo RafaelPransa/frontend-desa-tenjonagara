@@ -27,6 +27,7 @@ import AdminPotensi from './pages/admin/Potensi';
 import PotensiForm from './pages/admin/PotensiForm';
 import AdminLayanan from './pages/admin/Layanan';
 import LayananForm from './pages/admin/LayananForm';
+import AdminPengajuan from './pages/admin/Pengajuan';
 import AdminPerangkat from './pages/admin/Perangkat';
 import PerangkatForm from './pages/admin/PerangkatForm';
 import AdminStatistik from './pages/admin/Statistik';
@@ -76,6 +77,8 @@ export default function App() {
           <Route path="layanan" element={<AdminLayanan />} />
           <Route path="layanan/tambah" element={<LayananForm />} />
           <Route path="layanan/:id" element={<LayananForm />} />
+
+          <Route path="pengajuan" element={<AdminPengajuan />} />
 
           <Route path="perangkat" element={<AdminPerangkat />} />
           <Route path="perangkat/tambah" element={<PerangkatForm />} />
