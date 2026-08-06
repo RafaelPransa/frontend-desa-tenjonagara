@@ -13,6 +13,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { getAdminPerangkat, deletePerangkat } from '../../services/adminService';
+import ScrollReveal from '../../components/ScrollReveal';
 
 export default function AdminPerangkat() {
   const [perangkatList, setPerangkatList] = useState([]);
@@ -60,33 +61,37 @@ export default function AdminPerangkat() {
     }
   };
 
-  const filteredList = perangkatList.filter((item) =>
-    (item.nama && item.nama.toLowerCase().includes(search.toLowerCase())) ||
-    (item.jabatan && item.jabatan.toLowerCase().includes(search.toLowerCase()))
-  );
+  const filteredList = perangkatList.filter((item) => {
+    return (
+      item.nama.toLowerCase().includes(search.toLowerCase()) ||
+      (item.jabatan && item.jabatan.toLowerCase().includes(search.toLowerCase()))
+    );
+  });
 
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold shadow-xs">
-            <Users className="w-6 h-6 text-purple-700" />
+      <ScrollReveal direction="down" delay={0}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold shadow-xs shrink-0">
+              <Users className="w-6 h-6 text-purple-700" />
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Kelola Perangkat Desa</h1>
+              <p className="text-xs sm:text-sm text-slate-500">Struktur organisasi aparatur pemerintah dan foto profil aparatur desa</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Kelola Perangkat Desa</h1>
-            <p className="text-xs sm:text-sm text-slate-500">Struktur organisasi aparatur pemerintah Desa Tenjonagara</p>
-          </div>
-        </div>
 
-        <Link
-          to="/admin/perangkat/tambah"
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs sm:text-sm shadow-md transition-all group shrink-0"
-        >
-          <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
-          <span>Tambah Perangkat Desa</span>
-        </Link>
-      </div>
+          <Link
+            to="/admin/perangkat/tambah"
+            className="px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
+          >
+            <Plus className="w-4 h-4 text-accent" />
+            <span>Tambah Perangkat Baru</span>
+          </Link>
+        </div>
+      </ScrollReveal>
 
       {/* Alert Messages */}
       {error && (

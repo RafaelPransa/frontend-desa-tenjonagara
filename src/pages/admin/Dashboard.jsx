@@ -10,7 +10,8 @@ import {
   ArrowUpRight,
   ShieldCheck,
   Plus,
-  Clock
+  Clock,
+  Inbox
 } from 'lucide-react';
 import {
   getBerita,
@@ -19,6 +20,7 @@ import {
   getLayanan,
   getPerangkatDesa
 } from '../../services/desaService';
+import ScrollReveal from '../../components/ScrollReveal';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -70,47 +72,50 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-primary to-emerald-800 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
-        <div className="relative z-10 space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/20 border border-accent/40 text-accent text-xs font-bold uppercase tracking-wider">
-            <ShieldCheck className="w-4 h-4" />
-            <span>Administrator Authenticated</span>
+      <ScrollReveal direction="down" delay={0}>
+        <div className="bg-gradient-to-r from-primary via-emerald-800 to-emerald-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+          <div className="relative z-10 space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/20 border border-accent/40 text-accent text-xs font-bold uppercase tracking-wider">
+              <ShieldCheck className="w-4 h-4" />
+              <span>Administrator Authenticated</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white">
+              Selamat Datang di Panel Kelola Desa Tenjonagara
+            </h1>
+            <p className="text-emerald-100 text-xs sm:text-sm max-w-2xl font-light">
+              Kelola verifikasi pengajuan surat warga, artikel berita, fasilitas fisik bangunan, potensi ekonomi desa, serta informasi perangkat desa secara efisien dari satu tempat.
+            </p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white">
-            Selamat Datang di Panel Kelola Desa Tenjonagara
-          </h1>
-          <p className="text-emerald-100 text-xs sm:text-sm max-w-2xl">
-            Kelola artikel berita, data fasilitas fisik bangunan, potensi ekonomi desa, serta informasi perangkat desa secara efisien dan real-time dari satu tempat.
-          </p>
+          <div className="absolute right-0 bottom-0 translate-x-8 translate-y-8 opacity-10 pointer-events-none">
+            <ShieldCheck className="w-72 h-72 text-white" />
+          </div>
         </div>
-        <div className="absolute right-0 bottom-0 translate-x-8 translate-y-8 opacity-10 pointer-events-none">
-          <ShieldCheck className="w-72 h-72 text-white" />
-        </div>
-      </div>
+      </ScrollReveal>
 
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {cards.map((card, idx) => {
           const Icon = card.icon;
           return (
-            <Link
-              key={idx}
-              to={card.link}
-              className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:shadow-md hover:border-slate-300 transition-all group flex flex-col justify-between"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <div className={`p-3 rounded-xl ${card.color} text-white shadow-sm group-hover:scale-110 transition-transform`}>
-                  <Icon className="w-5 h-5" />
+            <ScrollReveal key={idx} direction="up" delay={idx * 100}>
+              <Link
+                to={card.link}
+                className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-xl hover:border-slate-300 transition-all group flex flex-col justify-between transform hover:-translate-y-1 h-full"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className={`p-3 rounded-xl ${card.color} text-white shadow-sm group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <ArrowUpRight className="w-4 h-4 text-slate-300 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-slate-300 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-slate-800 tracking-tight">
-                  {loading ? '...' : card.count}
+                <div>
+                  <div className="text-2xl font-bold text-slate-800 tracking-tight">
+                    {loading ? '...' : card.count}
+                  </div>
+                  <div className="text-xs font-semibold text-slate-500 mt-0.5">{card.title}</div>
                 </div>
-                <div className="text-xs font-medium text-slate-500">{card.title}</div>
-              </div>
-            </Link>
+              </Link>
+            </ScrollReveal>
           );
         })}
       </div>
@@ -118,101 +123,106 @@ export default function Dashboard() {
       {/* Quick Action & Info Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Quick Actions */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-4">
-          <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
-            <Plus className="w-5 h-5 text-primary" />
-            <span>Aksi Cepat Manajemen</span>
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Link
-              to="/admin/berita/tambah"
-              className="p-4 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3 group"
-            >
-              <div className="p-2.5 rounded-lg bg-emerald-100 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                <Newspaper className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-primary transition-colors">
-                  Buat Berita Baru
+        <ScrollReveal direction="left" delay={200} className="lg:col-span-2">
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4 h-full">
+            <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
+              <Plus className="w-5 h-5 text-primary" />
+              <span>Aksi Cepat Manajemen Admin</span>
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Link
+                to="/admin/pengajuan"
+                className="p-4 rounded-2xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3 group"
+              >
+                <div className="p-2.5 rounded-xl bg-amber-100 text-amber-800 group-hover:bg-accent group-hover:text-primary-dark transition-colors">
+                  <Inbox className="w-5 h-5" />
                 </div>
-                <div className="text-[11px] text-slate-500">Tulis dan publikasikan pengumuman desa</div>
-              </div>
-            </Link>
+                <div>
+                  <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-primary transition-colors">
+                    Verifikasi Pengajuan Surat
+                  </div>
+                  <div className="text-[11px] text-slate-500">Cek berkas & status permohonan warga</div>
+                </div>
+              </Link>
 
-            <Link
-              to="/admin/bangunan"
-              className="p-4 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3 group"
-            >
-              <div className="p-2.5 rounded-lg bg-blue-100 text-blue-700 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                <Building2 className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
-                  Kelola Bangunan Desa
+              <Link
+                to="/admin/berita/tambah"
+                className="p-4 rounded-2xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3 group"
+              >
+                <div className="p-2.5 rounded-xl bg-emerald-100 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                  <Newspaper className="w-5 h-5" />
                 </div>
-                <div className="text-[11px] text-slate-500">Perbarui data aset dan fasilitas umum</div>
-              </div>
-            </Link>
+                <div>
+                  <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-primary transition-colors">
+                    Buat Berita Baru
+                  </div>
+                  <div className="text-[11px] text-slate-500">Tulis dan publikasikan kabar desa</div>
+                </div>
+              </Link>
 
-            <Link
-              to="/admin/potensi"
-              className="p-4 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3 group"
-            >
-              <div className="p-2.5 rounded-lg bg-amber-100 text-amber-700 group-hover:bg-amber-600 group-hover:text-white transition-colors">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-amber-700 transition-colors">
-                  Kelola Potensi Desa
+              <Link
+                to="/admin/bangunan"
+                className="p-4 rounded-2xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3 group"
+              >
+                <div className="p-2.5 rounded-xl bg-blue-100 text-blue-700 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  <Building2 className="w-5 h-5" />
                 </div>
-                <div className="text-[11px] text-slate-500">Tambah / edit UMKM & komoditas utama</div>
-              </div>
-            </Link>
+                <div>
+                  <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
+                    Kelola Bangunan Desa
+                  </div>
+                  <div className="text-[11px] text-slate-500">Perbarui data aset & fasilitas umum</div>
+                </div>
+              </Link>
 
-            <Link
-              to="/admin/statistik"
-              className="p-4 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3 group"
-            >
-              <div className="p-2.5 rounded-lg bg-purple-100 text-purple-700 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                <BarChart3 className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-purple-700 transition-colors">
-                  Update Data Statistik
+              <Link
+                to="/admin/statistik"
+                className="p-4 rounded-2xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3 group"
+              >
+                <div className="p-2.5 rounded-xl bg-purple-100 text-purple-700 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                  <BarChart3 className="w-5 h-5" />
                 </div>
-                <div className="text-[11px] text-slate-500">Perbarui statistik jumlah jiwa & KK</div>
-              </div>
-            </Link>
+                <div>
+                  <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-purple-700 transition-colors">
+                    Update Data Demografi
+                  </div>
+                  <div className="text-[11px] text-slate-500">Perbarui statistik jumlah jiwa & KK</div>
+                </div>
+              </Link>
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* System Info Card */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-4">
-          <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-primary" />
-            <span>Informasi Sistem</span>
-          </h2>
-          <div className="space-y-3 text-xs">
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
-              <div className="text-slate-400 font-medium">Status Authentikasi:</div>
-              <div className="font-bold text-emerald-700 flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Session Active (JWT Valid)</span>
+        <ScrollReveal direction="right" delay={300}>
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4 h-full">
+            <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-primary" />
+              <span>Informasi Sistem Admin</span>
+            </h2>
+            <div className="space-y-3 text-xs">
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
+                <div className="text-slate-400 font-medium">Status Otentikasi:</div>
+                <div className="font-bold text-emerald-700 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span>Session Active (JWT Token Valid)</span>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
+                <div className="text-slate-400 font-medium">Server Backend API:</div>
+                <div className="font-bold text-slate-700 font-mono">http://localhost:5000/api</div>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
+                <div className="text-slate-400 font-medium">Portal Resmi Publik:</div>
+                <div className="font-bold text-slate-700">Desa Tenjonagara, Cigalontang</div>
               </div>
             </div>
-
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
-              <div className="text-slate-400 font-medium">Server Backend API:</div>
-              <div className="font-bold text-slate-700">http://localhost:5000/api</div>
-            </div>
-
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
-              <div className="text-slate-400 font-medium">Domain Publik Website:</div>
-              <div className="font-bold text-slate-700">Desa Tenjonagara, Cigalontang</div>
-            </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </div>
   );
 }
+

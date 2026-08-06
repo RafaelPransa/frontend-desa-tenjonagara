@@ -12,6 +12,7 @@ import {
   Calculator
 } from 'lucide-react';
 import { getAdminStatistik, updateAdminStatistik } from '../../services/adminService';
+import ScrollReveal from '../../components/ScrollReveal';
 
 export default function AdminStatistik() {
   const [formData, setFormData] = useState({
@@ -50,7 +51,6 @@ export default function AdminStatistik() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  // Helper untuk menghitung ulang persentase Pendidikan
   const recalculatePendidikanPercentages = (listPendidikan) => {
     const totalPendidikan = listPendidikan.reduce((acc, curr) => acc + (Number(curr.jumlah) || 0), 0);
     return listPendidikan.map((item) => {
@@ -60,7 +60,6 @@ export default function AdminStatistik() {
     });
   };
 
-  // Helper untuk menghitung ulang persentase Pekerjaan
   const recalculatePekerjaanPercentages = (listPekerjaan) => {
     const totalPekerjaan = listPekerjaan.reduce((acc, curr) => acc + (Number(curr.jumlah) || 0), 0);
     return listPekerjaan.map((item) => {
@@ -70,16 +69,42 @@ export default function AdminStatistik() {
     });
   };
 
+  useEffect(() => {
+    fetchStatistik();
+  }, []);
+
   const fetchStatistik = async () => {
     setFetching(true);
     setError(null);
     try {
       const res = await getAdminStatistik();
-      const list = res.data?.data || res.data || [];
-      const item = Array.isArray(list) ? list[0] : list;
-      if (item) {
-        const rawEdu = Array.isArray(item.pendidikan) ? item.pendidikan : formData.pendidikan;
-        const rawJob = Array.isArray(item.pekerjaan) ? item.pekerjaan : formData.pekerjaan;
+      const payload = res.data?.data || res.data || res;
+      const list = Array.isArray(payload)
+        ? payload
+        : payload?.data && Array.isArray(payload.data)
+        ? payload.data
+        : [payload];
+
+      if (list.length > 0 && list[0]) {
+        const item = list[0];
+        let parsedPendidikan = item.pendidikan;
+        if (typeof parsedPendidikan === 'string') {
+          try { parsedPendidikan = JSON.parse(parsedPendidikan); } catch (e) {}
+        }
+
+        let parsedPekerjaan = item.pekerjaan;
+        if (typeof parsedPekerjaan === 'string') {
+          try { parsedPekerjaan = JSON.parse(parsedPekerjaan); } catch (e) {}
+        }
+
+        const validPendidikan = Array.isArray(parsedPendidikan) && parsedPendidikan.length > 0
+          ? parsedPendidikan
+          : formData.pendidikan;
+
+        const validPekerjaan = Array.isArray(parsedPekerjaan) && parsedPekerjaan.length > 0
+          ? parsedPekerjaan
+          : formData.pekerjaan;
+
         setFormData({
           id: item.id || 1,
           tahun: item.tahun || 2026,
@@ -88,20 +113,16 @@ export default function AdminStatistik() {
           jumlah_perempuan: item.jumlah_perempuan || 3026,
           jumlah_kk: item.jumlah_kk || 2262,
           rata_anggota_keluarga: item.rata_anggota_keluarga || 2.7,
-          pendidikan: recalculatePendidikanPercentages(rawEdu),
-          pekerjaan: recalculatePekerjaanPercentages(rawJob)
+          pendidikan: recalculatePendidikanPercentages(validPendidikan),
+          pekerjaan: recalculatePekerjaanPercentages(validPekerjaan)
         });
       }
     } catch (err) {
-      console.error('Gagal mengambil data statistik', err);
+      console.error('Error loading statistik admin', err);
     } finally {
       setFetching(false);
     }
   };
-
-  useEffect(() => {
-    fetchStatistik();
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

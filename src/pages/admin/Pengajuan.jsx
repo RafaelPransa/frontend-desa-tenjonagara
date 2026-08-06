@@ -19,6 +19,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { getAdminPengajuanLayanan, updateStatusPengajuanLayanan } from '../../services/adminService';
+import ScrollReveal from '../../components/ScrollReveal';
 
 export default function AdminPengajuan() {
   const [pengajuanList, setPengajuanList] = useState([]);
@@ -154,33 +155,36 @@ export default function AdminPengajuan() {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-        <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold shadow-xs shrink-0">
-            <Inbox className="w-6 h-6 text-amber-700" />
+      <ScrollReveal direction="down" delay={0}>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold shadow-xs shrink-0">
+              <Inbox className="w-6 h-6 text-amber-700" />
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Kelola Pengajuan Surat Warga</h1>
+              <p className="text-xs sm:text-sm text-slate-500">Verifikasi berkas persyaratan dan perbarui status pengurusan surat warga</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Kelola Pengajuan Surat Warga</h1>
-            <p className="text-xs sm:text-sm text-slate-500">Verifikasi berkas persyaratan dan perbarui status pengurusan surat warga</p>
-          </div>
-        </div>
 
-        {/* Counter Stats Cards */}
-        <div className="flex items-center gap-2 overflow-x-auto pt-2 md:pt-0">
-          <div className="px-3.5 py-2 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-900 text-center shrink-0">
-            <div className="text-xs text-amber-700 font-semibold">Pending</div>
-            <div className="text-base font-bold font-mono">{countPending}</div>
-          </div>
-          <div className="px-3.5 py-2 rounded-xl bg-blue-50 border border-blue-200/80 text-blue-900 text-center shrink-0">
-            <div className="text-xs text-blue-700 font-semibold">Diproses</div>
-            <div className="text-base font-bold font-mono">{countDiproses}</div>
-          </div>
-          <div className="px-3.5 py-2 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-900 text-center shrink-0">
-            <div className="text-xs text-emerald-700 font-semibold">Selesai</div>
-            <div className="text-base font-bold font-mono">{countSelesai}</div>
+          {/* Counter Stats Cards */}
+          <div className="flex items-center gap-2 overflow-x-auto pt-2 md:pt-0">
+            <div className="px-3.5 py-2 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-900 text-center shrink-0">
+              <div className="text-xs text-amber-700 font-semibold">Pending</div>
+              <div className="text-base font-bold font-mono">{countPending}</div>
+            </div>
+            <div className="px-3.5 py-2 rounded-xl bg-blue-50 border border-blue-200/80 text-blue-900 text-center shrink-0">
+              <div className="text-xs text-blue-700 font-semibold">Diproses</div>
+              <div className="text-base font-bold font-mono">{countDiproses}</div>
+            </div>
+            <div className="px-3.5 py-2 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-900 text-center shrink-0">
+              <div className="text-xs text-emerald-700 font-semibold">Selesai</div>
+              <div className="text-base font-bold font-mono">{countSelesai}</div>
+            </div>
           </div>
         </div>
-      </div>
+      </ScrollReveal>
+
 
       {/* Alert Messages */}
       {error && (

@@ -12,6 +12,7 @@ import {
   FileCheck
 } from 'lucide-react';
 import { getAdminLayanan, deleteLayanan } from '../../services/adminService';
+import ScrollReveal from '../../components/ScrollReveal';
 
 export default function AdminLayanan() {
   const [layananList, setLayananList] = useState([]);
@@ -59,33 +60,37 @@ export default function AdminLayanan() {
     }
   };
 
-  const filteredList = layananList.filter((item) =>
-    (item.nama_layanan && item.nama_layanan.toLowerCase().includes(search.toLowerCase())) ||
-    (item.deskripsi && item.deskripsi.toLowerCase().includes(search.toLowerCase()))
-  );
+  const filteredList = layananList.filter((item) => {
+    return (
+      item.nama_layanan.toLowerCase().includes(search.toLowerCase()) ||
+      (item.deskripsi && item.deskripsi.toLowerCase().includes(search.toLowerCase()))
+    );
+  });
 
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold shadow-xs">
-            <FileText className="w-6 h-6 text-indigo-700" />
+      <ScrollReveal direction="down" delay={0}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold shadow-xs shrink-0">
+              <FileText className="w-6 h-6 text-indigo-700" />
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Master Layanan Surat Publik</h1>
+              <p className="text-xs sm:text-sm text-slate-500">Atur jenis surat keterangan dan dokumen persyaratan yang diperlukan</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Kelola Layanan Publik & Surat</h1>
-            <p className="text-xs sm:text-sm text-slate-500">Master data jenis surat, syarat dokumen, dan pengurusan administrasi</p>
-          </div>
-        </div>
 
-        <Link
-          to="/admin/layanan/tambah"
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs sm:text-sm shadow-md transition-all group shrink-0"
-        >
-          <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
-          <span>Tambah Jenis Layanan</span>
-        </Link>
-      </div>
+          <Link
+            to="/admin/layanan/tambah"
+            className="px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
+          >
+            <Plus className="w-4 h-4 text-accent" />
+            <span>Tambah Layanan Baru</span>
+          </Link>
+        </div>
+      </ScrollReveal>
 
       {/* Alert Messages */}
       {error && (

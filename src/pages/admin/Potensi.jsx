@@ -11,6 +11,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { getAdminPotensi, deletePotensi } from '../../services/adminService';
+import ScrollReveal from '../../components/ScrollReveal';
 
 const categories = [
   { key: 'all', label: 'Semua Kategori' },
@@ -62,7 +63,7 @@ export default function AdminPotensi() {
       setSuccessMsg(`Potensi desa "${nama}" berhasil dihapus.`);
       setPotensiList((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
-      setError(err.message || 'Gagal menghapus data potensi desa.');
+      setError(err.message || 'Gagal menghapus potensi desa.');
     } finally {
       setDeletingId(null);
     }
@@ -72,6 +73,7 @@ export default function AdminPotensi() {
     const matchSearch =
       item.nama.toLowerCase().includes(search.toLowerCase()) ||
       (item.deskripsi && item.deskripsi.toLowerCase().includes(search.toLowerCase()));
+
     const matchCategory = categoryFilter === 'all' || item.kategori === categoryFilter;
     return matchSearch && matchCategory;
   });
@@ -94,25 +96,27 @@ export default function AdminPotensi() {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold shadow-xs">
-            <Sparkles className="w-6 h-6 text-amber-700" />
+      <ScrollReveal direction="down" delay={0}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold shadow-xs shrink-0">
+              <Sparkles className="w-6 h-6 text-amber-700" />
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Kelola Potensi Desa</h1>
+              <p className="text-xs sm:text-sm text-slate-500">Hasil perkebunan, produk UMKM warga, dan objek wisata lokal</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Kelola Potensi Desa</h1>
-            <p className="text-xs sm:text-sm text-slate-500">Komoditas pertanian, produk UMKM, dan destinasi wisata desa</p>
-          </div>
-        </div>
 
-        <Link
-          to="/admin/potensi/tambah"
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs sm:text-sm shadow-md transition-all group shrink-0"
-        >
-          <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
-          <span>Tambah Potensi Baru</span>
-        </Link>
-      </div>
+          <Link
+            to="/admin/potensi/tambah"
+            className="px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
+          >
+            <Plus className="w-4 h-4 text-accent" />
+            <span>Tambah Potensi Baru</span>
+          </Link>
+        </div>
+      </ScrollReveal>
 
       {/* Alert Messages */}
       {error && (

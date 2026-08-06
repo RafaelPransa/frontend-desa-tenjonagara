@@ -15,6 +15,7 @@ import {
   Clock
 } from 'lucide-react';
 import { getAdminBerita, deleteBerita } from '../../services/adminService';
+import ScrollReveal from '../../components/ScrollReveal';
 
 export default function AdminBerita() {
   const [beritaList, setBeritaList] = useState([]);
@@ -58,20 +59,19 @@ export default function AdminBerita() {
     setSuccessMsg(null);
 
     try {
-      const res = await deleteBerita(id);
-      if (res.data?.success || res.status === 200) {
-        setSuccessMsg(`Berita "${judul}" berhasil dihapus.`);
-        setBeritaList((prev) => prev.filter((b) => b.id !== id));
-      }
+      await deleteBerita(id);
+      setSuccessMsg(`Berita "${judul}" berhasil dihapus.`);
+      setBeritaList(beritaList.filter((item) => item.id !== id));
     } catch (err) {
-      setError(err.response?.data?.message || 'Gagal menghapus berita.');
+      setError(err.message || 'Gagal menghapus berita.');
     } finally {
       setDeletingId(null);
     }
   };
 
   const filteredBerita = beritaList.filter((item) => {
-    const matchSearch = item.judul.toLowerCase().includes(search.toLowerCase()) ||
+    const matchSearch =
+      item.judul.toLowerCase().includes(search.toLowerCase()) ||
       (item.konten && item.konten.toLowerCase().includes(search.toLowerCase()));
     const matchStatus = statusFilter === 'all' || item.status === statusFilter;
     return matchSearch && matchStatus;
@@ -80,25 +80,27 @@ export default function AdminBerita() {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-primary flex items-center justify-center font-bold shadow-xs">
-            <Newspaper className="w-6 h-6 text-primary" />
+      <ScrollReveal direction="down" delay={0}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-primary flex items-center justify-center font-bold shadow-xs shrink-0">
+              <Newspaper className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Kelola Berita Desa</h1>
+              <p className="text-xs sm:text-sm text-slate-500">Buat, sunting, atau publikasikan pengumuman resmi desa</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Kelola Berita & Pengumuman</h1>
-            <p className="text-xs sm:text-sm text-slate-500">Daftar semua artikel dan berita publikasi desa</p>
-          </div>
-        </div>
 
-        <Link
-          to="/admin/berita/tambah"
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs sm:text-sm shadow-md transition-all group shrink-0"
-        >
-          <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
-          <span>Tambah Berita Baru</span>
-        </Link>
-      </div>
+          <Link
+            to="/admin/berita/tambah"
+            className="px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
+          >
+            <Plus className="w-4 h-4 text-accent" />
+            <span>Tambah Berita Baru</span>
+          </Link>
+        </div>
+      </ScrollReveal>
 
       {/* Alert Messages */}
       {error && (

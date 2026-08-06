@@ -13,6 +13,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { getAdminBangunan, deleteBangunan } from '../../services/adminService';
+import ScrollReveal from '../../components/ScrollReveal';
 
 const categories = [
   { key: 'all', label: 'Semua Kategori' },
@@ -61,7 +62,7 @@ export default function AdminBangunan() {
 
     try {
       await deleteBangunan(id);
-      setSuccessMsg(`Bangunan "${nama}" berhasil dihapus.`);
+      setSuccessMsg(`Data bangunan "${nama}" berhasil dihapus.`);
       setBangunanList((prev) => prev.filter((b) => b.id !== id));
     } catch (err) {
       setError(err.message || 'Gagal menghapus data bangunan.');
@@ -73,9 +74,13 @@ export default function AdminBangunan() {
   const filteredList = bangunanList.filter((item) => {
     const matchSearch =
       item.nama.toLowerCase().includes(search.toLowerCase()) ||
-      (item.deskripsi && item.deskripsi.toLowerCase().includes(search.toLowerCase())) ||
-      (item.alamat && item.alamat.toLowerCase().includes(search.toLowerCase()));
-    const matchCategory = categoryFilter === 'all' || item.kategori === categoryFilter;
+      (item.deskripsi && item.deskripsi.toLowerCase().includes(search.toLowerCase()));
+
+    const matchCategory =
+      categoryFilter === 'all' ||
+      item.kategori === categoryFilter ||
+      (categoryFilter === 'fasilitas_umum' && item.kategori === 'pemerintahan');
+
     return matchSearch && matchCategory;
   });
 
@@ -87,25 +92,27 @@ export default function AdminBangunan() {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold shadow-xs">
-            <Building2 className="w-6 h-6 text-blue-700" />
+      <ScrollReveal direction="down" delay={0}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold shadow-xs shrink-0">
+              <Building2 className="w-6 h-6 text-blue-700" />
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Kelola Bangunan & Fasilitas Desa</h1>
+              <p className="text-xs sm:text-sm text-slate-500">Daftar gedung, sekolah, sarana kesehatan, dan fasilitas publik desa</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Kelola Bangunan & Fasilitas Desa</h1>
-            <p className="text-xs sm:text-sm text-slate-500">Daftar aset fisik, sekolah, puskesmas, dan fasilitas publik</p>
-          </div>
-        </div>
 
-        <Link
-          to="/admin/bangunan/tambah"
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs sm:text-sm shadow-md transition-all group shrink-0"
-        >
-          <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
-          <span>Tambah Bangunan Baru</span>
-        </Link>
-      </div>
+          <Link
+            to="/admin/bangunan/tambah"
+            className="px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
+          >
+            <Plus className="w-4 h-4 text-accent" />
+            <span>Tambah Bangunan Baru</span>
+          </Link>
+        </div>
+      </ScrollReveal>
 
       {/* Alert Messages */}
       {error && (
