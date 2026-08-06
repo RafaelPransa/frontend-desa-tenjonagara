@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart3, Users, Home, GraduationCap, Award, Briefcase, RefreshCw } from 'lucide-react';
+import { BarChart3, Users, Home, GraduationCap, Award, Briefcase, RefreshCw, Sparkles } from 'lucide-react';
 import { getStatistikPenduduk } from '../services/desaService';
+import ScrollReveal from '../components/ScrollReveal';
 
 export default function Statistik() {
   const [statistik, setStatistik] = useState([]);
@@ -114,7 +115,6 @@ export default function Statistik() {
     return themes[idx % themes.length];
   };
 
-  // Helper kalkulasi tinggi grafik (persentase)
   const calcHeightPercent = (jumlah, maxJumlah) => {
     const numJml = Number(jumlah);
     const numMax = Number(maxJumlah);
@@ -181,246 +181,277 @@ export default function Statistik() {
   const totalTercatatPekerjaan = dataPekerjaan.reduce((acc, curr) => acc + curr.jumlah, 0);
 
   return (
-    <div className="space-y-12 pb-16">
+    <div className="space-y-16 pb-20">
       {/* Header Banner */}
-      <section className="bg-primary text-white py-14 px-4 sm:px-6 lg:px-8 shadow-inner">
-        <div className="max-w-7xl mx-auto text-center space-y-3">
-          <span className="text-accent font-semibold text-sm uppercase tracking-widest">Statistik Kependudukan</span>
-          <h1 className="font-serif text-3xl sm:text-5xl font-bold">Statistik Penduduk Desa</h1>
-          <p className="text-emerald-100 max-w-2xl mx-auto text-sm sm:text-base">
-            Informasi demografi kependudukan, diagram batang tingkat pendidikan, dan profil mata pencaharian warga Desa Tenjonagara.
-          </p>
+      <section className="gradient-hero text-white py-16 px-4 sm:px-6 lg:px-8 shadow-2xl relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#D4A017_1px,transparent_1px)] [background-size:16px_16px]"></div>
+
+        <div className="max-w-7xl mx-auto text-center space-y-3 relative z-10">
+          <ScrollReveal direction="down" delay={0}>
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-accent backdrop-blur-md border border-white/20 text-xs font-bold uppercase tracking-widest">
+              <Sparkles className="w-4 h-4 text-accent" />
+              Statistik Kependudukan
+            </span>
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" delay={100}>
+            <h1 className="font-serif text-3xl sm:text-5xl font-extrabold tracking-tight">
+              Statistik Penduduk <span className="text-accent">Desa Tenjonagara</span>
+            </h1>
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" delay={200}>
+            <p className="text-emerald-100 max-w-2xl mx-auto text-sm sm:text-base font-light">
+              Informasi demografi kependudukan, diagram batang tingkat pendidikan, dan profil mata pencaharian warga Desa Tenjonagara.
+            </p>
+          </ScrollReveal>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
         {/* STATISTIK DEMOGRAFI UTAMA */}
         <section className="space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-accent/20 text-accent-dark flex items-center justify-center font-bold">
-              <Users className="w-6 h-6 text-primary" />
+          <ScrollReveal direction="up" delay={100}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-accent/20 text-accent-dark flex items-center justify-center font-bold">
+                <Users className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <h2 className="font-serif text-2xl font-bold text-primary">
+                  Demografi Penduduk Desa Tenjonagara (Tahun {statTerbaru.tahun || 2026})
+                </h2>
+                <p className="text-slate-500 text-xs sm:text-sm">Data statistik kependudukan resmi terdaftar</p>
+              </div>
             </div>
-            <div>
-              <h2 className="font-serif text-2xl font-bold text-primary">
-                Demografi Penduduk Desa Tenjonagara (Tahun {statTerbaru.tahun || 2026})
-              </h2>
-              <p className="text-slate-500 text-xs sm:text-sm">Data statistik kependudukan resmi terdaftar</p>
-            </div>
-          </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-200 border-t-4 border-t-primary hover:shadow-lg transition-all">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Total Penduduk</span>
-                <Users className="w-5 h-5 text-primary" />
+            <ScrollReveal direction="up" delay={100}>
+              <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200 border-t-4 border-t-primary hover:shadow-2xl transition-all transform hover:-translate-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Total Penduduk</span>
+                  <Users className="w-5 h-5 text-primary" />
+                </div>
+                <div className="text-3xl font-serif font-bold text-primary mt-2">
+                  {statTerbaru.jumlah_total ? Number(statTerbaru.jumlah_total).toLocaleString('id-ID') : '6,146'}
+                </div>
+                <div className="text-xs text-emerald-700 font-semibold mt-1">Jiwa Terdaftar</div>
               </div>
-              <div className="text-3xl font-serif font-bold text-primary mt-2">
-                {statTerbaru.jumlah_total ? Number(statTerbaru.jumlah_total).toLocaleString('id-ID') : '6,146'}
-              </div>
-              <div className="text-xs text-emerald-700 font-semibold mt-1">Jiwa Terdaftar</div>
-            </div>
+            </ScrollReveal>
 
-            <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-200 border-t-4 border-t-secondary hover:shadow-lg transition-all">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Jumlah Kepala Keluarga</span>
-                <Home className="w-5 h-5 text-secondary" />
+            <ScrollReveal direction="up" delay={200}>
+              <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200 border-t-4 border-t-secondary hover:shadow-2xl transition-all transform hover:-translate-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Jumlah Kepala Keluarga</span>
+                  <Home className="w-5 h-5 text-secondary" />
+                </div>
+                <div className="text-3xl font-serif font-bold text-secondary mt-2">
+                  {statTerbaru.jumlah_kk ? Number(statTerbaru.jumlah_kk).toLocaleString('id-ID') : '2,262'}
+                </div>
+                <div className="text-xs text-slate-500 font-medium mt-1">Kepala Keluarga (KK)</div>
               </div>
-              <div className="text-3xl font-serif font-bold text-secondary mt-2">
-                {statTerbaru.jumlah_kk ? Number(statTerbaru.jumlah_kk).toLocaleString('id-ID') : '2,262'}
-              </div>
-              <div className="text-xs text-slate-500 font-medium mt-1">Kepala Keluarga (KK)</div>
-            </div>
+            </ScrollReveal>
 
-            <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-200 border-t-4 border-t-accent hover:shadow-lg transition-all">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Rata-rata Anggota</span>
-                <Users className="w-5 h-5 text-accent-dark" />
+            <ScrollReveal direction="up" delay={300}>
+              <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200 border-t-4 border-t-accent hover:shadow-2xl transition-all transform hover:-translate-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Rata-rata Anggota</span>
+                  <Users className="w-5 h-5 text-accent-dark" />
+                </div>
+                <div className="text-3xl font-serif font-bold text-slate-800 mt-2">
+                  {statTerbaru.rata_anggota_keluarga || '2.7'}
+                </div>
+                <div className="text-xs text-amber-700 font-semibold mt-1">Jiwa per Kepala Keluarga</div>
               </div>
-              <div className="text-3xl font-serif font-bold text-slate-800 mt-2">
-                {statTerbaru.rata_anggota_keluarga || '2.7'}
-              </div>
-              <div className="text-xs text-amber-700 font-semibold mt-1">Jiwa per Kepala Keluarga</div>
-            </div>
+            </ScrollReveal>
 
-            <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-200 border-t-4 border-t-emerald-600 hover:shadow-lg transition-all">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Terdata Pendidikan</span>
-                <GraduationCap className="w-5 h-5 text-emerald-600" />
+            <ScrollReveal direction="up" delay={400}>
+              <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200 border-t-4 border-t-emerald-600 hover:shadow-2xl transition-all transform hover:-translate-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Terdata Pendidikan</span>
+                  <GraduationCap className="w-5 h-5 text-emerald-600" />
+                </div>
+                <div className="text-3xl font-serif font-bold text-emerald-800 mt-2">
+                  {totalTercatatPendidikan.toLocaleString('id-ID')}
+                </div>
+                <div className="text-xs text-emerald-700 font-semibold mt-1">Warga Terdata Sekolah</div>
               </div>
-              <div className="text-3xl font-serif font-bold text-emerald-800 mt-2">
-                {totalTercatatPendidikan.toLocaleString('id-ID')}
-              </div>
-              <div className="text-xs text-emerald-700 font-semibold mt-1">Warga Terdata Sekolah</div>
-            </div>
+            </ScrollReveal>
           </div>
         </section>
+
 
         {/* GRAFIK 1: GRAFIK BATANG TINGKAT PENDIDIKAN */}
-        <section className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200 space-y-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-primary text-accent flex items-center justify-center font-bold shadow-md shrink-0">
-                <BarChart3 className="w-7 h-7 text-accent" />
+        <ScrollReveal direction="up" delay={150}>
+          <section className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200 space-y-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-primary text-accent flex items-center justify-center font-bold shadow-md shrink-0">
+                  <BarChart3 className="w-7 h-7 text-accent" />
+                </div>
+                <div>
+                  <h2 className="font-serif text-2xl font-bold text-primary">Grafik Batang Tingkat Pendidikan Warga</h2>
+                  <p className="text-slate-500 text-xs sm:text-sm">
+                    Diagram statistik jenjang pendidikan terdaftar di Desa Tenjonagara (8 Kategori)
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="font-serif text-2xl font-bold text-primary">Grafik Batang Tingkat Pendidikan Warga</h2>
-                <p className="text-slate-500 text-xs sm:text-sm">
-                  Diagram statistik jenjang pendidikan terdaftar di Desa Tenjonagara (8 Kategori)
-                </p>
+              <div className="bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-200 text-xs text-emerald-800 font-semibold flex items-center gap-2 shrink-0">
+                <Award className="w-4 h-4 text-emerald-600" />
+                <span>Total Terdata: {totalTercatatPendidikan.toLocaleString('id-ID')} Jiwa</span>
               </div>
             </div>
-            <div className="bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-200 text-xs text-emerald-800 font-semibold flex items-center gap-2 shrink-0">
-              <Award className="w-4 h-4 text-emerald-600" />
-              <span>Total Terdata: {totalTercatatPendidikan.toLocaleString('id-ID')} Jiwa</span>
-            </div>
-          </div>
 
-          {/* Visual Vertical Bar Chart Pendidikan */}
-          <div className="pt-6 pb-2">
-            <div className="w-full flex items-end justify-between gap-1.5 sm:gap-4 px-1 sm:px-4 border-b-2 border-slate-300 relative min-h-[260px]">
-              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
-                <div className="border-b border-slate-400 w-full"></div>
-                <div className="border-b border-slate-400 w-full"></div>
-                <div className="border-b border-slate-400 w-full"></div>
-                <div className="border-b border-slate-400 w-full"></div>
+            {/* Visual Vertical Bar Chart Pendidikan */}
+            <div className="pt-6 pb-2">
+              <div className="w-full flex items-end justify-between gap-1.5 sm:gap-4 px-1 sm:px-4 border-b-2 border-slate-300 relative min-h-[260px]">
+                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
+                  <div className="border-b border-slate-400 w-full"></div>
+                  <div className="border-b border-slate-400 w-full"></div>
+                  <div className="border-b border-slate-400 w-full"></div>
+                  <div className="border-b border-slate-400 w-full"></div>
+                </div>
+
+                {dataPendidikan.map((item, idx) => {
+                  const heightPct = calcHeightPercent(item.jumlah, maxJumlahPendidikan);
+
+                  return (
+                    <div key={idx} className="flex-1 flex flex-col items-center justify-end group z-10">
+                      <div className="mb-2.5 text-center transition-all transform group-hover:-translate-y-1">
+                        <div className="text-[11px] sm:text-xs font-bold font-mono text-slate-800">
+                          {item.jumlah.toLocaleString('id-ID')}
+                        </div>
+                        <div className={`text-[9px] sm:text-[11px] font-semibold px-1.5 py-0.5 rounded border mt-0.5 whitespace-nowrap ${item.badgeBg}`}>
+                          {item.persentase}%
+                        </div>
+                      </div>
+
+                      <div className="w-full max-w-[48px] h-44 sm:h-60 bg-slate-100/90 rounded-t-xl overflow-hidden shadow-inner flex items-end border border-slate-200">
+                        <div
+                          className="w-full rounded-t-lg transition-all duration-700 ease-out group-hover:brightness-110 group-hover:shadow-lg"
+                          style={{
+                            height: `${heightPct}%`,
+                            background: item.gradient
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
 
-              {dataPendidikan.map((item, idx) => {
-                const heightPct = calcHeightPercent(item.jumlah, maxJumlahPendidikan);
-
-                return (
-                  <div key={idx} className="flex-1 flex flex-col items-center justify-end group z-10">
-                    <div className="mb-2.5 text-center transition-all transform group-hover:-translate-y-1">
-                      <div className="text-[11px] sm:text-xs font-bold font-mono text-slate-800">
-                        {item.jumlah.toLocaleString('id-ID')}
-                      </div>
-                      <div className={`text-[9px] sm:text-[11px] font-semibold px-1.5 py-0.5 rounded border mt-0.5 whitespace-nowrap ${item.badgeBg}`}>
-                        {item.persentase}%
-                      </div>
-                    </div>
-
-                    <div className="w-full max-w-[48px] h-44 sm:h-60 bg-slate-100/90 rounded-t-xl overflow-hidden shadow-inner flex items-end border border-slate-200">
-                      <div
-                        className="w-full rounded-t-lg transition-all duration-700 ease-out group-hover:brightness-110 group-hover:shadow-lg"
-                        style={{
-                          height: `${heightPct}%`,
-                          background: item.gradient
-                        }}
-                      ></div>
-                    </div>
+              <div className="flex justify-between gap-1.5 sm:gap-4 px-1 sm:px-4 pt-4 text-center">
+                {dataPendidikan.map((item, idx) => (
+                  <div key={idx} className="flex-1">
+                    <span className="font-bold text-[11px] sm:text-xs text-slate-800 block truncate" title={item.tingkat}>
+                      {item.short}
+                    </span>
+                    <span className="text-[9px] sm:text-[11px] text-slate-500 hidden md:block truncate">
+                      {item.tingkat}
+                    </span>
                   </div>
-                );
-              })}
+                ))}
+              </div>
             </div>
 
-            <div className="flex justify-between gap-1.5 sm:gap-4 px-1 sm:px-4 pt-4 text-center">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 pt-4 border-t border-slate-100 text-center">
               {dataPendidikan.map((item, idx) => (
-                <div key={idx} className="flex-1">
-                  <span className="font-bold text-[11px] sm:text-xs text-slate-800 block truncate" title={item.tingkat}>
-                    {item.short}
-                  </span>
-                  <span className="text-[9px] sm:text-[11px] text-slate-500 hidden md:block truncate">
-                    {item.tingkat}
-                  </span>
+                <div key={idx} className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1 hover:border-primary transition-colors">
+                  <div className="text-[11px] font-semibold text-slate-500 truncate" title={item.tingkat}>{item.tingkat}</div>
+                  <div className="text-base font-bold font-mono text-slate-800">{item.jumlah.toLocaleString('id-ID')}</div>
+                  <div className="text-xs font-bold text-primary">{item.persentase}%</div>
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 pt-4 border-t border-slate-100 text-center">
-            {dataPendidikan.map((item, idx) => (
-              <div key={idx} className="bg-surface p-3 rounded-xl border border-slate-200 space-y-1 hover:border-primary transition-colors">
-                <div className="text-[11px] font-semibold text-slate-500 truncate" title={item.tingkat}>{item.tingkat}</div>
-                <div className="text-base font-bold font-mono text-slate-800">{item.jumlah.toLocaleString('id-ID')}</div>
-                <div className="text-xs font-bold text-primary">{item.persentase}%</div>
-              </div>
-            ))}
-          </div>
-        </section>
+          </section>
+        </ScrollReveal>
 
         {/* GRAFIK 2: GRAFIK BATANG MATA PENCAHARIAN / PEKERJAAN WARGA */}
-        <section className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200 space-y-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold shadow-md shrink-0">
-                <Briefcase className="w-7 h-7 text-amber-800" />
+        <ScrollReveal direction="up" delay={200}>
+          <section className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200 space-y-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold shadow-md shrink-0">
+                  <Briefcase className="w-7 h-7 text-amber-800" />
+                </div>
+                <div>
+                  <h2 className="font-serif text-2xl font-bold text-slate-900">Grafik Batang Mata Pencaharian Warga</h2>
+                  <p className="text-slate-500 text-xs sm:text-sm">
+                    Diagram statistik sektor pekerjaan dan profesi utama masyarakat Desa Tenjonagara (9 Kategori)
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="font-serif text-2xl font-bold text-slate-900">Grafik Batang Mata Pencaharian Warga</h2>
-                <p className="text-slate-500 text-xs sm:text-sm">
-                  Diagram statistik sektor pekerjaan dan profesi utama masyarakat Desa Tenjonagara (9 Kategori)
-                </p>
+              <div className="bg-amber-50 px-4 py-2 rounded-xl border border-amber-200 text-xs text-amber-900 font-semibold flex items-center gap-2 shrink-0">
+                <Award className="w-4 h-4 text-amber-700" />
+                <span>Total Terdata: {totalTercatatPekerjaan.toLocaleString('id-ID')} Jiwa</span>
               </div>
             </div>
-            <div className="bg-amber-50 px-4 py-2 rounded-xl border border-amber-200 text-xs text-amber-900 font-semibold flex items-center gap-2 shrink-0">
-              <Award className="w-4 h-4 text-amber-700" />
-              <span>Total Terdata: {totalTercatatPekerjaan.toLocaleString('id-ID')} Jiwa</span>
-            </div>
-          </div>
 
-          {/* Visual Vertical Bar Chart Pekerjaan */}
-          <div className="pt-6 pb-2">
-            <div className="w-full flex items-end justify-between gap-1 sm:gap-3 px-1 sm:px-3 border-b-2 border-slate-300 relative min-h-[260px]">
-              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
-                <div className="border-b border-slate-400 w-full"></div>
-                <div className="border-b border-slate-400 w-full"></div>
-                <div className="border-b border-slate-400 w-full"></div>
-                <div className="border-b border-slate-400 w-full"></div>
+            {/* Visual Vertical Bar Chart Pekerjaan */}
+            <div className="pt-6 pb-2">
+              <div className="w-full flex items-end justify-between gap-1 sm:gap-3 px-1 sm:px-3 border-b-2 border-slate-300 relative min-h-[260px]">
+                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
+                  <div className="border-b border-slate-400 w-full"></div>
+                  <div className="border-b border-slate-400 w-full"></div>
+                  <div className="border-b border-slate-400 w-full"></div>
+                  <div className="border-b border-slate-400 w-full"></div>
+                </div>
+
+                {dataPekerjaan.map((item, idx) => {
+                  const heightPct = calcHeightPercent(item.jumlah, maxJumlahPekerjaan);
+
+                  return (
+                    <div key={idx} className="flex-1 flex flex-col items-center justify-end group z-10">
+                      <div className="mb-2.5 text-center transition-all transform group-hover:-translate-y-1">
+                        <div className="text-[11px] sm:text-xs font-bold font-mono text-slate-800">
+                          {item.jumlah.toLocaleString('id-ID')}
+                        </div>
+                        <div className={`text-[9px] sm:text-[11px] font-semibold px-1.5 py-0.5 rounded border mt-0.5 whitespace-nowrap ${item.badgeBg}`}>
+                          {item.persentase}%
+                        </div>
+                      </div>
+
+                      <div className="w-full max-w-[44px] h-44 sm:h-60 bg-slate-100/90 rounded-t-xl overflow-hidden shadow-inner flex items-end border border-slate-200">
+                        <div
+                          className="w-full rounded-t-lg transition-all duration-700 ease-out group-hover:brightness-110 group-hover:shadow-lg"
+                          style={{
+                            height: `${heightPct}%`,
+                            background: item.gradient
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
 
-              {dataPekerjaan.map((item, idx) => {
-                const heightPct = calcHeightPercent(item.jumlah, maxJumlahPekerjaan);
-
-                return (
-                  <div key={idx} className="flex-1 flex flex-col items-center justify-end group z-10">
-                    <div className="mb-2.5 text-center transition-all transform group-hover:-translate-y-1">
-                      <div className="text-[11px] sm:text-xs font-bold font-mono text-slate-800">
-                        {item.jumlah.toLocaleString('id-ID')}
-                      </div>
-                      <div className={`text-[9px] sm:text-[11px] font-semibold px-1.5 py-0.5 rounded border mt-0.5 whitespace-nowrap ${item.badgeBg}`}>
-                        {item.persentase}%
-                      </div>
-                    </div>
-
-                    <div className="w-full max-w-[44px] h-44 sm:h-60 bg-slate-100/90 rounded-t-xl overflow-hidden shadow-inner flex items-end border border-slate-200">
-                      <div
-                        className="w-full rounded-t-lg transition-all duration-700 ease-out group-hover:brightness-110 group-hover:shadow-lg"
-                        style={{
-                          height: `${heightPct}%`,
-                          background: item.gradient
-                        }}
-                      ></div>
-                    </div>
+              <div className="flex justify-between gap-1 sm:gap-3 px-1 sm:px-3 pt-4 text-center">
+                {dataPekerjaan.map((item, idx) => (
+                  <div key={idx} className="flex-1">
+                    <span className="font-bold text-[10px] sm:text-xs text-slate-800 block truncate" title={item.pekerjaan}>
+                      {item.short}
+                    </span>
+                    <span className="text-[9px] sm:text-[11px] text-slate-500 hidden md:block truncate">
+                      {item.pekerjaan}
+                    </span>
                   </div>
-                );
-              })}
+                ))}
+              </div>
             </div>
 
-            <div className="flex justify-between gap-1 sm:gap-3 px-1 sm:px-3 pt-4 text-center">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-2 pt-4 border-t border-slate-100 text-center">
               {dataPekerjaan.map((item, idx) => (
-                <div key={idx} className="flex-1">
-                  <span className="font-bold text-[10px] sm:text-xs text-slate-800 block truncate" title={item.pekerjaan}>
-                    {item.short}
-                  </span>
-                  <span className="text-[9px] sm:text-[11px] text-slate-500 hidden md:block truncate">
-                    {item.pekerjaan}
-                  </span>
+                <div key={idx} className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-1 hover:border-amber-500 transition-colors">
+                  <div className="text-[10px] font-semibold text-slate-500 truncate" title={item.pekerjaan}>{item.pekerjaan}</div>
+                  <div className="text-sm sm:text-base font-bold font-mono text-slate-800">{item.jumlah.toLocaleString('id-ID')}</div>
+                  <div className="text-xs font-bold text-amber-700">{item.persentase}%</div>
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-2 pt-4 border-t border-slate-100 text-center">
-            {dataPekerjaan.map((item, idx) => (
-              <div key={idx} className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-1 hover:border-amber-500 transition-colors">
-                <div className="text-[10px] font-semibold text-slate-500 truncate" title={item.pekerjaan}>{item.pekerjaan}</div>
-                <div className="text-sm sm:text-base font-bold font-mono text-slate-800">{item.jumlah.toLocaleString('id-ID')}</div>
-                <div className="text-xs font-bold text-amber-700">{item.persentase}%</div>
-              </div>
-            ))}
-          </div>
-        </section>
+          </section>
+        </ScrollReveal>
       </div>
     </div>
   );
 }
+

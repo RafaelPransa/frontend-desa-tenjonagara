@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import PrivateRoute from './components/PrivateRoute';
 import AdminLayout from './layouts/AdminLayout';
+import ScrollToTop from './components/ScrollToTop';
 
 // Public Pages
 import Beranda from './pages/Beranda';
@@ -36,7 +37,9 @@ import AdminKontak from './pages/admin/Kontak';
 export default function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
+
         {/* Public Website Routes */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<Beranda />} />
