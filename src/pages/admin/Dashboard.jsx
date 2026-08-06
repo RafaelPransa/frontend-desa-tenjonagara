@@ -120,109 +120,78 @@ export default function Dashboard() {
         })}
       </div>
 
-      {/* Quick Action & Info Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Quick Actions */}
-        <ScrollReveal direction="left" delay={200} className="lg:col-span-2">
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4 h-full">
-            <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
-              <Plus className="w-5 h-5 text-primary" />
-              <span>Aksi Cepat Manajemen Admin</span>
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Link
-                to="/admin/pengajuan"
-                className="p-4 rounded-2xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3 group"
-              >
-                <div className="p-2.5 rounded-xl bg-amber-100 text-amber-800 group-hover:bg-accent group-hover:text-primary-dark transition-colors">
-                  <Inbox className="w-5 h-5" />
+      {/* Quick Action Cards - Full Width */}
+      <ScrollReveal direction="up" delay={200}>
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+          <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
+            <Plus className="w-5 h-5 text-primary" />
+            <span>Aksi Cepat Manajemen Admin</span>
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Link
+              to="/admin/pengajuan"
+              className="p-5 rounded-2xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3.5 group transform hover:-translate-y-1"
+            >
+              <div className="p-3 rounded-xl bg-amber-100 text-amber-800 group-hover:bg-accent group-hover:text-primary-dark transition-colors shrink-0">
+                <Inbox className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-primary transition-colors">
+                  Verifikasi Surat
                 </div>
-                <div>
-                  <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-primary transition-colors">
-                    Verifikasi Pengajuan Surat
-                  </div>
-                  <div className="text-[11px] text-slate-500">Cek berkas & status permohonan warga</div>
-                </div>
-              </Link>
+                <div className="text-[11px] text-slate-500">Cek permohonan warga</div>
+              </div>
+            </Link>
 
-              <Link
-                to="/admin/berita/tambah"
-                className="p-4 rounded-2xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3 group"
-              >
-                <div className="p-2.5 rounded-xl bg-emerald-100 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                  <Newspaper className="w-5 h-5" />
+            <Link
+              to="/admin/berita/tambah"
+              className="p-5 rounded-2xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3.5 group transform hover:-translate-y-1"
+            >
+              <div className="p-3 rounded-xl bg-emerald-100 text-primary group-hover:bg-primary group-hover:text-white transition-colors shrink-0">
+                <Newspaper className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-primary transition-colors">
+                  Buat Berita Baru
                 </div>
-                <div>
-                  <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-primary transition-colors">
-                    Buat Berita Baru
-                  </div>
-                  <div className="text-[11px] text-slate-500">Tulis dan publikasikan kabar desa</div>
-                </div>
-              </Link>
+                <div className="text-[11px] text-slate-500">Tulis publikasi desa</div>
+              </div>
+            </Link>
 
-              <Link
-                to="/admin/bangunan"
-                className="p-4 rounded-2xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3 group"
-              >
-                <div className="p-2.5 rounded-xl bg-blue-100 text-blue-700 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                  <Building2 className="w-5 h-5" />
+            <Link
+              to="/admin/bangunan"
+              className="p-5 rounded-2xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3.5 group transform hover:-translate-y-1"
+            >
+              <div className="p-3 rounded-xl bg-blue-100 text-blue-700 group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
+                <Building2 className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
+                  Kelola Bangunan
                 </div>
-                <div>
-                  <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
-                    Kelola Bangunan Desa
-                  </div>
-                  <div className="text-[11px] text-slate-500">Perbarui data aset & fasilitas umum</div>
-                </div>
-              </Link>
+                <div className="text-[11px] text-slate-500">Perbarui aset fisik</div>
+              </div>
+            </Link>
 
-              <Link
-                to="/admin/statistik"
-                className="p-4 rounded-2xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3 group"
-              >
-                <div className="p-2.5 rounded-xl bg-purple-100 text-purple-700 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                  <BarChart3 className="w-5 h-5" />
+            <Link
+              to="/admin/statistik"
+              className="p-5 rounded-2xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3.5 group transform hover:-translate-y-1"
+            >
+              <div className="p-3 rounded-xl bg-purple-100 text-purple-700 group-hover:bg-purple-600 group-hover:text-white transition-colors shrink-0">
+                <BarChart3 className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-purple-700 transition-colors">
+                  Update Demografi
                 </div>
-                <div>
-                  <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-purple-700 transition-colors">
-                    Update Data Demografi
-                  </div>
-                  <div className="text-[11px] text-slate-500">Perbarui statistik jumlah jiwa & KK</div>
-                </div>
-              </Link>
-            </div>
+                <div className="text-[11px] text-slate-500">Perbarui data jiwa & KK</div>
+              </div>
+            </Link>
           </div>
-        </ScrollReveal>
-
-        {/* System Info Card */}
-        <ScrollReveal direction="right" delay={300}>
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4 h-full">
-            <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-primary" />
-              <span>Informasi Sistem Admin</span>
-            </h2>
-            <div className="space-y-3 text-xs">
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
-                <div className="text-slate-400 font-medium">Status Otentikasi:</div>
-                <div className="font-bold text-emerald-700 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span>Session Active (JWT Token Valid)</span>
-                </div>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
-                <div className="text-slate-400 font-medium">Server Backend API:</div>
-                <div className="font-bold text-slate-700 font-mono">http://localhost:5000/api</div>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
-                <div className="text-slate-400 font-medium">Portal Resmi Publik:</div>
-                <div className="font-bold text-slate-700">Desa Tenjonagara, Cigalontang</div>
-              </div>
-            </div>
-          </div>
-        </ScrollReveal>
-      </div>
+        </div>
+      </ScrollReveal>
     </div>
   );
 }
+
 

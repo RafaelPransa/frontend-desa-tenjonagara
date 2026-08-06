@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { getAdminKontak, deleteAdminKontak } from '../../services/adminService';
 import ScrollReveal from '../../components/ScrollReveal';
+import ConfirmModal from '../../components/ConfirmModal';
 
 export default function AdminKontak() {
   const [pesanList, setPesanList] = useState([]);
@@ -24,6 +25,7 @@ export default function AdminKontak() {
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null); // { id, subjek }
 
   const fetchKontak = async () => {
     setLoading(true);
@@ -43,10 +45,13 @@ export default function AdminKontak() {
     fetchKontak();
   }, []);
 
-  const handleDelete = async (id, subjek) => {
-    if (!window.confirm(`Apakah Anda yakin ingin menghapus pesan:\n"${subjek}"?`)) {
-      return;
-    }
+  const openDeleteModal = (id, subjek) => {
+    setDeleteTarget({ id, subjek });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { id, subjek } = deleteTarget;
 
     setDeletingId(id);
     setError(null);
@@ -63,6 +68,7 @@ export default function AdminKontak() {
       setError(err.message || 'Gagal menghapus pesan.');
     } finally {
       setDeletingId(null);
+      setDeleteTarget(null);
     }
   };
 
@@ -215,7 +221,7 @@ export default function AdminKontak() {
                         </a>
 
                         <button
-                          onClick={() => handleDelete(item.id, item.subjek)}
+                          onClick={() => openDeleteModal(item.id, item.subjek)}
                           disabled={deletingId === item.id}
                           className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
                           title="Hapus Pesan"
@@ -284,6 +290,23 @@ export default function AdminKontak() {
           </div>
         </div>
       )}
+
+      {/* Modal Konfirmasi Hapus Pesan Kontak */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        title="Hapus Pesan Kontak Warga"
+        message={
+          deleteTarget
+            ? `Apakah Anda yakin ingin menghapus pesan kontak "${deleteTarget.subjek}"? Pesan yang dihapus tidak dapat dipulihkan.`
+            : ''
+        }
+        confirmText="Hapus Pesan"
+        cancelText="Batal"
+        variant="danger"
+        loading={!!deletingId}
+      />
     </div>
   );
 }

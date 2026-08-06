@@ -19,6 +19,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import logoPemkab from '../assets/logo-pemkab-tasikmalaya.png';
+import ConfirmModal from '../components/ConfirmModal';
 
 const navItems = [
   { name: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
@@ -35,6 +36,7 @@ const navItems = [
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -50,12 +52,16 @@ export default function AdminLayout() {
   }, []);
 
   const handleLogout = () => {
-    if (window.confirm('Apakah Anda yakin ingin keluar dari Admin Panel?')) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      navigate('/login');
-    }
+    setShowLogoutModal(true);
   };
+
+  const confirmLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setShowLogoutModal(false);
+    navigate('/login');
+  };
+
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col font-sans">
@@ -184,6 +190,19 @@ export default function AdminLayout() {
           </div>
         </main>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={confirmLogout}
+        title="Konfirmasi Keluar Admin"
+        message="Apakah Anda yakin ingin keluar dari Admin Control Center Desa Tenjonagara?"
+        confirmText="Keluar Akun"
+        cancelText="Batal"
+        variant="warning"
+      />
     </div>
   );
 }
+

@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { getAdminBangunan, deleteBangunan } from '../../services/adminService';
 import ScrollReveal from '../../components/ScrollReveal';
+import ConfirmModal from '../../components/ConfirmModal';
 
 const categories = [
   { key: 'all', label: 'Semua Kategori' },
@@ -32,6 +33,7 @@ export default function AdminBangunan() {
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null); // { id, nama }
 
   const fetchBangunan = async () => {
     setLoading(true);
@@ -51,10 +53,13 @@ export default function AdminBangunan() {
     fetchBangunan();
   }, []);
 
-  const handleDelete = async (id, nama) => {
-    if (!window.confirm(`Apakah Anda yakin ingin menghapus data bangunan:\n"${nama}"?`)) {
-      return;
-    }
+  const openDeleteModal = (id, nama) => {
+    setDeleteTarget({ id, nama });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { id, nama } = deleteTarget;
 
     setDeletingId(id);
     setError(null);
@@ -68,6 +73,7 @@ export default function AdminBangunan() {
       setError(err.message || 'Gagal menghapus data bangunan.');
     } finally {
       setDeletingId(null);
+      setDeleteTarget(null);
     }
   };
 
@@ -252,7 +258,7 @@ export default function AdminBangunan() {
                         </Link>
 
                         <button
-                          onClick={() => handleDelete(item.id, item.nama)}
+                          onClick={() => openDeleteModal(item.id, item.nama)}
                           disabled={deletingId === item.id}
                           className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
                           title="Hapus Bangunan"
@@ -268,6 +274,23 @@ export default function AdminBangunan() {
           </div>
         )}
       </div>
+
+      {/* Modal Konfirmasi Hapus Bangunan */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        title="Hapus Data Bangunan Desa"
+        message={
+          deleteTarget
+            ? `Apakah Anda yakin ingin menghapus data fasilitas/bangunan "${deleteTarget.nama}"? Data yang dihapus tidak dapat dikembalikan.`
+            : ''
+        }
+        confirmText="Hapus Bangunan"
+        cancelText="Batal"
+        variant="danger"
+        loading={!!deletingId}
+      />
     </div>
   );
 }

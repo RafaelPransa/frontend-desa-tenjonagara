@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { getAdminBerita, deleteBerita } from '../../services/adminService';
 import ScrollReveal from '../../components/ScrollReveal';
+import ConfirmModal from '../../components/ConfirmModal';
 
 export default function AdminBerita() {
   const [beritaList, setBeritaList] = useState([]);
@@ -25,6 +26,7 @@ export default function AdminBerita() {
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null); // { id, judul }
 
   const fetchBerita = async () => {
     setLoading(true);
@@ -49,10 +51,13 @@ export default function AdminBerita() {
     fetchBerita();
   }, []);
 
-  const handleDelete = async (id, judul) => {
-    if (!window.confirm(`Apakah Anda yakin ingin menghapus berita:\n"${judul}"?`)) {
-      return;
-    }
+  const openDeleteModal = (id, judul) => {
+    setDeleteTarget({ id, judul });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { id, judul } = deleteTarget;
 
     setDeletingId(id);
     setError(null);
@@ -61,13 +66,15 @@ export default function AdminBerita() {
     try {
       await deleteBerita(id);
       setSuccessMsg(`Berita "${judul}" berhasil dihapus.`);
-      setBeritaList(beritaList.filter((item) => item.id !== id));
+      setBeritaList((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
       setError(err.message || 'Gagal menghapus berita.');
     } finally {
       setDeletingId(null);
+      setDeleteTarget(null);
     }
   };
+
 
   const filteredBerita = beritaList.filter((item) => {
     const matchSearch =
@@ -279,7 +286,7 @@ export default function AdminBerita() {
                         </Link>
 
                         <button
-                          onClick={() => handleDelete(item.id, item.judul)}
+                          onClick={() => openDeleteModal(item.id, item.judul)}
                           disabled={deletingId === item.id}
                           className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
                           title="Hapus Berita"
@@ -295,6 +302,24 @@ export default function AdminBerita() {
           </div>
         )}
       </div>
+
+      {/* Modal Konfirmasi Hapus Berita */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        title="Hapus Berita Desa"
+        message={
+          deleteTarget
+            ? `Apakah Anda yakin ingin menghapus artikel berita "${deleteTarget.judul}"? Tindakan ini tidak dapat dibatalkan.`
+            : ''
+        }
+        confirmText="Hapus Berita"
+        cancelText="Batal"
+        variant="danger"
+        loading={!!deletingId}
+      />
     </div>
   );
 }
+

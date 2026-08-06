@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { getAdminPerangkat, deletePerangkat } from '../../services/adminService';
 import ScrollReveal from '../../components/ScrollReveal';
+import ConfirmModal from '../../components/ConfirmModal';
 
 export default function AdminPerangkat() {
   const [perangkatList, setPerangkatList] = useState([]);
@@ -22,6 +23,7 @@ export default function AdminPerangkat() {
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null); // { id, nama }
 
   const fetchPerangkat = async () => {
     setLoading(true);
@@ -41,10 +43,13 @@ export default function AdminPerangkat() {
     fetchPerangkat();
   }, []);
 
-  const handleDelete = async (id, nama) => {
-    if (!window.confirm(`Apakah Anda yakin ingin menghapus data perangkat desa:\n"${nama}"?`)) {
-      return;
-    }
+  const openDeleteModal = (id, nama) => {
+    setDeleteTarget({ id, nama });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { id, nama } = deleteTarget;
 
     setDeletingId(id);
     setError(null);
@@ -58,6 +63,7 @@ export default function AdminPerangkat() {
       setError(err.message || 'Gagal menghapus data perangkat desa.');
     } finally {
       setDeletingId(null);
+      setDeleteTarget(null);
     }
   };
 
@@ -207,7 +213,7 @@ export default function AdminPerangkat() {
                         </Link>
 
                         <button
-                          onClick={() => handleDelete(item.id, item.nama)}
+                          onClick={() => openDeleteModal(item.id, item.nama)}
                           disabled={deletingId === item.id}
                           className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
                           title="Hapus Perangkat"
@@ -223,6 +229,23 @@ export default function AdminPerangkat() {
           </div>
         )}
       </div>
+
+      {/* Modal Konfirmasi Hapus Perangkat */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        title="Hapus Data Perangkat Desa"
+        message={
+          deleteTarget
+            ? `Apakah Anda yakin ingin menghapus data aparatur/perangkat desa "${deleteTarget.nama}"? Data yang dihapus tidak dapat dikembalikan.`
+            : ''
+        }
+        confirmText="Hapus Perangkat"
+        cancelText="Batal"
+        variant="danger"
+        loading={!!deletingId}
+      />
     </div>
   );
 }

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { getAdminLayanan, deleteLayanan } from '../../services/adminService';
 import ScrollReveal from '../../components/ScrollReveal';
+import ConfirmModal from '../../components/ConfirmModal';
 
 export default function AdminLayanan() {
   const [layananList, setLayananList] = useState([]);
@@ -21,6 +22,7 @@ export default function AdminLayanan() {
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null); // { id, nama_layanan }
 
   const fetchLayanan = async () => {
     setLoading(true);
@@ -40,10 +42,13 @@ export default function AdminLayanan() {
     fetchLayanan();
   }, []);
 
-  const handleDelete = async (id, nama) => {
-    if (!window.confirm(`Apakah Anda yakin ingin menghapus jenis layanan:\n"${nama}"?`)) {
-      return;
-    }
+  const openDeleteModal = (id, nama_layanan) => {
+    setDeleteTarget({ id, nama_layanan });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { id, nama_layanan } = deleteTarget;
 
     setDeletingId(id);
     setError(null);
@@ -51,12 +56,13 @@ export default function AdminLayanan() {
 
     try {
       await deleteLayanan(id);
-      setSuccessMsg(`Layanan "${nama}" berhasil dihapus.`);
+      setSuccessMsg(`Layanan "${nama_layanan}" berhasil dihapus.`);
       setLayananList((prev) => prev.filter((l) => l.id !== id));
     } catch (err) {
       setError(err.message || 'Gagal menghapus jenis layanan.');
     } finally {
       setDeletingId(null);
+      setDeleteTarget(null);
     }
   };
 
@@ -190,7 +196,7 @@ export default function AdminLayanan() {
                         </Link>
 
                         <button
-                          onClick={() => handleDelete(item.id, item.nama_layanan)}
+                          onClick={() => openDeleteModal(item.id, item.nama_layanan)}
                           disabled={deletingId === item.id}
                           className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
                           title="Hapus Layanan"
@@ -206,6 +212,23 @@ export default function AdminLayanan() {
           </div>
         )}
       </div>
+
+      {/* Modal Konfirmasi Hapus Layanan */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        title="Hapus Jenis Layanan Surat"
+        message={
+          deleteTarget
+            ? `Apakah Anda yakin ingin menghapus jenis layanan surat "${deleteTarget.nama_layanan}"? Permohonan warga yang menggunakan layanan ini mungkin akan terpengaruh.`
+            : ''
+        }
+        confirmText="Hapus Layanan"
+        cancelText="Batal"
+        variant="danger"
+        loading={!!deletingId}
+      />
     </div>
   );
 }
