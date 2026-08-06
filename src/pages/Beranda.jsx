@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TreePine, Users, Map, Landmark, ArrowRight, ShieldCheck, Sparkles, FileText, CheckCircle2, ChevronRight, Home, GraduationCap } from 'lucide-react';
-import { getProfilDesa, getBerita, getPotensiDesa, getPerangkatDesa } from '../services/desaService';
+import { getProfilDesa, getBerita, getPotensiDesa, getPerangkatDesa, getStatistikPenduduk } from '../services/desaService';
 
 export default function Beranda() {
   const [profil, setProfil] = useState(null);
   const [beritaList, setBeritaList] = useState([]);
   const [potensiList, setPotensiList] = useState([]);
   const [perangkatList, setPerangkatList] = useState([]);
+  const [statistik, setStatistik] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,12 +16,23 @@ export default function Beranda() {
       getProfilDesa().catch(() => ({ data: null })),
       getBerita('published').catch(() => ({ data: [] })),
       getPotensiDesa().catch(() => ({ data: [] })),
-      getPerangkatDesa().catch(() => ({ data: [] }))
-    ]).then(([resProfil, resBerita, resPotensi, resPerangkat]) => {
+      getPerangkatDesa().catch(() => ({ data: [] })),
+      getStatistikPenduduk().catch(() => ({ data: null }))
+    ]).then(([resProfil, resBerita, resPotensi, resPerangkat, resStatistik]) => {
       setProfil(resProfil.data);
       setBeritaList(resBerita.data ? resBerita.data.slice(0, 3) : []);
       setPotensiList(resPotensi.data ? resPotensi.data.slice(0, 3) : []);
       setPerangkatList(resPerangkat.data ? resPerangkat.data.slice(0, 4) : []);
+
+      const statPayload = resStatistik?.data || resStatistik;
+      const statList = Array.isArray(statPayload)
+        ? statPayload
+        : statPayload?.data && Array.isArray(statPayload.data)
+        ? statPayload.data
+        : statPayload
+        ? [statPayload]
+        : [];
+      setStatistik(statList.length > 0 ? statList[0] : null);
       setLoading(false);
     });
   }, []);
@@ -69,22 +81,36 @@ export default function Beranda() {
           <div className="lg:col-span-5 grid grid-cols-2 gap-4">
             <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 text-center hover:bg-white/15 transition-all">
               <Users className="w-8 h-8 text-accent mx-auto mb-2" />
-              <div className="text-2xl font-bold font-serif text-white">6,146</div>
+              <div className="text-2xl font-bold font-serif text-white">
+                {statistik?.jumlah_total ? Number(statistik.jumlah_total).toLocaleString('en-US') : '6,146'}
+              </div>
               <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Jiwa Penduduk</div>
             </div>
             <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 text-center hover:bg-white/15 transition-all">
               <Home className="w-8 h-8 text-accent mx-auto mb-2" />
-              <div className="text-2xl font-bold font-serif text-white">2,262</div>
+              <div className="text-2xl font-bold font-serif text-white">
+                {statistik?.jumlah_kk ? Number(statistik.jumlah_kk).toLocaleString('en-US') : '2,262'}
+              </div>
               <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Kepala Keluarga (KK)</div>
             </div>
             <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 text-center hover:bg-white/15 transition-all">
               <Users className="w-8 h-8 text-accent mx-auto mb-2" />
-              <div className="text-2xl font-bold font-serif text-white">2.70</div>
+              <div className="text-2xl font-bold font-serif text-white">
+                {statistik?.rata_anggota_keluarga ? Number(statistik.rata_anggota_keluarga).toFixed(2) : '2.70'}
+              </div>
               <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Rata-rata Anggota/KK</div>
             </div>
             <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 text-center hover:bg-white/15 transition-all">
               <GraduationCap className="w-8 h-8 text-accent mx-auto mb-2" />
-              <div className="text-2xl font-bold font-serif text-white">3,288</div>
+              <div className="text-2xl font-bold font-serif text-white">
+                {(() => {
+                  if (statistik?.pendidikan && Array.isArray(statistik.pendidikan)) {
+                    const total = statistik.pendidikan.reduce((acc, curr) => acc + (Number(curr.jumlah) || 0), 0);
+                    return total > 0 ? Number(total).toLocaleString('en-US') : '3,288';
+                  }
+                  return '3,288';
+                })()}
+              </div>
               <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Terdata Pendidikan</div>
             </div>
           </div>
