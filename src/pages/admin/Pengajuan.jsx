@@ -390,7 +390,28 @@ export default function AdminPengajuan() {
                     <span className="text-slate-400 block font-semibold uppercase text-[10px]">Tanggal Pengajuan</span>
                     <span className="font-medium text-slate-800">{formatDate(selectedItem.created_at)}</span>
                   </div>
+                  <div>
+                    <span className="text-slate-400 block font-semibold uppercase text-[10px]">Tempat, Tanggal Lahir</span>
+                    <span className="font-medium text-slate-800">
+                      {selectedItem.tempat_lahir || '-'}, {selectedItem.tanggal_lahir ? formatDate(selectedItem.tanggal_lahir) : '-'}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block font-semibold uppercase text-[10px]">Jenis Kelamin & Agama</span>
+                    <span className="font-medium text-slate-800">
+                      {selectedItem.jenis_kelamin || '-'} ({selectedItem.agama || '-'})
+                    </span>
+                  </div>
                 </div>
+
+                {selectedItem.alamat && (
+                  <div className="pt-2 border-t border-slate-200/60 text-xs">
+                    <span className="text-slate-400 block font-semibold uppercase text-[10px]">Alamat Lengkap Sesuai KTP</span>
+                    <p className="text-slate-800 font-medium mt-0.5 leading-relaxed bg-white p-2.5 rounded-xl border border-slate-200">
+                      {selectedItem.alamat}
+                    </p>
+                  </div>
+                )}
 
                 {selectedItem.keterangan && (
                   <div className="pt-2 border-t border-slate-200/60 text-xs">
@@ -561,22 +582,33 @@ export default function AdminPengajuan() {
 
       {/* ── IMAGE LIGHTBOX PREVIEW MODAL ── */}
       {previewMedia && (
-        <div className="fixed inset-0 z-60 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative max-w-3xl w-full bg-slate-900 rounded-2xl overflow-hidden shadow-2xl flex flex-col space-y-2 p-4">
-            <div className="flex items-center justify-between text-white pb-2 border-b border-slate-800">
-              <span className="font-bold text-sm truncate">{previewMedia.title}</span>
+        <div
+          onClick={() => setPreviewMedia(null)}
+          className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative max-w-4xl w-full bg-slate-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col space-y-3 p-5 border border-white/10"
+          >
+            <div className="flex items-center justify-between text-white pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-accent" />
+                <span className="font-bold text-base truncate">{previewMedia.title}</span>
+              </div>
               <button
+                type="button"
                 onClick={() => setPreviewMedia(null)}
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white transition-colors"
+                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white transition-colors flex items-center gap-1 text-xs font-semibold"
               >
+                <span>Tutup</span>
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="max-h-[75vh] flex items-center justify-center overflow-auto bg-black rounded-xl">
+            <div className="max-h-[75vh] flex items-center justify-center overflow-auto bg-black/60 rounded-2xl p-2 border border-slate-800">
               <img
                 src={previewMedia.url}
                 alt={previewMedia.title}
-                className="max-h-[75vh] w-auto object-contain rounded-lg"
+                className="max-h-[70vh] w-auto object-contain rounded-xl shadow-lg"
               />
             </div>
           </div>

@@ -39,6 +39,11 @@ export default function LayananPublik() {
     layanan_id: '',
     nama_pemohon: '',
     nik: '',
+    tempat_lahir: '',
+    tanggal_lahir: '',
+    jenis_kelamin: '',
+    alamat: '',
+    agama: '',
     keterangan: ''
   });
 
@@ -89,8 +94,17 @@ export default function LayananPublik() {
     setStatusMsg(null);
 
     // 1. Validasi Input Utama
-    if (!formData.nama_pemohon || !formData.nik || !formData.layanan_id) {
-      setStatusMsg({ type: 'error', text: 'Harap lengkapi nama pemohon, NIK, dan jenis layanan.' });
+    if (
+      !formData.nama_pemohon ||
+      !formData.nik ||
+      !formData.layanan_id ||
+      !formData.tempat_lahir ||
+      !formData.tanggal_lahir ||
+      !formData.jenis_kelamin ||
+      !formData.alamat ||
+      !formData.agama
+    ) {
+      setStatusMsg({ type: 'error', text: 'Harap lengkapi seluruh data diri KTP dan jenis layanan.' });
       return;
     }
 
@@ -146,6 +160,11 @@ export default function LayananPublik() {
           layanan_id: layananList[0]?.id || '',
           nama_pemohon: '',
           nik: '',
+          tempat_lahir: '',
+          tanggal_lahir: '',
+          jenis_kelamin: '',
+          alamat: '',
+          agama: '',
           keterangan: ''
         });
         setDokumenUrls({});
@@ -309,6 +328,83 @@ export default function LayananPublik() {
                     value={formData.nik}
                     onChange={handleChange}
                     className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary focus:border-transparent text-sm font-mono"
+                    required
+                  />
+                </div>
+
+                {/* Tempat & Tanggal Lahir */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Tempat Lahir</label>
+                    <input
+                      type="text"
+                      name="tempat_lahir"
+                      placeholder="Sesuai KTP (Contoh: Tasikmalaya)"
+                      value={formData.tempat_lahir}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Tanggal Lahir</label>
+                    <input
+                      type="date"
+                      name="tanggal_lahir"
+                      value={formData.tanggal_lahir}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary focus:border-transparent text-sm bg-white text-slate-800"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Jenis Kelamin & Agama */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Jenis Kelamin</label>
+                    <select
+                      name="jenis_kelamin"
+                      value={formData.jenis_kelamin}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary focus:border-transparent text-sm bg-white"
+                      required
+                    >
+                      <option value="">-- Pilih Jenis Kelamin --</option>
+                      <option value="Laki-laki">Laki-laki</option>
+                      <option value="Perempuan">Perempuan</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Agama</label>
+                    <select
+                      name="agama"
+                      value={formData.agama}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary focus:border-transparent text-sm bg-white"
+                      required
+                    >
+                      <option value="">-- Pilih Agama --</option>
+                      <option value="Islam">Islam</option>
+                      <option value="Protestan">Protestan</option>
+                      <option value="Katolik">Katolik</option>
+                      <option value="Hindu">Hindu</option>
+                      <option value="Buddha">Buddha</option>
+                      <option value="Khonghucu">Khonghucu</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Alamat Lengkap Sesuai KTP */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">Alamat Lengkap Sesuai KTP</label>
+                  <textarea
+                    name="alamat"
+                    rows={2}
+                    placeholder="Contoh: RT 002 / RW 005 Dusun Tenjonagara, Desa Tenjonagara"
+                    value={formData.alamat}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
                     required
                   />
                 </div>
