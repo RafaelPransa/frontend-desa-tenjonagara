@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { TreePine, Users, Map, Landmark, ArrowRight, ShieldCheck, Sparkles, FileText, CheckCircle2, ChevronRight, Home, GraduationCap, PhoneCall } from 'lucide-react';
 import { getProfilDesa, getBerita, getPotensiDesa, getPerangkatDesa, getStatistikPenduduk } from '../services/desaService';
 import ScrollReveal from '../components/ScrollReveal';
+import CollaborationBanner from '../components/CollaborationBanner';
+
 
 export default function Beranda() {
   const [profil, setProfil] = useState(null);
@@ -29,10 +31,10 @@ export default function Beranda() {
       const statList = Array.isArray(statPayload)
         ? statPayload
         : statPayload?.data && Array.isArray(statPayload.data)
-        ? statPayload.data
-        : statPayload
-        ? [statPayload]
-        : [];
+          ? statPayload.data
+          : statPayload
+            ? [statPayload]
+            : [];
       setStatistik(statList.length > 0 ? statList[0] : null);
       setLoading(false);
     });
@@ -142,7 +144,7 @@ export default function Beranda() {
         <ScrollReveal direction="up" delay={150}>
           <div className="bg-white rounded-3xl p-8 sm:p-12 shadow-xl border border-slate-200/80 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-bl-full pointer-events-none" />
-            
+
             <div className="lg:col-span-4 flex justify-center">
               <div className="relative group">
                 <div className="w-56 h-64 sm:w-64 sm:h-72 rounded-2xl overflow-hidden shadow-2xl border-4 border-primary/20 transition-transform duration-300 group-hover:scale-[1.02]">
@@ -167,7 +169,7 @@ export default function Beranda() {
                 {perangkatList[0]?.nama || 'Asep Saepulloh, S.IP'}
               </h2>
               <p className="text-slate-600 leading-relaxed italic border-l-4 border-accent pl-4 py-1">
-                "Sampurasun warga Desa Tenjonagara. Selamat datang di portal resmi desa kami. Website ini kami hadirkan sebagai bentuk transparansi tata kelola pemerintahan desa serta memudahkan seluruh warga dalam mendapatkan informasi dan layanan administrasi tanpa hambatan."
+                "Sampurasun warga Desa Tenjonagara. Selamat datang di portal desa kami. Website ini kami hadirkan sebagai bentuk transparansi tata kelola pemerintahan desa serta memudahkan seluruh warga dalam mendapatkan informasi dan layanan administrasi tanpa hambatan."
               </p>
               <div className="pt-2">
                 <Link to="/profil" className="inline-flex items-center gap-2 text-primary font-semibold hover:text-accent transition-colors group">
@@ -272,6 +274,10 @@ export default function Beranda() {
           </ScrollReveal>
         </div>
       </section>
+
+      {/* BANNER KOLABORASI KERJASAMA UNPER & LP2M */}
+      <CollaborationBanner />
+
 
       {/* FLOATING QUICK ACCESS WIDGET FOR CITIZENS */}
       <div className="fixed bottom-6 right-6 z-40">

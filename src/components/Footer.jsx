@@ -35,7 +35,7 @@ export default function Footer() {
               <h2 className="font-serif font-bold text-lg text-white">Desa Tenjonagara</h2>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Website resmi Pemerintah Desa Tenjonagara, Kecamatan Cigalontang, Kabupaten Tasikmalaya. Pusat transparansi informasi dan layanan publik warga desa.
+              Website Pemerintah Desa Tenjonagara, Kecamatan Cigalontang, Kabupaten Tasikmalaya. Pusat transparansi informasi dan layanan publik warga desa.
             </p>
             {/* Live API Health indicator */}
             <div className="flex items-center gap-2 pt-2">
