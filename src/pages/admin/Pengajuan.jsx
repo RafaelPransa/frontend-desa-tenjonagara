@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { getAdminPengajuanLayanan, updateStatusPengajuanLayanan } from '../../services/adminService';
 import ScrollReveal from '../../components/ScrollReveal';
+import Pagination from '../../components/Pagination';
 
 export default function AdminPengajuan() {
   const [pengajuanList, setPengajuanList] = useState([]);
@@ -28,6 +29,9 @@ export default function AdminPengajuan() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
 
   // Selected item for Detail / Verification Modal
   const [selectedItem, setSelectedItem] = useState(null);
@@ -74,6 +78,16 @@ export default function AdminPengajuan() {
   };
 
   // Filter List
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleStatusFilterChange = (e) => {
+    setStatusFilter(e.target.value);
+    setCurrentPage(1);
+  };
+
   const filteredList = pengajuanList.filter((item) => {
     const matchSearch =
       (item.nama_pemohon && item.nama_pemohon.toLowerCase().includes(search.toLowerCase())) ||
@@ -83,6 +97,12 @@ export default function AdminPengajuan() {
     const matchStatus = statusFilter === 'all' || item.status === statusFilter;
     return matchSearch && matchStatus;
   });
+
+  const totalPages = Math.ceil(filteredList.length / itemsPerPage);
+  const paginatedList = filteredList.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   // Calculate Counter Stats
   const countPending = pengajuanList.filter((i) => i.status === 'pending').length;
@@ -213,7 +233,7 @@ export default function AdminPengajuan() {
             type="text"
             placeholder="Cari nama, NIK, atau jenis surat..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-xs sm:text-sm"
           />
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
@@ -223,7 +243,7 @@ export default function AdminPengajuan() {
           {/* Status Tabs Filter */}
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={handleStatusFilterChange}
             className="px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold bg-white text-slate-800 focus:ring-2 focus:ring-primary"
           >
             <option value="all">Semua Status ({pengajuanList.length})</option>
@@ -258,94 +278,108 @@ export default function AdminPengajuan() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  <th className="py-3.5 px-4 sm:px-6">Nama Pemohon & NIK</th>
-                  <th className="py-3.5 px-4">Jenis Surat</th>
-                  <th className="py-3.5 px-4 hidden md:table-cell">Tanggal</th>
-                  <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-4 hidden sm:table-cell text-center">Dokumen</th>
-                  <th className="py-3.5 px-4 text-right pr-6">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
-                {filteredList.map((item) => {
-                  const dokumenList = parseDokumen(item.dokumen_url);
-                  const validDokumenCount = dokumenList.filter((d) => d.url).length;
+          <div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="py-3.5 px-4 sm:px-6">Nama Pemohon & NIK</th>
+                    <th className="py-3.5 px-4">Jenis Surat</th>
+                    <th className="py-3.5 px-4 hidden md:table-cell">Tanggal</th>
+                    <th className="py-3.5 px-4">Status</th>
+                    <th className="py-3.5 px-4 hidden sm:table-cell text-center">Dokumen</th>
+                    <th className="py-3.5 px-4 text-right pr-6">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
+                  {paginatedList.map((item) => {
+                    const dokumenList = parseDokumen(item.dokumen_url);
+                    const validDokumenCount = dokumenList.filter((d) => d.url).length;
 
-                  return (
-                    <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
-                      {/* Pemohon */}
-                      <td className="py-4 px-4 sm:px-6">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-bold shrink-0">
-                            <User className="w-5 h-5 text-slate-500" />
-                          </div>
-                          <div>
-                            <div className="font-bold text-slate-900 line-clamp-1">{item.nama_pemohon}</div>
-                            <div className="text-[11px] font-mono text-slate-500 tracking-wider">
-                              NIK: {item.nik}
+                    return (
+                      <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
+                        {/* Pemohon */}
+                        <td className="py-4 px-4 sm:px-6">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-bold shrink-0">
+                              <User className="w-5 h-5 text-slate-500" />
+                            </div>
+                            <div>
+                              <div className="font-bold text-slate-900 line-clamp-1">{item.nama_pemohon}</div>
+                              <div className="text-[11px] font-mono text-slate-500 tracking-wider">
+                                NIK: {item.nik}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
+                        </td>
 
-                      {/* Jenis Surat */}
-                      <td className="py-4 px-4">
-                        <div className="font-semibold text-slate-800 line-clamp-1 max-w-xs">
-                          {item.layanan?.nama_layanan || 'Surat Keterangan'}
-                        </div>
-                        {item.keterangan && (
-                          <div className="text-[11px] text-slate-400 line-clamp-1 max-w-xs mt-0.5">
-                            {item.keterangan}
+                        {/* Jenis Surat */}
+                        <td className="py-4 px-4">
+                          <div className="font-semibold text-slate-800 line-clamp-1 max-w-xs">
+                            {item.layanan?.nama_layanan || 'Surat Keterangan'}
                           </div>
-                        )}
-                      </td>
+                          {item.keterangan && (
+                            <div className="text-[11px] text-slate-400 line-clamp-1 max-w-xs mt-0.5">
+                              {item.keterangan}
+                            </div>
+                          )}
+                        </td>
 
-                      {/* Tanggal */}
-                      <td className="py-4 px-4 hidden md:table-cell text-slate-500 text-xs">
-                        <div className="flex items-center gap-1.5 whitespace-nowrap">
-                          <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                          <span>{formatDate(item.created_at)}</span>
-                        </div>
-                      </td>
+                        {/* Tanggal */}
+                        <td className="py-4 px-4 hidden md:table-cell text-slate-500 text-xs">
+                          <div className="flex items-center gap-1.5 whitespace-nowrap">
+                            <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                            <span>{formatDate(item.created_at)}</span>
+                          </div>
+                        </td>
 
-                      {/* Status */}
-                      <td className="py-4 px-4">
-                        {getStatusBadge(item.status)}
-                      </td>
+                        {/* Status */}
+                        <td className="py-4 px-4">
+                          {getStatusBadge(item.status)}
+                        </td>
 
-                      {/* Dokumen Count */}
-                      <td className="py-4 px-4 hidden sm:table-cell text-center">
-                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${validDokumenCount > 0
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-slate-100 text-slate-500 border border-slate-200'
-                          }`}>
-                          <ShieldCheck className="w-3.5 h-3.5" />
-                          <span>{validDokumenCount} Berkas</span>
-                        </span>
-                      </td>
+                        {/* Dokumen Count */}
+                        <td className="py-4 px-4 hidden sm:table-cell text-center">
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${validDokumenCount > 0
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : 'bg-slate-100 text-slate-500 border border-slate-200'
+                            }`}>
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                            <span>{validDokumenCount} Berkas</span>
+                          </span>
+                        </td>
 
-                      {/* Aksi */}
-                      <td className="py-4 px-4 text-right pr-6">
-                        <button
-                          onClick={() => setSelectedItem(item)}
-                          className="px-3.5 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-xs transition-all inline-flex items-center gap-1.5"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                          <span>Verifikasi</span>
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        {/* Aksi */}
+                        <td className="py-4 px-4 text-right pr-6">
+                          <button
+                            onClick={() => setSelectedItem(item)}
+                            className="px-3.5 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-xs transition-all inline-flex items-center gap-1.5"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>Verifikasi</span>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination Footer */}
+            <div className="p-4 border-t border-slate-100">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                totalItems={filteredList.length}
+                itemsPerPage={itemsPerPage}
+              />
+            </div>
           </div>
         )}
       </div>
+
 
       {/* ── MODAL DETAIL & VERIFIKASI DOKUMEN ── */}
       {selectedItem && createPortal(

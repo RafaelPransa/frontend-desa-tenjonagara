@@ -17,6 +17,7 @@ import {
 import { getAdminBerita, deleteBerita } from '../../services/adminService';
 import ScrollReveal from '../../components/ScrollReveal';
 import ConfirmModal from '../../components/ConfirmModal';
+import Pagination from '../../components/Pagination';
 
 export default function AdminBerita() {
   const [beritaList, setBeritaList] = useState([]);
@@ -27,6 +28,9 @@ export default function AdminBerita() {
   const [successMsg, setSuccessMsg] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null); // { id, judul }
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
 
   const fetchBerita = async () => {
     setLoading(true);
@@ -76,6 +80,16 @@ export default function AdminBerita() {
   };
 
 
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleStatusFilterChange = (status) => {
+    setStatusFilter(status);
+    setCurrentPage(1);
+  };
+
   const filteredBerita = beritaList.filter((item) => {
     const matchSearch =
       item.judul.toLowerCase().includes(search.toLowerCase()) ||
@@ -83,6 +97,13 @@ export default function AdminBerita() {
     const matchStatus = statusFilter === 'all' || item.status === statusFilter;
     return matchSearch && matchStatus;
   });
+
+  const totalPages = Math.ceil(filteredBerita.length / itemsPerPage);
+  const paginatedBerita = filteredBerita.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
 
   return (
     <div className="space-y-6">
@@ -131,7 +152,7 @@ export default function AdminBerita() {
             type="text"
             placeholder="Cari judul berita..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-xs sm:text-sm"
           />
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
@@ -140,7 +161,7 @@ export default function AdminBerita() {
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
           <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-semibold">
             <button
-              onClick={() => setStatusFilter('all')}
+              onClick={() => handleStatusFilterChange('all')}
               className={`px-3 py-1.5 rounded-lg transition-all ${
                 statusFilter === 'all' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'
               }`}
@@ -148,7 +169,7 @@ export default function AdminBerita() {
               Semua ({beritaList.length})
             </button>
             <button
-              onClick={() => setStatusFilter('published')}
+              onClick={() => handleStatusFilterChange('published')}
               className={`px-3 py-1.5 rounded-lg transition-all ${
                 statusFilter === 'published' ? 'bg-white text-emerald-700 shadow-xs' : 'text-slate-500 hover:text-slate-800'
               }`}
@@ -156,7 +177,7 @@ export default function AdminBerita() {
               Published ({beritaList.filter((b) => b.status === 'published').length})
             </button>
             <button
-              onClick={() => setStatusFilter('draft')}
+              onClick={() => handleStatusFilterChange('draft')}
               className={`px-3 py-1.5 rounded-lg transition-all ${
                 statusFilter === 'draft' ? 'bg-white text-amber-700 shadow-xs' : 'text-slate-500 hover:text-slate-800'
               }`}
@@ -191,117 +212,131 @@ export default function AdminBerita() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  <th className="py-3.5 px-4 sm:px-6">Info Berita</th>
-                  <th className="py-3.5 px-4 hidden md:table-cell">Penulis</th>
-                  <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-4 hidden sm:table-cell">Tanggal</th>
-                  <th className="py-3.5 px-4 text-right pr-6">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
-                {filteredBerita.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-4 px-4 sm:px-6">
-                      <div className="flex items-center gap-3">
-                        {item.gambar_url ? (
-                          <img
-                            src={item.gambar_url}
-                            alt={item.judul}
-                            className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
-                            <Newspaper className="w-5 h-5 text-slate-400" />
-                          </div>
-                        )}
-                        <div className="space-y-0.5">
-                          <div className="font-bold text-slate-900 line-clamp-1 max-w-md">
-                            {item.judul}
-                          </div>
-                          <div className="text-[11px] text-slate-400 font-mono">
-                            slug: {item.slug}
+          <div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="py-3.5 px-4 sm:px-6">Info Berita</th>
+                    <th className="py-3.5 px-4 hidden md:table-cell">Penulis</th>
+                    <th className="py-3.5 px-4">Status</th>
+                    <th className="py-3.5 px-4 hidden sm:table-cell">Tanggal</th>
+                    <th className="py-3.5 px-4 text-right pr-6">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
+                  {paginatedBerita.map((item) => (
+                    <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-4 px-4 sm:px-6">
+                        <div className="flex items-center gap-3">
+                          {item.gambar_url ? (
+                            <img
+                              src={item.gambar_url}
+                              alt={item.judul}
+                              className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
+                              <Newspaper className="w-5 h-5 text-slate-400" />
+                            </div>
+                          )}
+                          <div className="space-y-0.5">
+                            <div className="font-bold text-slate-900 line-clamp-1 max-w-md">
+                              {item.judul}
+                            </div>
+                            <div className="text-[11px] text-slate-400 font-mono">
+                              slug: {item.slug}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    <td className="py-4 px-4 hidden md:table-cell text-slate-600">
-                      <div className="flex items-center gap-1.5 text-xs">
-                        <User className="w-3.5 h-3.5 text-slate-400" />
-                        <span>{item.penulis?.nama || 'Admin Desa'}</span>
-                      </div>
-                    </td>
+                      <td className="py-4 px-4 hidden md:table-cell text-slate-600">
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <User className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{item.penulis?.nama || 'Admin Desa'}</span>
+                        </div>
+                      </td>
 
-                    <td className="py-4 px-4">
-                      {item.status === 'published' ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold border border-emerald-200">
-                          <CheckCircle className="w-3 h-3 text-emerald-600" />
-                          <span>Published</span>
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-[11px] font-bold border border-amber-200">
-                          <Clock className="w-3 h-3 text-amber-600" />
-                          <span>Draft</span>
-                        </span>
-                      )}
-                    </td>
+                      <td className="py-4 px-4">
+                        {item.status === 'published' ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold border border-emerald-200">
+                            <CheckCircle className="w-3 h-3 text-emerald-600" />
+                            <span>Published</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-[11px] font-bold border border-amber-200">
+                            <Clock className="w-3 h-3 text-amber-600" />
+                            <span>Draft</span>
+                          </span>
+                        )}
+                      </td>
 
-                    <td className="py-4 px-4 hidden sm:table-cell text-slate-500 text-xs">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                        <span>
-                          {item.created_at
-                            ? new Date(item.created_at).toLocaleDateString('id-ID', {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric'
-                              })
-                            : '-'}
-                        </span>
-                      </div>
-                    </td>
+                      <td className="py-4 px-4 hidden sm:table-cell text-slate-500 text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                          <span>
+                            {item.created_at
+                              ? new Date(item.created_at).toLocaleDateString('id-ID', {
+                                  day: 'numeric',
+                                  month: 'short',
+                                  year: 'numeric'
+                                })
+                              : '-'}
+                          </span>
+                        </div>
+                      </td>
 
-                    <td className="py-4 px-4 text-right pr-6">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <Link
-                          to={`/berita/${item.slug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
-                          title="Lihat Tampilan Publik"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </Link>
+                      <td className="py-4 px-4 text-right pr-6">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Link
+                            to={`/berita/${item.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+                            title="Lihat Tampilan Publik"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </Link>
 
-                        <Link
-                          to={`/admin/berita/${item.id}`}
-                          className="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors"
-                          title="Edit Berita"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Link>
+                          <Link
+                            to={`/admin/berita/${item.id}`}
+                            className="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors"
+                            title="Edit Berita"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Link>
 
-                        <button
-                          onClick={() => openDeleteModal(item.id, item.judul)}
-                          disabled={deletingId === item.id}
-                          className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
-                          title="Hapus Berita"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                          <button
+                            onClick={() => openDeleteModal(item.id, item.judul)}
+                            disabled={deletingId === item.id}
+                            className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
+                            title="Hapus Berita"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="p-4 border-t border-slate-100">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                totalItems={filteredBerita.length}
+                itemsPerPage={itemsPerPage}
+              />
+            </div>
           </div>
         )}
       </div>
+
 
       {/* Modal Konfirmasi Hapus Berita */}
       <ConfirmModal

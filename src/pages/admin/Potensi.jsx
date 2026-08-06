@@ -13,6 +13,7 @@ import {
 import { getAdminPotensi, deletePotensi } from '../../services/adminService';
 import ScrollReveal from '../../components/ScrollReveal';
 import ConfirmModal from '../../components/ConfirmModal';
+import Pagination from '../../components/Pagination';
 
 const categories = [
   { key: 'all', label: 'Semua Kategori' },
@@ -32,6 +33,9 @@ export default function AdminPotensi() {
   const [successMsg, setSuccessMsg] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null); // { id, nama }
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
 
   const fetchPotensi = async () => {
     setLoading(true);
@@ -75,6 +79,16 @@ export default function AdminPotensi() {
     }
   };
 
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryFilterChange = (e) => {
+    setCategoryFilter(e.target.value);
+    setCurrentPage(1);
+  };
+
   const filteredList = potensiList.filter((item) => {
     const matchSearch =
       item.nama.toLowerCase().includes(search.toLowerCase()) ||
@@ -83,6 +97,12 @@ export default function AdminPotensi() {
     const matchCategory = categoryFilter === 'all' || item.kategori === categoryFilter;
     return matchSearch && matchCategory;
   });
+
+  const totalPages = Math.ceil(filteredList.length / itemsPerPage);
+  const paginatedList = filteredList.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const getCategoryMeta = (catKey) => {
     switch (catKey) {
@@ -146,7 +166,7 @@ export default function AdminPotensi() {
             type="text"
             placeholder="Cari potensi atau deskripsi..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-xs sm:text-sm"
           />
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
@@ -155,7 +175,7 @@ export default function AdminPotensi() {
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end overflow-x-auto">
           <select
             value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
+            onChange={handleCategoryFilterChange}
             className="px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold bg-white text-slate-800 focus:ring-2 focus:ring-primary"
           >
             {categories.map((cat) => (
@@ -191,79 +211,93 @@ export default function AdminPotensi() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  <th className="py-3.5 px-4 sm:px-6">Nama Potensi</th>
-                  <th className="py-3.5 px-4">Kategori</th>
-                  <th className="py-3.5 px-4 hidden md:table-cell">Deskripsi Ringkas</th>
-                  <th className="py-3.5 px-4 text-right pr-6">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
-                {filteredList.map((item) => {
-                  const meta = getCategoryMeta(item.kategori);
+          <div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="py-3.5 px-4 sm:px-6">Nama Potensi</th>
+                    <th className="py-3.5 px-4">Kategori</th>
+                    <th className="py-3.5 px-4 hidden md:table-cell">Deskripsi Ringkas</th>
+                    <th className="py-3.5 px-4 text-right pr-6">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
+                  {paginatedList.map((item) => {
+                    const meta = getCategoryMeta(item.kategori);
 
-                  return (
-                    <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-4 px-4 sm:px-6">
-                        <div className="flex items-center gap-3">
-                          {item.gambar_url ? (
-                            <img
-                              src={item.gambar_url}
-                              alt={item.nama}
-                              className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
-                            />
-                          ) : (
-                            <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0">
-                              <Sparkles className="w-5 h-5 text-amber-600" />
+                    return (
+                      <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
+                        <td className="py-4 px-4 sm:px-6">
+                          <div className="flex items-center gap-3">
+                            {item.gambar_url ? (
+                              <img
+                                src={item.gambar_url}
+                                alt={item.nama}
+                                className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0">
+                                <Sparkles className="w-5 h-5 text-amber-600" />
+                              </div>
+                            )}
+                            <div className="font-bold text-slate-900 line-clamp-1 max-w-xs sm:max-w-md">
+                              {item.nama}
                             </div>
-                          )}
-                          <div className="font-bold text-slate-900 line-clamp-1 max-w-xs sm:max-w-md">
-                            {item.nama}
                           </div>
-                        </div>
-                      </td>
+                        </td>
 
-                      <td className="py-4 px-4">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold border ${meta.badgeClass}`}>
-                          {meta.label}
-                        </span>
-                      </td>
+                        <td className="py-4 px-4">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold border ${meta.badgeClass}`}>
+                            {meta.label}
+                          </span>
+                        </td>
 
-                      <td className="py-4 px-4 hidden md:table-cell text-slate-600">
-                        <span className="line-clamp-2 max-w-md text-xs">{item.deskripsi}</span>
-                      </td>
+                        <td className="py-4 px-4 hidden md:table-cell text-slate-600">
+                          <span className="line-clamp-2 max-w-md text-xs">{item.deskripsi}</span>
+                        </td>
 
-                      <td className="py-4 px-4 text-right pr-6">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <Link
-                            to={`/admin/potensi/${item.id}`}
-                            className="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors"
-                            title="Edit Potensi"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Link>
+                        <td className="py-4 px-4 text-right pr-6">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Link
+                              to={`/admin/potensi/${item.id}`}
+                              className="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors"
+                              title="Edit Potensi"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Link>
 
-                          <button
-                            onClick={() => openDeleteModal(item.id, item.nama)}
-                            disabled={deletingId === item.id}
-                            className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
-                            title="Hapus Potensi"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                            <button
+                              onClick={() => openDeleteModal(item.id, item.nama)}
+                              disabled={deletingId === item.id}
+                              className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
+                              title="Hapus Potensi"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="p-4 border-t border-slate-100">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                totalItems={filteredList.length}
+                itemsPerPage={itemsPerPage}
+              />
+            </div>
           </div>
         )}
       </div>
+
 
       {/* Modal Konfirmasi Hapus Potensi */}
       <ConfirmModal

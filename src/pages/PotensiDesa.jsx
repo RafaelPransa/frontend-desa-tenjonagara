@@ -2,16 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { Sparkles, Sprout, Store, Trees, Fish } from 'lucide-react';
 import { getPotensiDesa } from '../services/desaService';
 import ScrollReveal from '../components/ScrollReveal';
+import Pagination from '../components/Pagination';
 
 export default function PotensiDesa() {
   const [potensiList, setPotensiList] = useState([]);
   const [activeKategori, setActiveKategori] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   useEffect(() => {
     getPotensiDesa()
       .then((res) => setPotensiList(res.data || []))
       .catch(() => setPotensiList([]));
   }, []);
+
+  const handleCategoryChange = (kat) => {
+    setActiveKategori(kat);
+    setCurrentPage(1);
+  };
 
   const getCategoryMeta = (kategori) => {
     switch (kategori) {
@@ -52,6 +60,12 @@ export default function PotensiDesa() {
     ? potensiList
     : potensiList.filter((item) => item.kategori === activeKategori);
 
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const paginatedPotensi = filtered.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <div className="space-y-16 pb-20">
       {/* Header */}
@@ -86,7 +100,7 @@ export default function PotensiDesa() {
         <ScrollReveal direction="up" delay={100}>
           <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3">
             <button
-              onClick={() => setActiveKategori('all')}
+              onClick={() => handleCategoryChange('all')}
               className={`px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all flex items-center gap-2 ${
                 activeKategori === 'all' ? 'bg-primary text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
               }`}
@@ -96,7 +110,7 @@ export default function PotensiDesa() {
             </button>
             
             <button
-              onClick={() => setActiveKategori('pertanian')}
+              onClick={() => handleCategoryChange('pertanian')}
               className={`px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all flex items-center gap-2 ${
                 activeKategori === 'pertanian' ? 'bg-emerald-700 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
               }`}
@@ -106,7 +120,7 @@ export default function PotensiDesa() {
             </button>
 
             <button
-              onClick={() => setActiveKategori('umkm')}
+              onClick={() => handleCategoryChange('umkm')}
               className={`px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all flex items-center gap-2 ${
                 activeKategori === 'umkm' ? 'bg-amber-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
               }`}
@@ -116,7 +130,7 @@ export default function PotensiDesa() {
             </button>
 
             <button
-              onClick={() => setActiveKategori('wisata')}
+              onClick={() => handleCategoryChange('wisata')}
               className={`px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all flex items-center gap-2 ${
                 activeKategori === 'wisata' ? 'bg-teal-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
               }`}
@@ -126,7 +140,7 @@ export default function PotensiDesa() {
             </button>
 
             <button
-              onClick={() => setActiveKategori('perikanan')}
+              onClick={() => handleCategoryChange('perikanan')}
               className={`px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all flex items-center gap-2 ${
                 activeKategori === 'perikanan' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
               }`}
@@ -139,7 +153,7 @@ export default function PotensiDesa() {
 
         {/* Grid List with ScrollReveal Animations */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
-          {filtered.map((item, index) => {
+          {paginatedPotensi.map((item, index) => {
             const meta = getCategoryMeta(item.kategori);
 
             return (
@@ -172,8 +186,17 @@ export default function PotensiDesa() {
           })}
         </div>
 
+        {/* Pagination */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          totalItems={filtered.length}
+          itemsPerPage={itemsPerPage}
+        />
       </div>
     </div>
   );
 }
+
 

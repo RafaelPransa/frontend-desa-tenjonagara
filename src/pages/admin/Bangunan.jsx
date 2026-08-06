@@ -15,6 +15,7 @@ import {
 import { getAdminBangunan, deleteBangunan } from '../../services/adminService';
 import ScrollReveal from '../../components/ScrollReveal';
 import ConfirmModal from '../../components/ConfirmModal';
+import Pagination from '../../components/Pagination';
 
 const categories = [
   { key: 'all', label: 'Semua Kategori' },
@@ -34,6 +35,9 @@ export default function AdminBangunan() {
   const [successMsg, setSuccessMsg] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null); // { id, nama }
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
 
   const fetchBangunan = async () => {
     setLoading(true);
@@ -77,6 +81,16 @@ export default function AdminBangunan() {
     }
   };
 
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryFilterChange = (e) => {
+    setCategoryFilter(e.target.value);
+    setCurrentPage(1);
+  };
+
   const filteredList = bangunanList.filter((item) => {
     const matchSearch =
       item.nama.toLowerCase().includes(search.toLowerCase()) ||
@@ -89,6 +103,12 @@ export default function AdminBangunan() {
 
     return matchSearch && matchCategory;
   });
+
+  const totalPages = Math.ceil(filteredList.length / itemsPerPage);
+  const paginatedList = filteredList.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const getCategoryLabel = (catKey) => {
     const found = categories.find((c) => c.key === catKey);
@@ -142,7 +162,7 @@ export default function AdminBangunan() {
             type="text"
             placeholder="Cari nama bangunan atau lokasi..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-xs sm:text-sm"
           />
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
@@ -151,7 +171,7 @@ export default function AdminBangunan() {
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end overflow-x-auto">
           <select
             value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
+            onChange={handleCategoryFilterChange}
             className="px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold bg-white text-slate-800 focus:ring-2 focus:ring-primary"
           >
             {categories.map((cat) => (
@@ -187,93 +207,107 @@ export default function AdminBangunan() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  <th className="py-3.5 px-4 sm:px-6">Nama Bangunan</th>
-                  <th className="py-3.5 px-4">Kategori</th>
-                  <th className="py-3.5 px-4 hidden md:table-cell">Alamat / Lokasi</th>
-                  <th className="py-3.5 px-4 text-right pr-6">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
-                {filteredList.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-4 px-4 sm:px-6">
-                      <div className="flex items-center gap-3">
-                        {item.gambar_url ? (
-                          <img
-                            src={item.gambar_url}
-                            alt={item.nama}
-                            className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
-                            <Building2 className="w-5 h-5 text-blue-600" />
-                          </div>
-                        )}
-                        <div className="space-y-0.5">
-                          <div className="font-bold text-slate-900 line-clamp-1 max-w-xs sm:max-w-md">
-                            {item.nama}
-                          </div>
-                          <div className="text-[11px] text-slate-400 line-clamp-1 max-w-xs">
-                            {item.deskripsi}
+          <div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="py-3.5 px-4 sm:px-6">Nama Bangunan</th>
+                    <th className="py-3.5 px-4">Kategori</th>
+                    <th className="py-3.5 px-4 hidden md:table-cell">Alamat / Lokasi</th>
+                    <th className="py-3.5 px-4 text-right pr-6">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
+                  {paginatedList.map((item) => (
+                    <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-4 px-4 sm:px-6">
+                        <div className="flex items-center gap-3">
+                          {item.gambar_url ? (
+                            <img
+                              src={item.gambar_url}
+                              alt={item.nama}
+                              className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+                              <Building2 className="w-5 h-5 text-blue-600" />
+                            </div>
+                          )}
+                          <div className="space-y-0.5">
+                            <div className="font-bold text-slate-900 line-clamp-1 max-w-xs sm:max-w-md">
+                              {item.nama}
+                            </div>
+                            <div className="text-[11px] text-slate-400 line-clamp-1 max-w-xs">
+                              {item.deskripsi}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    <td className="py-4 px-4">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-bold border border-slate-200">
-                        {getCategoryLabel(item.kategori)}
-                      </span>
-                    </td>
+                      <td className="py-4 px-4">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-bold border border-slate-200">
+                          {getCategoryLabel(item.kategori)}
+                        </span>
+                      </td>
 
-                    <td className="py-4 px-4 hidden md:table-cell text-slate-600">
-                      <div className="flex items-center gap-1.5 text-xs">
-                        <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                        <span className="truncate max-w-xs">{item.alamat || 'Desa Tenjonagara'}</span>
-                      </div>
-                    </td>
+                      <td className="py-4 px-4 hidden md:table-cell text-slate-600">
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span className="truncate max-w-xs">{item.alamat || 'Desa Tenjonagara'}</span>
+                        </div>
+                      </td>
 
-                    <td className="py-4 px-4 text-right pr-6">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <Link
-                          to={`/bangunan/${item.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
-                          title="Lihat Tampilan Publik"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </Link>
+                      <td className="py-4 px-4 text-right pr-6">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Link
+                            to={`/bangunan/${item.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+                            title="Lihat Tampilan Publik"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </Link>
 
-                        <Link
-                          to={`/admin/bangunan/${item.id}`}
-                          className="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors"
-                          title="Edit Bangunan"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Link>
+                          <Link
+                            to={`/admin/bangunan/${item.id}`}
+                            className="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors"
+                            title="Edit Bangunan"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Link>
 
-                        <button
-                          onClick={() => openDeleteModal(item.id, item.nama)}
-                          disabled={deletingId === item.id}
-                          className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
-                          title="Hapus Bangunan"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                          <button
+                            onClick={() => openDeleteModal(item.id, item.nama)}
+                            disabled={deletingId === item.id}
+                            className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
+                            title="Hapus Bangunan"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="p-4 border-t border-slate-100">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                totalItems={filteredList.length}
+                itemsPerPage={itemsPerPage}
+              />
+            </div>
           </div>
         )}
       </div>
+
 
       {/* Modal Konfirmasi Hapus Bangunan */}
       <ConfirmModal

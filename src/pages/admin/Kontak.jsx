@@ -16,6 +16,7 @@ import {
 import { getAdminKontak, deleteAdminKontak } from '../../services/adminService';
 import ScrollReveal from '../../components/ScrollReveal';
 import ConfirmModal from '../../components/ConfirmModal';
+import Pagination from '../../components/Pagination';
 
 export default function AdminKontak() {
   const [pesanList, setPesanList] = useState([]);
@@ -26,6 +27,9 @@ export default function AdminKontak() {
   const [successMsg, setSuccessMsg] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null); // { id, subjek }
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
 
   const fetchKontak = async () => {
     setLoading(true);
@@ -72,6 +76,11 @@ export default function AdminKontak() {
     }
   };
 
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
+  };
+
   const filteredList = pesanList.filter((item) => {
     return (
       (item.nama && item.nama.toLowerCase().includes(search.toLowerCase())) ||
@@ -80,6 +89,12 @@ export default function AdminKontak() {
       (item.pesan && item.pesan.toLowerCase().includes(search.toLowerCase()))
     );
   });
+
+  const totalPages = Math.ceil(filteredList.length / itemsPerPage);
+  const paginatedList = filteredList.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="space-y-6">
@@ -129,7 +144,7 @@ export default function AdminKontak() {
             type="text"
             placeholder="Cari pengirim, email, atau subjek..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-xs sm:text-sm"
           />
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
@@ -152,91 +167,105 @@ export default function AdminKontak() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  <th className="py-3.5 px-4 sm:px-6">Pengirim</th>
-                  <th className="py-3.5 px-4">Subjek</th>
-                  <th className="py-3.5 px-4 hidden md:table-cell">Isi Pesan</th>
-                  <th className="py-3.5 px-4 hidden sm:table-cell">Tanggal</th>
-                  <th className="py-3.5 px-4 text-right pr-6">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
-                {filteredList.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-4 px-4 sm:px-6">
-                      <div className="space-y-0.5">
-                        <div className="font-bold text-slate-900 flex items-center gap-1.5">
-                          <User className="w-3.5 h-3.5 text-primary" />
-                          <span>{item.nama}</span>
-                        </div>
-                        <div className="text-[11px] text-slate-500 flex items-center gap-1 font-mono">
-                          <Mail className="w-3 h-3 text-slate-400" />
-                          <span>{item.email}</span>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td className="py-4 px-4 font-semibold text-slate-800">
-                      <span className="line-clamp-1 max-w-xs">{item.subjek}</span>
-                    </td>
-
-                    <td className="py-4 px-4 hidden md:table-cell text-slate-600">
-                      <span className="line-clamp-1 max-w-sm text-xs">{item.pesan}</span>
-                    </td>
-
-                    <td className="py-4 px-4 hidden sm:table-cell text-slate-500 text-xs">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                        <span>
-                          {item.created_at
-                            ? new Date(item.created_at).toLocaleDateString('id-ID', {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric'
-                              })
-                            : 'Baru saja'}
-                        </span>
-                      </div>
-                    </td>
-
-                    <td className="py-4 px-4 text-right pr-6">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          onClick={() => setSelectedPesan(item)}
-                          className="p-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-primary transition-colors"
-                          title="Baca Pesan Lengkap"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-
-                        <a
-                          href={`mailto:${item.email}?subject=Re: ${encodeURIComponent(item.subjek)}`}
-                          className="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors"
-                          title="Balas via Email"
-                        >
-                          <Send className="w-4 h-4" />
-                        </a>
-
-                        <button
-                          onClick={() => openDeleteModal(item.id, item.subjek)}
-                          disabled={deletingId === item.id}
-                          className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
-                          title="Hapus Pesan"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
+          <div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="py-3.5 px-4 sm:px-6">Pengirim</th>
+                    <th className="py-3.5 px-4">Subjek</th>
+                    <th className="py-3.5 px-4 hidden md:table-cell">Isi Pesan</th>
+                    <th className="py-3.5 px-4 hidden sm:table-cell">Tanggal</th>
+                    <th className="py-3.5 px-4 text-right pr-6">Aksi</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
+                  {paginatedList.map((item) => (
+                    <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-4 px-4 sm:px-6">
+                        <div className="space-y-0.5">
+                          <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                            <User className="w-3.5 h-3.5 text-primary" />
+                            <span>{item.nama}</span>
+                          </div>
+                          <div className="text-[11px] text-slate-500 flex items-center gap-1 font-mono">
+                            <Mail className="w-3 h-3 text-slate-400" />
+                            <span>{item.email}</span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="py-4 px-4 font-semibold text-slate-800">
+                        <span className="line-clamp-1 max-w-xs">{item.subjek}</span>
+                      </td>
+
+                      <td className="py-4 px-4 hidden md:table-cell text-slate-600">
+                        <span className="line-clamp-1 max-w-sm text-xs">{item.pesan}</span>
+                      </td>
+
+                      <td className="py-4 px-4 hidden sm:table-cell text-slate-500 text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                          <span>
+                            {item.created_at
+                              ? new Date(item.created_at).toLocaleDateString('id-ID', {
+                                  day: 'numeric',
+                                  month: 'short',
+                                  year: 'numeric'
+                                })
+                              : 'Baru saja'}
+                          </span>
+                        </div>
+                      </td>
+
+                      <td className="py-4 px-4 text-right pr-6">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => setSelectedPesan(item)}
+                            className="p-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-primary transition-colors"
+                            title="Baca Pesan Lengkap"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+
+                          <a
+                            href={`mailto:${item.email}?subject=Re: ${encodeURIComponent(item.subjek)}`}
+                            className="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors"
+                            title="Balas via Email"
+                          >
+                            <Send className="w-4 h-4" />
+                          </a>
+
+                          <button
+                            onClick={() => openDeleteModal(item.id, item.subjek)}
+                            disabled={deletingId === item.id}
+                            className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
+                            title="Hapus Pesan"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="p-4 border-t border-slate-100">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                totalItems={filteredList.length}
+                itemsPerPage={itemsPerPage}
+              />
+            </div>
           </div>
         )}
       </div>
+
 
       {/* Modal Detail Pesan */}
       {selectedPesan && (

@@ -3,11 +3,14 @@ import { Link } from 'react-router-dom';
 import { Newspaper, Calendar, User, Search, ChevronRight, Sparkles } from 'lucide-react';
 import { getBerita } from '../services/desaService';
 import ScrollReveal from '../components/ScrollReveal';
+import Pagination from '../components/Pagination';
 
 export default function Berita() {
   const [beritaList, setBeritaList] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   useEffect(() => {
     getBerita('published')
@@ -18,10 +21,22 @@ export default function Berita() {
       .finally(() => setLoading(false));
   }, []);
 
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
+  };
+
   const filteredBerita = beritaList.filter((b) =>
     b.judul.toLowerCase().includes(search.toLowerCase()) ||
     b.konten.toLowerCase().includes(search.toLowerCase())
   );
+
+  const totalPages = Math.ceil(filteredBerita.length / itemsPerPage);
+  const paginatedBerita = filteredBerita.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
 
   return (
     <div className="space-y-16 pb-20">
@@ -60,7 +75,7 @@ export default function Berita() {
               type="text"
               placeholder="Cari kata kunci berita..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={handleSearchChange}
               className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-300 shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm bg-white"
             />
             <Search className="w-5 h-5 text-slate-400 absolute left-4 top-4" />
@@ -69,7 +84,7 @@ export default function Berita() {
 
         {/* Grid List Berita with ScrollReveal */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredBerita.map((item, index) => (
+          {paginatedBerita.map((item, index) => (
             <ScrollReveal key={item.id} direction="up" delay={(index % 3) * 150}>
               <article className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 flex flex-col group h-full transform hover:-translate-y-1.5">
                 <Link to={`/berita/${item.slug}`} className="h-52 overflow-hidden relative block">
@@ -119,8 +134,17 @@ export default function Berita() {
           ))}
         </div>
 
+        {/* Pagination */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          totalItems={filteredBerita.length}
+          itemsPerPage={itemsPerPage}
+        />
       </div>
     </div>
   );
 }
+
 
