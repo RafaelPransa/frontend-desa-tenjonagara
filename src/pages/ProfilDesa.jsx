@@ -21,11 +21,11 @@ export default function ProfilDesa() {
 
   return (
     <div className="space-y-16 pb-20">
-      
+
       {/* Header Banner */}
       <section className="gradient-hero text-white py-16 px-4 sm:px-6 lg:px-8 shadow-2xl relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#D4A017_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        
+
         <div className="max-w-7xl mx-auto text-center space-y-3 relative z-10">
           <ScrollReveal direction="down" delay={0}>
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-accent backdrop-blur-md border border-white/20 text-xs font-bold uppercase tracking-widest">
@@ -49,7 +49,7 @@ export default function ProfilDesa() {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
-        
+
         {/* Sejarah Desa */}
         <section>
           <ScrollReveal direction="up" delay={150}>
@@ -64,8 +64,13 @@ export default function ProfilDesa() {
                 </div>
               </div>
               <p className="text-slate-700 leading-relaxed text-base sm:text-lg whitespace-pre-line bg-slate-50/60 p-6 rounded-2xl border border-slate-200/60">
-                {profil?.sejarah || 'Desa Tenjonagara merupakan salah satu desa di Kecamatan Cigalontang, Kabupaten Tasikmalaya, Jawa Barat. Berada di kawasan perbukitan yang asri dengan mata pencaharian utama masyarakat di bidang pertanian dan perkebunan. Desa ini berdiri sejak puluhan tahun lalu dengan kearifan lokal yang terjaga erat.'}
+                {profil?.sejarah || `Desa Tenjonagara berdiri sekitar tahun 2002 sebagai hasil pemekaran dari desa induk untuk meningkatkan efektivitas pemerintahan dan pelayanan kepada masyarakat. Nama "Tenjonagara" berasal dari bahasa Sunda, yaitu "Tenjo" (melihat) dan "Nagara" (negara), yang melambangkan harapan agar desa ini dikenal dan diperhatikan karena potensi yang dimilikinya.
+
+Sebagai desa dengan wilayah terluas di Kecamatan Cigalontang, Tenjonagara memiliki potensi besar di sektor pertanian dan perkebunan yang menjadi tulang punggung perekonomian masyarakat. Seiring perkembangannya, berbagai program pembangunan dan pemberdayaan masyarakat terus dilakukan, mulai dari peningkatan infrastruktur, pengembangan pertanian, peternakan, hingga ekonomi kreatif berbasis desa.
+
+Kini, Desa Tenjonagara dikenal sebagai desa yang mandiri, aktif, dan progresif, dengan masyarakat yang menjunjung tinggi semangat gotong royong, melestarikan nilai-nilai budaya, serta terbuka terhadap inovasi demi mewujudkan kemajuan yang berkelanjutan.`}
               </p>
+
             </div>
           </ScrollReveal>
         </section>
@@ -81,7 +86,7 @@ export default function ProfilDesa() {
                 </span>
                 <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white mt-3 mb-5">Visi Desa</h3>
                 <p className="text-emerald-100 leading-relaxed italic text-lg sm:text-xl border-l-4 border-accent pl-5 py-2">
-                  "{profil?.visi || 'Terwujudnya Desa Tenjonagara yang Mandiri, Sejahtera, Agamis, dan Berbudaya Berbasis Potensi Pertanian dan Ekonomi Kerakyatan.'}"
+                  "{profil?.visi || 'Mewujudkan Desa Tenjonagara yang lebih maju berprestasi, berbudaya dan kreatif melalui peningkatan sumber daya manusia, kemampuan ekonomi dan kepedulian sosial masyarakat dan pemantapan pembangunan di berbagai bidang berlandaskan religius, kultural dan budaya daerah.'}"
                 </p>
               </div>
             </div>
@@ -95,10 +100,12 @@ export default function ProfilDesa() {
                 </span>
                 <h3 className="font-serif text-2xl sm:text-3xl font-bold text-primary mt-3 mb-5">Misi Desa</h3>
                 <div className="text-slate-700 leading-relaxed text-sm sm:text-base whitespace-pre-line space-y-3">
-                  {profil?.misi || `1. Meningkatkan kualitas pelayanan publik dan transparansi tata kelola pemerintahan desa.
-2. Mengembangkan sarana dan prasarana pertanian serta UMKM desa.
-3. Meningkatkan derajat kesehatan dan pendidikan masyarakat desa.
-4. Memelihara kelestarian lingkungan hidup dan nilai kearifan lokal Sunda.`}
+                  {profil?.misi || `1. Meningkatkan profesionalisme pelayanan publik.
+2. Meningkatkan kualitas sumber daya manusia bagi aparatur pemerintah desa.
+3. Meningkatkan pembangunan fisik dan nonfisik di berbagai bidang.
+4. Meningkatkan ketersediaan dan kualitas insfrastruktur pemerintahan desa.
+5. Meningkatkan partisipasi swadaya masyarakat dan sektor swasta dalam kegiatan pembangunan dan kegiatan kemsyarakatan desa.
+6. Menggali potensi potensi desa dalam rangka peningkatan pendapatan asli daerah.`}
                 </div>
               </div>
             </div>
