@@ -136,9 +136,8 @@ export default function AdminLayout() {
 
         {/* Sidebar */}
         <aside
-          className={`fixed lg:static inset-y-0 left-0 z-20 w-64 bg-white border-r border-slate-200 flex flex-col transition-transform duration-300 ease-in-out transform ${
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-          }`}
+          className={`fixed lg:static inset-y-0 left-0 z-20 w-64 bg-white border-r border-slate-200 flex flex-col transition-transform duration-300 ease-in-out transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+            }`}
         >
           <div className="p-4 border-b border-slate-100 flex items-center justify-between">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Navigasi Panel</span>
@@ -158,11 +157,10 @@ export default function AdminLayout() {
                   key={item.path}
                   to={item.path}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
-                    isActive
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${isActive
                       ? 'bg-primary text-white font-bold shadow-md shadow-primary/20'
                       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <Icon className={`w-4 h-4 ${isActive ? 'text-accent' : 'text-slate-400'}`} />

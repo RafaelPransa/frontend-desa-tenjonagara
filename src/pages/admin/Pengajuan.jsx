@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Inbox,
   Search,
@@ -57,7 +58,7 @@ export default function AdminPengajuan() {
     try {
       await updateStatusPengajuanLayanan(id, newStatus);
       setSuccessMsg(`Status pengajuan berhasil diperbarui menjadi "${newStatus}".`);
-      
+
       // Update local state
       setPengajuanList((prev) =>
         prev.map((item) => (item.id === id ? { ...item, status: newStatus } : item))
@@ -77,7 +78,7 @@ export default function AdminPengajuan() {
       (item.nama_pemohon && item.nama_pemohon.toLowerCase().includes(search.toLowerCase())) ||
       (item.nik && item.nik.includes(search)) ||
       (item.layanan?.nama_layanan && item.layanan.nama_layanan.toLowerCase().includes(search.toLowerCase()));
-    
+
     const matchStatus = statusFilter === 'all' || item.status === statusFilter;
     return matchSearch && matchStatus;
   });
@@ -314,11 +315,10 @@ export default function AdminPengajuan() {
 
                       {/* Dokumen Count */}
                       <td className="py-4 px-4 hidden sm:table-cell text-center">
-                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
-                          validDokumenCount > 0
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${validDokumenCount > 0
                             ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                             : 'bg-slate-100 text-slate-500 border border-slate-200'
-                        }`}>
+                          }`}>
                           <ShieldCheck className="w-3.5 h-3.5" />
                           <span>{validDokumenCount} Berkas</span>
                         </span>
@@ -344,10 +344,16 @@ export default function AdminPengajuan() {
       </div>
 
       {/* ── MODAL DETAIL & VERIFIKASI DOKUMEN ── */}
-      {selectedItem && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
-            
+      {selectedItem && createPortal(
+        <div
+          onClick={() => setSelectedItem(null)}
+          className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden my-auto"
+          >
+
             {/* Modal Header */}
             <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
               <div className="flex items-center gap-3">
@@ -370,7 +376,7 @@ export default function AdminPengajuan() {
 
             {/* Modal Body (Scrollable) */}
             <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs sm:text-sm">
-              
+
               {/* Applicant Info Box */}
               <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
                 <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-200/80">
@@ -452,11 +458,10 @@ export default function AdminPengajuan() {
                         return (
                           <div
                             key={idx}
-                            className={`p-4 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
-                              hasUrl
+                            className={`p-4 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${hasUrl
                                 ? 'bg-emerald-50/50 border-emerald-200'
                                 : 'bg-rose-50/50 border-rose-200'
-                            }`}
+                              }`}
                           >
                             <div className="space-y-1">
                               <div className="font-bold text-slate-800 text-xs sm:text-sm flex items-center gap-2">
@@ -518,17 +523,16 @@ export default function AdminPengajuan() {
                 <span className="block font-bold text-slate-800 text-xs uppercase tracking-wider">
                   Ubah Status Pengajuan Surat
                 </span>
-                
+
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <button
                     type="button"
                     onClick={() => handleUpdateStatus(selectedItem.id, 'pending')}
                     disabled={selectedItem.status === 'pending'}
-                    className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${
-                      selectedItem.status === 'pending'
+                    className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${selectedItem.status === 'pending'
                         ? 'bg-amber-600 text-white shadow-md cursor-default ring-2 ring-amber-300'
                         : 'bg-white text-slate-700 hover:bg-amber-50 border border-slate-300'
-                    }`}
+                      }`}
                   >
                     <Clock className="w-3.5 h-3.5" />
                     <span>Menunggu (Pending)</span>
@@ -538,11 +542,10 @@ export default function AdminPengajuan() {
                     type="button"
                     onClick={() => handleUpdateStatus(selectedItem.id, 'diproses')}
                     disabled={selectedItem.status === 'diproses'}
-                    className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${
-                      selectedItem.status === 'diproses'
+                    className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${selectedItem.status === 'diproses'
                         ? 'bg-blue-600 text-white shadow-md cursor-default ring-2 ring-blue-300'
                         : 'bg-white text-slate-700 hover:bg-blue-50 border border-slate-300'
-                    }`}
+                      }`}
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
                     <span>Setujui & Proses</span>
@@ -552,11 +555,10 @@ export default function AdminPengajuan() {
                     type="button"
                     onClick={() => handleUpdateStatus(selectedItem.id, 'selesai')}
                     disabled={selectedItem.status === 'selesai'}
-                    className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${
-                      selectedItem.status === 'selesai'
+                    className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${selectedItem.status === 'selesai'
                         ? 'bg-emerald-700 text-white shadow-md cursor-default ring-2 ring-emerald-300'
                         : 'bg-white text-slate-700 hover:bg-emerald-50 border border-slate-300'
-                    }`}
+                      }`}
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>Tandai Selesai</span>
@@ -577,14 +579,15 @@ export default function AdminPengajuan() {
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ── IMAGE LIGHTBOX PREVIEW MODAL ── */}
-      {previewMedia && (
+      {previewMedia && createPortal(
         <div
           onClick={() => setPreviewMedia(null)}
-          className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200"
+          className="fixed inset-0 z-[110] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200"
         >
           <div
             onClick={(e) => e.stopPropagation()}
@@ -612,7 +615,8 @@ export default function AdminPengajuan() {
               />
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
