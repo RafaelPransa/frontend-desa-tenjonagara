@@ -42,12 +42,27 @@ export default function AdminStatistik() {
       { pekerjaan: 'Wiraswasta', jumlah: 600, persentase: 8.21 },
       { pekerjaan: 'Petani / Pekebun', jumlah: 210, persentase: 2.87 },
       { pekerjaan: 'Pedagang', jumlah: 147, persentase: 2.01 },
-      { pekerjaan: 'Karyawan Swasta & Honorer', jumlah: 91, persentase: 1.24 },
+      { pekerjaan: 'Karyawan Swasta', jumlah: 64, persentase: 0.88 },
       { pekerjaan: 'Buruh Tani / Perkebunan', jumlah: 34, persentase: 0.46 },
-      { pekerjaan: 'Tenaga Kesehatan & Pendidikan', jumlah: 33, persentase: 0.45 },
+      { pekerjaan: 'Karyawan Honorer', jumlah: 27, persentase: 0.37 },
       { pekerjaan: 'Pensiunan', jumlah: 26, persentase: 0.36 },
-      { pekerjaan: 'PNS, POLRI & TNI', jumlah: 25, persentase: 0.34 },
-      { pekerjaan: 'Pekerjaan lainnya', jumlah: 17, persentase: 0.23 }
+      { pekerjaan: 'PNS', jumlah: 21, persentase: 0.29 },
+      { pekerjaan: 'Guru', jumlah: 19, persentase: 0.26 },
+      { pekerjaan: 'Bidan', jumlah: 5, persentase: 0.07 },
+      { pekerjaan: 'Tukang Cukur', jumlah: 5, persentase: 0.07 },
+      { pekerjaan: 'Sopir', jumlah: 4, persentase: 0.05 },
+      { pekerjaan: 'Perdagangan', jumlah: 4, persentase: 0.05 },
+      { pekerjaan: 'Karyawan BUMN', jumlah: 3, persentase: 0.04 },
+      { pekerjaan: 'Perangkat Desa', jumlah: 3, persentase: 0.04 },
+      { pekerjaan: 'Dokter', jumlah: 2, persentase: 0.03 },
+      { pekerjaan: 'Perawat', jumlah: 2, persentase: 0.03 },
+      { pekerjaan: 'POLRI', jumlah: 2, persentase: 0.03 },
+      { pekerjaan: 'Ustadz / Mubaligh', jumlah: 2, persentase: 0.03 },
+      { pekerjaan: 'TNI', jumlah: 1, persentase: 0.01 },
+      { pekerjaan: 'Kepala Desa', jumlah: 1, persentase: 0.01 },
+      { pekerjaan: 'Penata Rias', jumlah: 1, persentase: 0.01 },
+      { pekerjaan: 'Konstruksi', jumlah: 1, persentase: 0.01 },
+      { pekerjaan: 'Pekerjaan Lainnya', jumlah: 1, persentase: 0.01 }
     ]
   });
 

@@ -47,12 +47,27 @@ export default function Statistik() {
     { pekerjaan: 'Wiraswasta', jumlah: 600, persentase: 8.21 },
     { pekerjaan: 'Petani / Pekebun', jumlah: 210, persentase: 2.87 },
     { pekerjaan: 'Pedagang', jumlah: 147, persentase: 2.01 },
-    { pekerjaan: 'Karyawan Swasta & Honorer', jumlah: 91, persentase: 1.24 },
+    { pekerjaan: 'Karyawan Swasta', jumlah: 64, persentase: 0.88 },
     { pekerjaan: 'Buruh Tani / Perkebunan', jumlah: 34, persentase: 0.46 },
-    { pekerjaan: 'Tenaga Kesehatan & Pendidikan', jumlah: 33, persentase: 0.45 },
+    { pekerjaan: 'Karyawan Honorer', jumlah: 27, persentase: 0.37 },
     { pekerjaan: 'Pensiunan', jumlah: 26, persentase: 0.36 },
-    { pekerjaan: 'PNS, POLRI & TNI', jumlah: 25, persentase: 0.34 },
-    { pekerjaan: 'Pekerjaan lainnya', jumlah: 17, persentase: 0.23 }
+    { pekerjaan: 'PNS', jumlah: 21, persentase: 0.29 },
+    { pekerjaan: 'Guru', jumlah: 19, persentase: 0.26 },
+    { pekerjaan: 'Bidan', jumlah: 5, persentase: 0.07 },
+    { pekerjaan: 'Tukang Cukur', jumlah: 5, persentase: 0.07 },
+    { pekerjaan: 'Sopir', jumlah: 4, persentase: 0.05 },
+    { pekerjaan: 'Perdagangan', jumlah: 4, persentase: 0.05 },
+    { pekerjaan: 'Karyawan BUMN', jumlah: 3, persentase: 0.04 },
+    { pekerjaan: 'Perangkat Desa', jumlah: 3, persentase: 0.04 },
+    { pekerjaan: 'Dokter', jumlah: 2, persentase: 0.03 },
+    { pekerjaan: 'Perawat', jumlah: 2, persentase: 0.03 },
+    { pekerjaan: 'POLRI', jumlah: 2, persentase: 0.03 },
+    { pekerjaan: 'Ustadz / Mubaligh', jumlah: 2, persentase: 0.03 },
+    { pekerjaan: 'TNI', jumlah: 1, persentase: 0.01 },
+    { pekerjaan: 'Kepala Desa', jumlah: 1, persentase: 0.01 },
+    { pekerjaan: 'Penata Rias', jumlah: 1, persentase: 0.01 },
+    { pekerjaan: 'Konstruksi', jumlah: 1, persentase: 0.01 },
+    { pekerjaan: 'Pekerjaan Lainnya', jumlah: 1, persentase: 0.01 }
   ];
 
   const firstStat = Array.isArray(statistik) && statistik.length > 0 ? statistik[0] : null;
@@ -380,7 +395,7 @@ export default function Statistik() {
           </section>
         </ScrollReveal>
 
-        {/* GRAFIK 2: GRAFIK BATANG MATA PENCAHARIAN / PEKERJAAN WARGA */}
+        {/* GRAFIK 2: GRAFIK MATA PENCAHARIAN / PEKERJAAN WARGA (RESPONSIF 28 KATEGORI) */}
         <ScrollReveal direction="up" delay={200}>
           <section className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200 space-y-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
@@ -389,78 +404,60 @@ export default function Statistik() {
                   <Briefcase className="w-7 h-7 text-amber-800" />
                 </div>
                 <div>
-                  <h2 className="font-serif text-2xl font-bold text-slate-900">Grafik Batang Mata Pencaharian Warga</h2>
+                  <h2 className="font-serif text-2xl font-bold text-slate-900">Grafik & Sebaran Mata Pencaharian Warga</h2>
                   <p className="text-slate-500 text-xs sm:text-sm">
-                    Diagram statistik sektor pekerjaan dan profesi utama masyarakat Desa Tenjonagara (9 Kategori)
+                    Statistik lengkap rincian 28 sektor pekerjaan dan profesi masyarakat Desa Tenjonagara
                   </p>
                 </div>
               </div>
               <div className="bg-amber-50 px-4 py-2 rounded-xl border border-amber-200 text-xs text-amber-900 font-semibold flex items-center gap-2 shrink-0">
                 <Award className="w-4 h-4 text-amber-700" />
-                <span>Total Terdata: {totalTercatatPekerjaan.toLocaleString('id-ID')} Jiwa</span>
+                <span>Total Terdata: {totalTercatatPekerjaan.toLocaleString('id-ID')} Jiwa (28 Profesi)</span>
               </div>
             </div>
 
-            {/* Visual Vertical Bar Chart Pekerjaan */}
-            <div className="pt-6 pb-2">
-              <div className="w-full flex items-end justify-between gap-1 sm:gap-3 px-1 sm:px-3 border-b-2 border-slate-300 relative min-h-[260px]">
-                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
-                  <div className="border-b border-slate-400 w-full"></div>
-                  <div className="border-b border-slate-400 w-full"></div>
-                  <div className="border-b border-slate-400 w-full"></div>
-                  <div className="border-b border-slate-400 w-full"></div>
-                </div>
+            {/* Horizontal Progress Bars Grid (2 Kolom di Desktop, 1 Kolom di Mobile) */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-4 pt-2">
+              {dataPekerjaan.map((item, idx) => {
+                const widthPct = Math.max((item.jumlah / maxJumlahPekerjaan) * 100, 2);
 
-                {dataPekerjaan.map((item, idx) => {
-                  const heightPct = calcHeightPercent(item.jumlah, maxJumlahPekerjaan);
-
-                  return (
-                    <div key={idx} className="flex-1 flex flex-col items-center justify-end group z-10">
-                      <div className="mb-2.5 text-center transition-all transform group-hover:-translate-y-1">
-                        <div className="text-[11px] sm:text-xs font-bold font-mono text-slate-800">
-                          {item.jumlah.toLocaleString('id-ID')}
-                        </div>
-                        <div className={`text-[9px] sm:text-[11px] font-semibold px-1.5 py-0.5 rounded border mt-0.5 whitespace-nowrap ${item.badgeBg}`}>
-                          {item.persentase}%
-                        </div>
+                return (
+                  <div
+                    key={idx}
+                    className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-amber-300 hover:shadow-md transition-all space-y-2 group"
+                  >
+                    <div className="flex items-center justify-between gap-2 text-xs">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="w-6 h-6 rounded-lg bg-amber-100 text-amber-900 font-extrabold text-[11px] flex items-center justify-center shrink-0 shadow-sm">
+                          #{idx + 1}
+                        </span>
+                        <span className="font-bold text-slate-800 text-sm truncate group-hover:text-amber-900 transition-colors" title={item.pekerjaan}>
+                          {item.pekerjaan}
+                        </span>
                       </div>
-
-                      <div className="w-full max-w-[44px] h-44 sm:h-60 bg-slate-100/90 rounded-t-xl overflow-hidden shadow-inner flex items-end border border-slate-200">
-                        <div
-                          className="w-full rounded-t-lg transition-all duration-700 ease-out group-hover:brightness-110 group-hover:shadow-lg"
-                          style={{
-                            height: `${heightPct}%`,
-                            background: item.gradient
-                          }}
-                        ></div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="font-bold font-mono text-slate-900 text-sm">
+                          {item.jumlah.toLocaleString('id-ID')} <span className="text-[10px] font-normal text-slate-500">jiwa</span>
+                        </span>
+                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${item.badgeBg}`}>
+                          {item.persentase}%
+                        </span>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
 
-              <div className="flex justify-between gap-1 sm:gap-3 px-1 sm:px-3 pt-4 text-center">
-                {dataPekerjaan.map((item, idx) => (
-                  <div key={idx} className="flex-1">
-                    <span className="font-bold text-[10px] sm:text-xs text-slate-800 block truncate" title={item.pekerjaan}>
-                      {item.short}
-                    </span>
-                    <span className="text-[9px] sm:text-[11px] text-slate-500 hidden md:block truncate">
-                      {item.pekerjaan}
-                    </span>
+                    {/* Progress Bar Container */}
+                    <div className="w-full h-3 bg-slate-200/80 rounded-full overflow-hidden p-0.5 border border-slate-200">
+                      <div
+                        className="h-full rounded-full transition-all duration-700 ease-out group-hover:brightness-110"
+                        style={{
+                          width: `${widthPct}%`,
+                          background: item.gradient
+                        }}
+                      ></div>
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-2 pt-4 border-t border-slate-100 text-center">
-              {dataPekerjaan.map((item, idx) => (
-                <div key={idx} className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-1 hover:border-amber-500 transition-colors">
-                  <div className="text-[10px] font-semibold text-slate-500 truncate" title={item.pekerjaan}>{item.pekerjaan}</div>
-                  <div className="text-sm sm:text-base font-bold font-mono text-slate-800">{item.jumlah.toLocaleString('id-ID')}</div>
-                  <div className="text-xs font-bold text-amber-700">{item.persentase}%</div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         </ScrollReveal>
@@ -468,4 +465,3 @@ export default function Statistik() {
     </div>
   );
 }
-
