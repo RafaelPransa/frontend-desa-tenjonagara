@@ -224,12 +224,6 @@ Kini, Desa Tenjonagara dikenal sebagai desa yang mandiri, aktif, dan progresif, 
                   <p className="text-primary font-bold text-xs mt-2 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
                     {item.jabatan}
                   </p>
-                  {item.no_hp && (
-                    <p className="text-slate-500 text-xs mt-4 flex items-center gap-1.5 font-medium">
-                      <Phone className="w-3.5 h-3.5 text-accent" />
-                      <span>{item.no_hp}</span>
-                    </p>
-                  )}
                 </div>
               </ScrollReveal>
             ))}
