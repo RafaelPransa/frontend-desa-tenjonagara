@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Halaman Utama -->
+  <url>
+    <loc>https://tenjonagara.id/</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Profil & Sejarah Desa -->
+  <url>
+    <loc>https://tenjonagara.id/profil</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Kabar & Berita Desa -->
+  <url>
+    <loc>https://tenjonagara.id/berita</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Potensi Desa & UMKM -->
+  <url>
+    <loc>https://tenjonagara.id/potensi</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Layanan Publik & Surat Online -->
+  <url>
+    <loc>https://tenjonagara.id/layanan</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Bangunan & Fasilitas Desa -->
+  <url>
+    <loc>https://tenjonagara.id/bangunan</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Statistik & Demografi Penduduk -->
+  <url>
+    <loc>https://tenjonagara.id/statistik</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Kontak & Pengaduan Warga -->
+  <url>
+    <loc>https://tenjonagara.id/kontak</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+</urlset>
+

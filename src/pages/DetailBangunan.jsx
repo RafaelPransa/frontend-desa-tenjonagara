@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, MapPin, Building2, ExternalLink } from 'lucide-react';
 import { getBangunanDesaById } from '../services/desaService';
+import SEOHead from '../components/SEOHead';
 
 export default function DetailBangunan() {
   const { id } = useParams();
@@ -60,9 +61,19 @@ export default function DetailBangunan() {
   }
 
   const meta = getCategoryMeta(bangunan.kategori);
+  const excerpt = bangunan?.deskripsi
+    ? bangunan.deskripsi.replace(/\s+/g, ' ').trim().substring(0, 160) + '...'
+    : `Informasi detail fasilitas dan bangunan ${bangunan.nama} di Desa Tenjonagara, Kec. Cigalontang.`;
 
   return (
     <div className="space-y-10 pb-16">
+      <SEOHead
+        title={`${bangunan.nama} — Fasilitas Desa Tenjonagara`}
+        description={excerpt}
+        image={bangunan.gambar_url}
+        url={`/bangunan/${id}`}
+      />
+
       {/* Top Header Navigation */}
       <section className="bg-primary text-white py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">

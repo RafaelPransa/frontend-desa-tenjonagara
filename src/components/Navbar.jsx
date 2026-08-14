@@ -31,9 +31,9 @@ export default function Navbar() {
               className="w-10 h-10 sm:w-11 sm:h-11 object-contain drop-shadow-sm group-hover:scale-105 transition-transform rounded-lg"
             />
             <div>
-              <h1 className="font-serif font-bold text-lg sm:text-xl tracking-tight text-primary leading-none">
+              <span className="font-serif font-bold text-lg sm:text-xl tracking-tight text-primary leading-none block">
                 DESA TENJONAGARA
-              </h1>
+              </span>
               <p className="text-xs text-slate-500 font-medium mt-1">Kec. Cigalontang, Kab. Tasikmalaya</p>
             </div>
           </Link>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Lock, Mail, Key, ShieldCheck, AlertCircle } from 'lucide-react';
 import { loginAdmin } from '../services/desaService';
+import SEOHead from '../components/SEOHead';
 
 export default function Login() {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
@@ -44,6 +45,12 @@ export default function Login() {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+      <SEOHead
+        title="Login Portal Administrator"
+        description="Portal otentikasi petugas dan administrator website resmi Desa Tenjonagara."
+        url="/login"
+        noIndex={true}
+      />
       <div className="max-w-md w-full bg-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-slate-200 space-y-6">
         
         <div className="text-center space-y-2">
@@ -68,7 +75,7 @@ export default function Login() {
               <input
                 type="email"
                 name="email"
-                placeholder="admin@tenjonagara.desa.id"
+                placeholder="admin@tenjonagara.id"
                 value={credentials.email}
                 onChange={handleChange}
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm"
@@ -99,7 +106,7 @@ export default function Login() {
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
               <span>Demo Account Credentials:</span>
             </p>
-            <p>Email: <code className="font-mono bg-white px-1.5 py-0.5 rounded border">admin@tenjonagara.desa.id</code></p>
+            <p>Email: <code className="font-mono bg-white px-1.5 py-0.5 rounded border">admin@tenjonagara.id</code></p>
             <p>Password: <code className="font-mono bg-white px-1.5 py-0.5 rounded border">admin123</code></p>
           </div>
 

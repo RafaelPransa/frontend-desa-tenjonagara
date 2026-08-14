@@ -4,6 +4,7 @@ import { TreePine, Users, Map, Landmark, ArrowRight, ShieldCheck, Sparkles, File
 import { getProfilDesa, getBerita, getPotensiDesa, getPerangkatDesa, getStatistikPenduduk } from '../services/desaService';
 import ScrollReveal from '../components/ScrollReveal';
 import CollaborationBanner from '../components/CollaborationBanner';
+import SEOHead from '../components/SEOHead';
 
 
 export default function Beranda() {
@@ -42,6 +43,11 @@ export default function Beranda() {
 
   return (
     <div className="space-y-16 pb-20 relative">
+      <SEOHead
+        title="Beranda — Portal Resmi Desa Tenjonagara"
+        description="Pusat informasi publik resmi, layanan administrasi digital warga, kabar berita terkini, dan potensi ekonomi lokal Kecamatan Cigalontang, Kabupaten Tasikmalaya."
+        url="/"
+      />
 
       {/* HERO SECTION */}
       <section className="gradient-hero text-white relative overflow-hidden py-20 lg:py-28 px-4 sm:px-6 lg:px-8 shadow-2xl">

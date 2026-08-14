@@ -4,6 +4,7 @@ import { Building2, Landmark, GraduationCap, Stethoscope, Moon, Store, Sparkles 
 import { getBangunanDesa } from '../services/desaService';
 import ScrollReveal from '../components/ScrollReveal';
 import Pagination from '../components/Pagination';
+import SEOHead from '../components/SEOHead';
 
 export default function BangunanDesa() {
   const [bangunanList, setBangunanList] = useState([]);
@@ -97,6 +98,12 @@ export default function BangunanDesa() {
 
   return (
     <div className="space-y-16 pb-20">
+      <SEOHead
+        title="Bangunan & Fasilitas Publik Desa Tenjonagara"
+        description="Direktori fasilitas dan bangunan publik Desa Tenjonagara — sarana pendidikan (SD, SMP, Pesantren), kesehatan (Poskesdes, Puskesmas), tempat ibadah, kantor desa, dan sarana olahraga."
+        url="/bangunan"
+      />
+
       {/* Header Banner */}
       <section className="gradient-hero text-white py-16 px-4 sm:px-6 lg:px-8 shadow-2xl relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#D4A017_1px,transparent_1px)] [background-size:16px_16px]"></div>

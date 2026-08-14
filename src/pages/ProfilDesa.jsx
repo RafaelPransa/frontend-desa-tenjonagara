@@ -2,15 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { TreePine, Map, Landmark, Users, ShieldCheck, Phone, CheckCircle, Award, Sparkles } from 'lucide-react';
 import { getProfilDesa, getPerangkatDesa } from '../services/desaService';
 import ScrollReveal from '../components/ScrollReveal';
+import SEOHead from '../components/SEOHead';
 import petaDesaImg from '../assets/peta-desa.jpeg';
 
 export default function ProfilDesa() {
   const [profil, setProfil] = useState(null);
   const [perangkat, setPerangkat] = useState([]);
   const [loading, setLoading] = useState(true);
-
-
-
 
   useEffect(() => {
     Promise.all([
@@ -25,6 +23,11 @@ export default function ProfilDesa() {
 
   return (
     <div className="space-y-16 pb-20">
+      <SEOHead
+        title="Profil & Sejarah Desa Tenjonagara"
+        description="Mengenal lebih dekat Desa Tenjonagara — sejarah berdirinya desa, visi & misi pembangunan, data demografi wilayah (4 dusun, 6 RW, 22 RT), peta administrasi spasial KKN UNPER 2026, dan struktur perangkat desa."
+        url="/profil"
+      />
 
       {/* Header Banner */}
       <section className="gradient-hero text-white py-16 px-4 sm:px-6 lg:px-8 shadow-2xl relative overflow-hidden">

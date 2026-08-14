@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Calendar, User, ArrowLeft, Share2, Tag, Newspaper } from 'lucide-react';
 import { getBeritaBySlug } from '../services/desaService';
+import SEOHead from '../components/SEOHead';
 
 export default function DetailBerita() {
   const { slug } = useParams();
@@ -45,8 +46,20 @@ Kepala Desa Tenjonagara, Asep Saepulloh, S.IP, menyampaikan bahwa program ini me
     );
   }
 
+  const excerpt = berita?.konten 
+    ? berita.konten.replace(/\s+/g, ' ').trim().substring(0, 160) + '...'
+    : 'Baca berita dan pengumuman resmi terkini dari Pemerintah Desa Tenjonagara.';
+
   return (
     <div className="pb-20 space-y-10">
+      <SEOHead
+        title={berita?.judul}
+        description={excerpt}
+        image={berita?.gambar_url}
+        url={`/berita/${slug}`}
+        type="article"
+      />
+
       {/* Header Banner */}
       <section className="bg-primary text-white py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto space-y-4">

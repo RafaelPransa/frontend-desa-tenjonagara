@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BarChart3, Users, Home, GraduationCap, Award, Briefcase, RefreshCw, Sparkles } from 'lucide-react';
 import { getStatistikPenduduk } from '../services/desaService';
 import ScrollReveal from '../components/ScrollReveal';
+import SEOHead from '../components/SEOHead';
 
 export default function Statistik() {
   const [statistik, setStatistik] = useState([]);
@@ -182,6 +183,12 @@ export default function Statistik() {
 
   return (
     <div className="space-y-16 pb-20">
+      <SEOHead
+        title="Statistik & Demografi Penduduk Desa Tenjonagara"
+        description="Data statistik kependudukan resmi Desa Tenjonagara tahun 2026 — jumlah total 6.146 jiwa penduduk, 2.262 Kepala Keluarga (KK), diagram sebaran tingkat pendidikan, dan persentase mata pencaharian warga."
+        url="/statistik"
+      />
+
       {/* Header Banner */}
       <section className="gradient-hero text-white py-16 px-4 sm:px-6 lg:px-8 shadow-2xl relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#D4A017_1px,transparent_1px)] [background-size:16px_16px]"></div>

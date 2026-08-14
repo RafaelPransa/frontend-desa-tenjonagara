@@ -3,6 +3,7 @@ import { FileText, CheckCircle2, Send, AlertCircle, ShieldCheck, User, ArrowRigh
 import { getLayanan, submitPengajuanLayanan } from '../services/desaService';
 import DokumenUploader from '../components/DokumenUploader';
 import ScrollReveal from '../components/ScrollReveal';
+import SEOHead from '../components/SEOHead';
 
 /**
  * Parse string syarat menjadi array persyaratan bersih
@@ -216,6 +217,11 @@ export default function LayananPublik() {
 
   return (
     <div className="space-y-12 pb-20">
+      <SEOHead
+        title="Layanan Publik & Pengajuan Surat Online"
+        description="Portal pelayanan administrasi mandiri warga Desa Tenjonagara. Pengajuan surat pengantar KTP/KK, surat keterangan domisili, surat keterangan usaha, dan administrasi kependudukan lainnya secara online."
+        url="/layanan"
+      />
 
       {/* HEADER BANNER */}
       <section className="gradient-hero text-white py-14 px-4 sm:px-6 lg:px-8 shadow-xl relative overflow-hidden">

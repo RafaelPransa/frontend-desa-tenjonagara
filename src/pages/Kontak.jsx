@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Phone, Mail, MapPin, Send, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 import { sendPesanKontak } from '../services/desaService';
 import ScrollReveal from '../components/ScrollReveal';
+import SEOHead from '../components/SEOHead';
 
 export default function Kontak() {
   const [formData, setFormData] = useState({
@@ -43,6 +44,12 @@ export default function Kontak() {
 
   return (
     <div className="space-y-16 pb-20">
+      <SEOHead
+        title="Kontak & Pengaduan Warga Desa Tenjonagara"
+        description="Hubungi Pemerintah Desa Tenjonagara melalui formulir pesan & aspirasi online, nomor telepon/WhatsApp resmi, email, atau datang langsung ke Kantor Desa di Jl. Raya Cigalontang No. 1, Kab. Tasikmalaya."
+        url="/kontak"
+      />
+
       {/* Header */}
       <section className="gradient-hero text-white py-16 px-4 sm:px-6 lg:px-8 shadow-2xl relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#D4A017_1px,transparent_1px)] [background-size:16px_16px]"></div>
@@ -110,7 +117,7 @@ export default function Kontak() {
                     </div>
                     <div>
                       <h3 className="font-bold text-slate-800 text-sm">Email Resmi</h3>
-                      <p className="text-slate-600 text-xs mt-0.5 font-mono">pemdes@tenjonagara.desa.id</p>
+                      <p className="text-slate-600 text-xs mt-0.5 font-mono">pemdes@tenjonagara.id</p>
                     </div>
                   </div>
                 </div>

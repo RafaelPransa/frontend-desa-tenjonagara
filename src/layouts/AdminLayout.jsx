@@ -115,7 +115,7 @@ export default function AdminLayout() {
               </div>
               <div className="hidden md:block text-left">
                 <div className="text-xs font-bold leading-tight text-white">{user?.nama || 'Administrator'}</div>
-                <div className="text-[10px] text-emerald-200">{user?.email || 'admin@tenjonagara.desa.id'}</div>
+                <div className="text-[10px] text-emerald-200">{user?.email || 'admin@tenjonagara.id'}</div>
               </div>
             </div>
 

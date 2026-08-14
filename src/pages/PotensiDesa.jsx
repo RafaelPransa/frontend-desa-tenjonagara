@@ -3,6 +3,7 @@ import { Sparkles, Sprout, Store, Trees, Fish } from 'lucide-react';
 import { getPotensiDesa } from '../services/desaService';
 import ScrollReveal from '../components/ScrollReveal';
 import Pagination from '../components/Pagination';
+import SEOHead from '../components/SEOHead';
 
 export default function PotensiDesa() {
   const [potensiList, setPotensiList] = useState([]);
@@ -68,6 +69,12 @@ export default function PotensiDesa() {
 
   return (
     <div className="space-y-16 pb-20">
+      <SEOHead
+        title="Potensi Unggulan & Komoditas Desa Tenjonagara"
+        description="Eksplorasi kekayaan dan potensi Desa Tenjonagara — sektor pertanian padi organik, perkebunan teh Cigalontang, produk olahan UMKM warga, destinasi wisata alam, serta peternakan dan perikanan."
+        url="/potensi"
+      />
+
       {/* Header */}
       <section className="gradient-hero text-white py-16 px-4 sm:px-6 lg:px-8 shadow-2xl relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#D4A017_1px,transparent_1px)] [background-size:16px_16px]"></div>
