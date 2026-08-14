@@ -310,85 +310,183 @@ export default function Statistik() {
         </section>
 
 
-        {/* GRAFIK 1: GRAFIK BATANG TINGKAT PENDIDIKAN */}
+        {/* GRAFIK 1: GRAFIK GARIS TINGKAT PENDIDIKAN WARGA (RESPONSIF LINE & AREA CHART) */}
         <ScrollReveal direction="up" delay={150}>
           <section className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200 space-y-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-primary text-accent flex items-center justify-center font-bold shadow-md shrink-0">
-                  <BarChart3 className="w-7 h-7 text-accent" />
+                <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold shadow-md shrink-0">
+                  <BarChart3 className="w-7 h-7 text-emerald-800" />
                 </div>
                 <div>
-                  <h2 className="font-serif text-2xl font-bold text-primary">Grafik Batang Tingkat Pendidikan Warga</h2>
+                  <h2 className="font-serif text-2xl font-bold text-slate-900">Grafik Tingkat Pendidikan Warga</h2>
                   <p className="text-slate-500 text-xs sm:text-sm">
-                    Diagram statistik jenjang pendidikan terdaftar di Desa Tenjonagara (8 Kategori)
+                    Diagram tren dan sebaran jenjang pendidikan terdaftar masyarakat Desa Tenjonagara (9 Kategori)
                   </p>
                 </div>
               </div>
               <div className="bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-200 text-xs text-emerald-800 font-semibold flex items-center gap-2 shrink-0">
                 <Award className="w-4 h-4 text-emerald-600" />
-                <span>Total Terdata: {totalTercatatPendidikan.toLocaleString('id-ID')} Jiwa</span>
+                <span>Total Terdata: {totalTercatatPendidikan.toLocaleString('id-ID')} Jiwa (9 Jenjang)</span>
               </div>
             </div>
 
-            {/* Visual Vertical Bar Chart Pendidikan */}
-            <div className="pt-6 pb-2">
-              <div className="w-full flex items-end justify-between gap-1.5 sm:gap-4 px-1 sm:px-4 border-b-2 border-slate-300 relative min-h-[260px]">
-                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
-                  <div className="border-b border-slate-400 w-full"></div>
-                  <div className="border-b border-slate-400 w-full"></div>
-                  <div className="border-b border-slate-400 w-full"></div>
-                  <div className="border-b border-slate-400 w-full"></div>
+            {/* SVG Line & Area Chart Container */}
+            <div className="relative pt-6 pb-8 px-2 overflow-x-auto">
+              <div className="min-w-[650px] sm:min-w-full">
+                {/* SVG Graphics */}
+                <div className="relative w-full h-[320px]">
+                  <svg viewBox="0 0 900 320" className="w-full h-full overflow-visible">
+                    <defs>
+                      <linearGradient id="educationAreaGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#10B981" stopOpacity="0.45" />
+                        <stop offset="60%" stopColor="#10B981" stopOpacity="0.1" />
+                        <stop offset="100%" stopColor="#10B981" stopOpacity="0.0" />
+                      </linearGradient>
+                      <linearGradient id="educationLineGradient" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#1E293B" />
+                        <stop offset="25%" stopColor="#059669" />
+                        <stop offset="50%" stopColor="#10B981" stopOpacity="1" />
+                        <stop offset="75%" stopColor="#D97706" />
+                        <stop offset="100%" stopColor="#4F46E5" />
+                      </linearGradient>
+                      <filter id="glowEffect" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="4" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                      </filter>
+                    </defs>
+
+                    {/* Y-Axis Horizontal Gridlines & Scale Labels (0 to 3000) */}
+                    {[3000, 2500, 2000, 1500, 1000, 500, 0].map((val, i) => {
+                      const yPos = 50 + (i * 35); // Y range 50 to 260
+                      return (
+                        <g key={i}>
+                          <line
+                            x1="55"
+                            y1={yPos}
+                            x2="880"
+                            y2={yPos}
+                            stroke="#E2E8F0"
+                            strokeDasharray={val === 0 ? "none" : "4 4"}
+                            strokeWidth={val === 0 ? "2" : "1"}
+                          />
+                          <text
+                            x="45"
+                            y={yPos + 4}
+                            textAnchor="end"
+                            className="text-[11px] font-mono font-semibold fill-slate-400"
+                          >
+                            {val.toLocaleString('id-ID')}
+                          </text>
+                        </g>
+                      );
+                    })}
+
+                    {/* Generate Line & Filled Area Paths */}
+                    {(() => {
+                      const points = dataPendidikan.map((item, idx) => {
+                        const x = 75 + idx * 98; // 9 points evenly spaced between 75 and 859
+                        const y = 260 - (item.jumlah / 3000) * 210;
+                        return { x, y, item };
+                      });
+
+                      // Create smooth curve SVG path definition (cubic bezier)
+                      let lineD = `M ${points[0].x} ${points[0].y}`;
+                      for (let i = 0; i < points.length - 1; i++) {
+                        const p0 = points[i];
+                        const p1 = points[i + 1];
+                        const cpX1 = p0.x + (p1.x - p0.x) / 2;
+                        const cpY1 = p0.y;
+                        const cpX2 = p0.x + (p1.x - p0.x) / 2;
+                        const cpY2 = p1.y;
+                        lineD += ` C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${p1.x} ${p1.y}`;
+                      }
+
+                      const areaD = `${lineD} L ${points[points.length - 1].x} 260 L ${points[0].x} 260 Z`;
+
+                      return (
+                        <g>
+                          {/* Filled Background Area */}
+                          <path d={areaD} fill="url(#educationAreaGradient)" />
+
+                          {/* Smooth Main Line */}
+                          <path
+                            d={lineD}
+                            fill="none"
+                            stroke="url(#educationLineGradient)"
+                            strokeWidth="4.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            filter="url(#glowEffect)"
+                          />
+
+                          {/* Data Node Dots & Value Badges */}
+                          {points.map((p, idx) => (
+                            <g key={idx} className="group/node cursor-pointer">
+                              {/* Glowing Dot Ring */}
+                              <circle
+                                cx={p.x}
+                                cy={p.y}
+                                r="7"
+                                fill="#FFFFFF"
+                                stroke="#10B981"
+                                strokeWidth="3.5"
+                                className="transition-all duration-300 group-hover/node:r-9 group-hover/node:stroke-primary"
+                              />
+
+                              {/* Value Label & Percentage Badge Above Node */}
+                              <foreignObject
+                                x={p.x - 45}
+                                y={p.y - 48}
+                                width="90"
+                                height="42"
+                                className="overflow-visible"
+                              >
+                                <div className="flex flex-col items-center justify-center pointer-events-none transition-transform duration-200 group-hover/node:-translate-y-1">
+                                  <span className="text-[11px] font-extrabold font-mono text-slate-900 bg-white px-1.5 py-0.5 rounded shadow-sm border border-slate-200">
+                                    {p.item.jumlah.toLocaleString('id-ID')}
+                                  </span>
+                                  <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded border mt-0.5 whitespace-nowrap shadow-2xs ${p.item.badgeBg}`}>
+                                    {p.item.persentase}%
+                                  </span>
+                                </div>
+                              </foreignObject>
+
+                              {/* X-Axis Slanted Label Below Graph */}
+                              <foreignObject
+                                x={p.x - 45}
+                                y="272"
+                                width="90"
+                                height="50"
+                                className="overflow-visible"
+                              >
+                                <div className="text-center">
+                                  {/* Mobile: Miring -45 Derajat | Desktop: Tegak */}
+                                  <span className="block font-bold text-xs text-slate-800 transform -rotate-45 sm:rotate-0 origin-top-right whitespace-nowrap sm:whitespace-normal transition-transform">
+                                    {p.item.short}
+                                  </span>
+                                  <span className="text-[10px] text-slate-500 hidden sm:block truncate mt-0.5">
+                                    {p.item.tingkat}
+                                  </span>
+                                </div>
+                              </foreignObject>
+                            </g>
+                          ))}
+                        </g>
+                      );
+                    })()}
+                  </svg>
                 </div>
-
-                {dataPendidikan.map((item, idx) => {
-                  const heightPct = calcHeightPercent(item.jumlah, maxJumlahPendidikan);
-
-                  return (
-                    <div key={idx} className="flex-1 flex flex-col items-center justify-end group z-10">
-                      <div className="mb-2.5 text-center transition-all transform group-hover:-translate-y-1">
-                        <div className="text-[11px] sm:text-xs font-bold font-mono text-slate-800">
-                          {item.jumlah.toLocaleString('id-ID')}
-                        </div>
-                        <div className={`text-[9px] sm:text-[11px] font-semibold px-1.5 py-0.5 rounded border mt-0.5 whitespace-nowrap ${item.badgeBg}`}>
-                          {item.persentase}%
-                        </div>
-                      </div>
-
-                      <div className="w-full max-w-[48px] h-44 sm:h-60 bg-slate-100/90 rounded-t-xl overflow-hidden shadow-inner flex items-end border border-slate-200">
-                        <div
-                          className="w-full rounded-t-lg transition-all duration-700 ease-out group-hover:brightness-110 group-hover:shadow-lg"
-                          style={{
-                            height: `${heightPct}%`,
-                            background: item.gradient
-                          }}
-                        ></div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="flex justify-between gap-1.5 sm:gap-4 px-1 sm:px-4 pt-4 text-center">
-                {dataPendidikan.map((item, idx) => (
-                  <div key={idx} className="flex-1">
-                    <span className="font-bold text-[11px] sm:text-xs text-slate-800 block truncate" title={item.tingkat}>
-                      {item.short}
-                    </span>
-                    <span className="text-[9px] sm:text-[11px] text-slate-500 hidden md:block truncate">
-                      {item.tingkat}
-                    </span>
-                  </div>
-                ))}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 pt-4 border-t border-slate-100 text-center">
+            {/* Grid 9 Kartu Ringkasan Jenjang Pendidikan */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-2.5 pt-4 border-t border-slate-100 text-center">
               {dataPendidikan.map((item, idx) => (
-                <div key={idx} className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1 hover:border-primary transition-colors">
+                <div key={idx} className="bg-slate-50 p-3 rounded-2xl border border-slate-200/90 space-y-1 hover:border-emerald-400 hover:shadow-sm transition-all">
                   <div className="text-[11px] font-semibold text-slate-500 truncate" title={item.tingkat}>{item.tingkat}</div>
                   <div className="text-base font-bold font-mono text-slate-800">{item.jumlah.toLocaleString('id-ID')}</div>
-                  <div className="text-xs font-bold text-primary">{item.persentase}%</div>
+                  <div className="text-xs font-bold text-emerald-700">{item.persentase}%</div>
                 </div>
               ))}
             </div>
