@@ -493,7 +493,7 @@ export default function Statistik() {
           </section>
         </ScrollReveal>
 
-        {/* GRAFIK 2: GRAFIK MATA PENCAHARIAN / PEKERJAAN WARGA (RESPONSIF 28 KATEGORI) */}
+        {/* GRAFIK 2: GRAFIK GARIS MATA PENCAHARIAN WARGA (RESPONSIF SVG LINE & AREA CHART) */}
         <ScrollReveal direction="up" delay={200}>
           <section className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200 space-y-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
@@ -502,9 +502,9 @@ export default function Statistik() {
                   <Briefcase className="w-7 h-7 text-amber-800" />
                 </div>
                 <div>
-                  <h2 className="font-serif text-2xl font-bold text-slate-900">Grafik & Sebaran Mata Pencaharian Warga</h2>
+                  <h2 className="font-serif text-2xl font-bold text-slate-900">Grafik & Tren Mata Pencaharian Warga</h2>
                   <p className="text-slate-500 text-xs sm:text-sm">
-                    Statistik lengkap rincian 28 sektor pekerjaan dan profesi masyarakat Desa Tenjonagara
+                    Diagram tren dan sebaran 28 sektor pekerjaan serta profesi masyarakat Desa Tenjonagara
                   </p>
                 </div>
               </div>
@@ -514,8 +514,153 @@ export default function Statistik() {
               </div>
             </div>
 
+            {/* SVG Line & Area Chart Container for 28 Jobs */}
+            <div className="relative pt-6 pb-8 px-2 overflow-x-auto">
+              <div className="min-w-[1400px]">
+                {/* SVG Graphics */}
+                <div className="relative w-full h-[320px]">
+                  <svg viewBox="0 0 1400 320" className="w-full h-full overflow-visible">
+                    <defs>
+                      <linearGradient id="jobsAreaGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.4" />
+                        <stop offset="60%" stopColor="#F59E0B" stopOpacity="0.1" />
+                        <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.0" />
+                      </linearGradient>
+                      <linearGradient id="jobsLineGradient" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#D97706" />
+                        <stop offset="30%" stopColor="#059669" />
+                        <stop offset="60%" stopColor="#2563EB" />
+                        <stop offset="85%" stopColor="#7C3AED" />
+                        <stop offset="100%" stopColor="#DC2626" />
+                      </linearGradient>
+                      <filter id="jobsGlowEffect" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="4" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                      </filter>
+                    </defs>
+
+                    {/* Y-Axis Horizontal Gridlines & Scale Labels (0 to 2000) */}
+                    {[2000, 1500, 1000, 500, 0].map((val, i) => {
+                      const yPos = 50 + (i * 52.5); // Y range 50 to 260
+                      return (
+                        <g key={i}>
+                          <line
+                            x1="55"
+                            y1={yPos}
+                            x2="1380"
+                            y2={yPos}
+                            stroke="#E2E8F0"
+                            strokeDasharray={val === 0 ? "none" : "4 4"}
+                            strokeWidth={val === 0 ? "2" : "1"}
+                          />
+                          <text
+                            x="45"
+                            y={yPos + 4}
+                            textAnchor="end"
+                            className="text-[11px] font-mono font-semibold fill-slate-400"
+                          >
+                            {val.toLocaleString('id-ID')}
+                          </text>
+                        </g>
+                      );
+                    })}
+
+                    {/* Generate Line & Filled Area Paths */}
+                    {(() => {
+                      const points = dataPekerjaan.map((item, idx) => {
+                        const x = 75 + idx * 47; // 28 points evenly spaced between 75 and 1344
+                        const y = 260 - (item.jumlah / 2000) * 210;
+                        return { x, y, item };
+                      });
+
+                      // Create smooth curve SVG path definition (cubic bezier)
+                      let lineD = `M ${points[0].x} ${points[0].y}`;
+                      for (let i = 0; i < points.length - 1; i++) {
+                        const p0 = points[i];
+                        const p1 = points[i + 1];
+                        const cpX1 = p0.x + (p1.x - p0.x) / 2;
+                        const cpY1 = p0.y;
+                        const cpX2 = p0.x + (p1.x - p0.x) / 2;
+                        const cpY2 = p1.y;
+                        lineD += ` C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${p1.x} ${p1.y}`;
+                      }
+
+                      const areaD = `${lineD} L ${points[points.length - 1].x} 260 L ${points[0].x} 260 Z`;
+
+                      return (
+                        <g>
+                          {/* Filled Background Area */}
+                          <path d={areaD} fill="url(#jobsAreaGradient)" />
+
+                          {/* Smooth Main Line */}
+                          <path
+                            d={lineD}
+                            fill="none"
+                            stroke="url(#jobsLineGradient)"
+                            strokeWidth="4"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            filter="url(#jobsGlowEffect)"
+                          />
+
+                          {/* Data Node Dots & Value Badges */}
+                          {points.map((p, idx) => (
+                            <g key={idx} className="group/node cursor-pointer">
+                              {/* Glowing Dot Ring */}
+                              <circle
+                                cx={p.x}
+                                cy={p.y}
+                                r="6"
+                                fill="#FFFFFF"
+                                stroke="#D97706"
+                                strokeWidth="3"
+                                className="transition-all duration-300 group-hover/node:r-8 group-hover/node:stroke-amber-700"
+                              />
+
+                              {/* Value Label & Percentage Badge Above Node */}
+                              <foreignObject
+                                x={p.x - 35}
+                                y={p.y - 44}
+                                width="70"
+                                height="40"
+                                className="overflow-visible"
+                              >
+                                <div className="flex flex-col items-center justify-center pointer-events-none transition-transform duration-200 group-hover/node:-translate-y-1">
+                                  <span className="text-[10px] font-extrabold font-mono text-slate-900 bg-white px-1 py-0.2 rounded shadow-2xs border border-slate-200">
+                                    {p.item.jumlah.toLocaleString('id-ID')}
+                                  </span>
+                                  <span className={`text-[9px] font-bold px-1 py-0.2 rounded border mt-0.5 whitespace-nowrap shadow-2xs ${p.item.badgeBg}`}>
+                                    {p.item.persentase}%
+                                  </span>
+                                </div>
+                              </foreignObject>
+
+                              {/* X-Axis Slanted Label Below Graph (-45 Deg) */}
+                              <foreignObject
+                                x={p.x - 35}
+                                y="270"
+                                width="70"
+                                height="50"
+                                className="overflow-visible"
+                              >
+                                <div className="text-center">
+                                  <span className="block font-bold text-[11px] text-slate-800 transform -rotate-45 origin-top-right whitespace-nowrap transition-transform" title={p.item.pekerjaan}>
+                                    {p.item.pekerjaan}
+                                  </span>
+                                </div>
+                              </foreignObject>
+                            </g>
+                          ))}
+                        </g>
+                      );
+                    })()}
+                  </svg>
+                </div>
+              </div>
+            </div>
+
             {/* Horizontal Progress Bars Grid (2 Kolom di Desktop, 1 Kolom di Mobile) */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-4 pt-2">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-4 pt-4 border-t border-slate-100">
               {dataPekerjaan.map((item, idx) => {
                 const widthPct = Math.max((item.jumlah / maxJumlahPekerjaan) * 100, 2);
 
