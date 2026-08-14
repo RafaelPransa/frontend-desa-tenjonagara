@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { TreePine, Map, Landmark, Users, ShieldCheck, Phone, CheckCircle, Award, Sparkles } from 'lucide-react';
 import { getProfilDesa, getPerangkatDesa } from '../services/desaService';
 import ScrollReveal from '../components/ScrollReveal';
+import petaDesaImg from '../assets/peta-desa.jpeg';
 
 export default function ProfilDesa() {
   const [profil, setProfil] = useState(null);
   const [perangkat, setPerangkat] = useState([]);
   const [loading, setLoading] = useState(true);
+
+
+
 
   useEffect(() => {
     Promise.all([
@@ -150,6 +154,46 @@ Kini, Desa Tenjonagara dikenal sebagai desa yang mandiri, aktif, dan progresif, 
                   </div>
                 </ScrollReveal>
               </div>
+            </div>
+          </ScrollReveal>
+        </section>
+
+        {/* Peta Administrasi & Geografis Desa Tenjonagara */}
+        <section>
+          <ScrollReveal direction="up" delay={150}>
+            <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200/80 space-y-6 relative overflow-hidden">
+              {/* Decorative Glow */}
+              <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-100/40 rounded-full blur-3xl -z-10"></div>
+
+              <div className="flex items-center gap-3 border-b border-slate-100 pb-6">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold shadow-sm shrink-0">
+                  <Map className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-accent font-bold text-xs uppercase tracking-widest">Peta Tematik & Spasial</span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold border border-emerald-200">
+                      KKN UNPER 2026
+                    </span>
+                  </div>
+                  <h2 className="font-serif text-2xl sm:text-3xl font-bold text-primary mt-0.5">
+                    Peta Administrasi Desa Tenjonagara
+                  </h2>
+                </div>
+              </div>
+
+              {/* Map Image Direct Full Display */}
+              <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-lg bg-slate-900/5">
+                <img
+                  src={petaDesaImg}
+                  alt="Peta Administrasi Desa Tenjonagara KKN UNPER 2026"
+                  className="w-full h-auto object-contain rounded-2xl shadow-sm"
+                />
+              </div>
+
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-200/70 italic">
+                * Peta di atas memuat batas wilayah administrasi, jaringan jalan, dan sebaran fasilitas penting (Sekolah, Pesantren, Kantor Desa, Masjid). Dibuat dan disurvei langsung oleh Tim Mahasiswa KKN Desa Tenjonagara Universitas Perjuangan Tasikmalaya Tahun 2026.
+              </p>
             </div>
           </ScrollReveal>
         </section>
