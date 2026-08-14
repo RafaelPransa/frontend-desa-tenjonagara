@@ -28,35 +28,42 @@ export default function Statistik() {
   }, []);
 
   const defaultPendidikan = [
-    { tingkat: 'Tidak/Belum sekolah', jumlah: 500, persentase: 8.14 },
-    { tingkat: 'Tamat SD/Sederajat', jumlah: 2793, persentase: 45.44 },
-    { tingkat: 'Tamat SMP/Sederajat', jumlah: 1343, persentase: 21.85 },
-    { tingkat: 'Tamat SLTA/Sederajat', jumlah: 971, persentase: 15.8 },
-    { tingkat: 'Tamat Diploma I-II', jumlah: 20, persentase: 0.33 },
-    { tingkat: 'Tamat Diploma III', jumlah: 35, persentase: 0.57 },
-    { tingkat: 'Tamat S1', jumlah: 470, persentase: 7.65 },
-    { tingkat: 'Tamat S2', jumlah: 14, persentase: 0.23 }
+    { tingkat: 'Tidak/Belum sekolah', jumlah: 1306, persentase: 17.86 },
+    { tingkat: 'Belum Tamat SD/Sederajat', jumlah: 757, persentase: 10.35 },
+    { tingkat: 'Tamat SD/Sederajat', jumlah: 2871, persentase: 39.26 },
+    { tingkat: 'Tamat SMP/Sederajat', jumlah: 1141, persentase: 15.60 },
+    { tingkat: 'Tamat SLTA/Sederajat', jumlah: 986, persentase: 13.48 },
+    { tingkat: 'Tamat Diploma I-II', jumlah: 9, persentase: 0.12 },
+    { tingkat: 'Tamat Diploma III', jumlah: 19, persentase: 0.26 },
+    { tingkat: 'Tamat S1/D-IV', jumlah: 111, persentase: 1.52 },
+    { tingkat: 'Tamat S2', jumlah: 10, persentase: 0.14 }
   ];
 
   const defaultPekerjaan = [
-    { pekerjaan: 'PNS, POLRI & TNI', jumlah: 45, persentase: 0.73 },
-    { pekerjaan: 'Karyawan', jumlah: 650, persentase: 10.58 },
-    { pekerjaan: 'Buruh', jumlah: 1200, persentase: 19.52 },
-    { pekerjaan: 'Petani / Pekebun', jumlah: 2100, persentase: 34.17 },
-    { pekerjaan: 'Peternakan', jumlah: 180, persentase: 2.93 },
-    { pekerjaan: 'Wiraswasta', jumlah: 750, persentase: 12.2 },
-    { pekerjaan: 'Pelajar/Mahasiswa', jumlah: 820, persentase: 13.34 },
-    { pekerjaan: 'Belum/tidak bekerja', jumlah: 350, persentase: 5.69 },
-    { pekerjaan: 'Pekerjaan lainnya', jumlah: 51, persentase: 0.83 }
+    { pekerjaan: 'Mengurus Rumah Tangga', jumlah: 1925, persentase: 26.33 },
+    { pekerjaan: 'Belum/Tidak Bekerja', jumlah: 1466, persentase: 20.05 },
+    { pekerjaan: 'Pelajar/Mahasiswa', jumlah: 1353, persentase: 18.50 },
+    { pekerjaan: 'Buruh Harian Lepas', jumlah: 1281, persentase: 17.52 },
+    { pekerjaan: 'Wiraswasta', jumlah: 600, persentase: 8.21 },
+    { pekerjaan: 'Petani / Pekebun', jumlah: 210, persentase: 2.87 },
+    { pekerjaan: 'Pedagang', jumlah: 147, persentase: 2.01 },
+    { pekerjaan: 'Karyawan Swasta & Honorer', jumlah: 91, persentase: 1.24 },
+    { pekerjaan: 'Buruh Tani / Perkebunan', jumlah: 34, persentase: 0.46 },
+    { pekerjaan: 'Tenaga Kesehatan & Pendidikan', jumlah: 33, persentase: 0.45 },
+    { pekerjaan: 'Pensiunan', jumlah: 26, persentase: 0.36 },
+    { pekerjaan: 'PNS, POLRI & TNI', jumlah: 25, persentase: 0.34 },
+    { pekerjaan: 'Pekerjaan lainnya', jumlah: 17, persentase: 0.23 }
   ];
 
   const firstStat = Array.isArray(statistik) && statistik.length > 0 ? statistik[0] : null;
 
   const statTerbaru = {
     tahun: firstStat?.tahun || 2026,
-    jumlah_total: firstStat?.jumlah_total || 6146,
-    jumlah_kk: firstStat?.jumlah_kk || 2262,
-    rata_anggota_keluarga: firstStat?.rata_anggota_keluarga || 2.7,
+    jumlah_total: firstStat?.jumlah_total || 7312,
+    jumlah_laki: firstStat?.jumlah_laki || 3835,
+    jumlah_perempuan: firstStat?.jumlah_perempuan || 3477,
+    jumlah_kk: firstStat?.jumlah_kk || 2553,
+    rata_anggota_keluarga: firstStat?.rata_anggota_keluarga || 2.86,
     pendidikan: firstStat?.pendidikan ? firstStat.pendidikan : defaultPendidikan,
     pekerjaan: firstStat?.pekerjaan ? firstStat.pekerjaan : defaultPekerjaan
   };
@@ -185,7 +192,7 @@ export default function Statistik() {
     <div className="space-y-16 pb-20">
       <SEOHead
         title="Statistik & Demografi Penduduk Desa Tenjonagara"
-        description="Data statistik kependudukan resmi Desa Tenjonagara tahun 2026 — jumlah total 6.146 jiwa penduduk, 2.262 Kepala Keluarga (KK), diagram sebaran tingkat pendidikan, dan persentase mata pencaharian warga."
+        description="Data statistik kependudukan resmi Desa Tenjonagara tahun 2026 — jumlah total 7.312 jiwa penduduk, 2.553 Kepala Keluarga (KK), diagram sebaran tingkat pendidikan, dan persentase mata pencaharian warga."
         url="/statistik"
       />
 
