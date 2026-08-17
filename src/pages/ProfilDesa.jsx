@@ -3,7 +3,7 @@ import { TreePine, Map, Landmark, Users, ShieldCheck, Phone, CheckCircle, Award,
 import { getProfilDesa, getPerangkatDesa } from '../services/desaService';
 import ScrollReveal from '../components/ScrollReveal';
 import SEOHead from '../components/SEOHead';
-import petaDesaImg from '../assets/peta-desa.jpeg';
+import petaDesaImg from '../assets/peta-desa.png';
 
 export default function ProfilDesa() {
   const [profil, setProfil] = useState(null);
@@ -128,7 +128,7 @@ Kini, Desa Tenjonagara dikenal sebagai desa yang mandiri, aktif, dan progresif, 
                 <ScrollReveal direction="up" delay={100}>
                   <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 hover:border-emerald-300 hover:shadow-md transition-all">
                     <Map className="w-8 h-8 text-accent mx-auto mb-2" />
-                    <div className="text-2xl font-bold font-serif text-primary">{profil?.luas_wilayah || '14.52 km²'}</div>
+                    <div className="text-2xl font-bold font-serif text-primary">{profil?.luas_wilayah || '490 Hektar'}</div>
                     <div className="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">Luas Wilayah</div>
                   </div>
                 </ScrollReveal>

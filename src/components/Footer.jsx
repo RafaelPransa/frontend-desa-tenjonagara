@@ -68,15 +68,8 @@ export default function Footer() {
               <li className="flex items-start gap-2">
                 <Clock className="w-4 h-4 text-accent shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-white font-medium">Senin - Kamis</p>
-                  <p className="text-slate-400 text-xs">08:00 - 15:00 WIB</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-2">
-                <Clock className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-white font-medium">Jumat</p>
-                  <p className="text-slate-400 text-xs">08:00 - 11:30 WIB</p>
+                  <p className="text-white font-medium">Senin - Jumat</p>
+                  <p className="text-slate-400 text-xs">08:00 - 16:00 WIB</p>
                 </div>
               </li>
               <li className="flex items-start gap-2">
