@@ -17,7 +17,8 @@ export const uploadImage = (file) => {
   return api.post('/upload', formData, {
     headers: {
       'Content-Type': undefined
-    }
+    },
+    timeout: 120000 // 2 menit timeout khusus upload gambar besar
   });
 };
 
