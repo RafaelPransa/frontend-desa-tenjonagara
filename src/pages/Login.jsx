@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Lock, Mail, Key, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Lock, Mail, Key, AlertCircle } from 'lucide-react';
 import { loginAdmin } from '../services/desaService';
 import SEOHead from '../components/SEOHead';
 
@@ -99,15 +99,6 @@ export default function Login() {
               />
               <Key className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
             </div>
-          </div>
-
-          <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-800 space-y-1">
-            <p className="font-semibold flex items-center gap-1">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>Demo Account Credentials:</span>
-            </p>
-            <p>Email: <code className="font-mono bg-white px-1.5 py-0.5 rounded border">admin@tenjonagara.id</code></p>
-            <p>Password: <code className="font-mono bg-white px-1.5 py-0.5 rounded border">admin123</code></p>
           </div>
 
           <button
