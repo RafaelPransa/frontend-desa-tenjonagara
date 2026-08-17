@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Sparkles, Sprout, Store, Trees, Fish } from 'lucide-react';
+import { Sparkles, Sprout, Store, Fish, PackageSearch } from 'lucide-react';
 import { getPotensiDesa } from '../services/desaService';
 import ScrollReveal from '../components/ScrollReveal';
 import Pagination from '../components/Pagination';
@@ -36,12 +36,6 @@ export default function PotensiDesa() {
           badgeBg: 'bg-amber-600 text-white shadow-amber-900/20',
           filterActive: 'bg-amber-600 text-white shadow-md'
         };
-      case 'wisata':
-        return {
-          label: 'Wisata & Alam',
-          badgeBg: 'bg-teal-600 text-white shadow-teal-900/20',
-          filterActive: 'bg-teal-600 text-white shadow-md'
-        };
       case 'perikanan':
         return {
           label: 'Perikanan & Peternakan',
@@ -71,7 +65,7 @@ export default function PotensiDesa() {
     <div className="space-y-16 pb-20">
       <SEOHead
         title="Potensi Unggulan & Komoditas Desa Tenjonagara"
-        description="Eksplorasi kekayaan dan potensi Desa Tenjonagara — sektor pertanian padi organik, perkebunan teh Cigalontang, produk olahan UMKM warga, destinasi wisata alam, serta peternakan dan perikanan."
+        description="Eksplorasi kekayaan dan potensi Desa Tenjonagara — sektor pertanian padi organik, perkebunan teh Cigalontang, produk olahan UMKM warga, serta peternakan dan perikanan."
         url="/potensi"
       />
 
@@ -95,7 +89,7 @@ export default function PotensiDesa() {
 
           <ScrollReveal direction="up" delay={200}>
             <p className="text-emerald-100 max-w-2xl mx-auto text-sm sm:text-base font-light">
-              Mulai dari hasil perkebunan teh, pertanian padi organik, UMKM khas warga, hingga objek wisata alam.
+              Mulai dari hasil perkebunan teh, pertanian padi organik, peternakan, hingga UMKM khas warga.
             </p>
           </ScrollReveal>
         </div>
@@ -137,16 +131,6 @@ export default function PotensiDesa() {
             </button>
 
             <button
-              onClick={() => handleCategoryChange('wisata')}
-              className={`px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all flex items-center gap-2 ${
-                activeKategori === 'wisata' ? 'bg-teal-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
-              }`}
-            >
-              <Trees className="w-4 h-4 text-teal-300" />
-              <span>Wisata & Alam</span>
-            </button>
-
-            <button
               onClick={() => handleCategoryChange('perikanan')}
               className={`px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all flex items-center gap-2 ${
                 activeKategori === 'perikanan' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
@@ -158,49 +142,79 @@ export default function PotensiDesa() {
           </div>
         </ScrollReveal>
 
-        {/* Grid List with ScrollReveal Animations */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
-          {paginatedPotensi.map((item, index) => {
-            const meta = getCategoryMeta(item.kategori);
+        {/* Empty State when no items in selected category */}
+        {filtered.length === 0 ? (
+          <ScrollReveal direction="up" delay={100}>
+            <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border border-slate-200/80 shadow-md max-w-lg mx-auto space-y-4 my-4">
+              <div className="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl border border-amber-200/60 flex items-center justify-center mx-auto shadow-sm">
+                <PackageSearch className="w-8 h-8 text-amber-600" />
+              </div>
+              <div className="space-y-1.5">
+                <h3 className="font-serif font-bold text-slate-800 text-lg sm:text-xl">
+                  Belum Ada Data Potensi
+                </h3>
+                <p className="text-slate-500 text-xs sm:text-sm max-w-sm mx-auto leading-relaxed">
+                  Belum ada data potensi desa yang terdaftar untuk kategori <span className="font-bold text-primary">"{getCategoryMeta(activeKategori).label}"</span>.
+                </p>
+              </div>
+              <button
+                onClick={() => handleCategoryChange('all')}
+                className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2 transform hover:-translate-y-0.5"
+              >
+                <Sparkles className="w-4 h-4 text-accent" />
+                <span>Tampilkan Semua Potensi</span>
+              </button>
+            </div>
+          </ScrollReveal>
+        ) : (
+          <div>
+            {/* Grid List with ScrollReveal Animations */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+              {paginatedPotensi.map((item, index) => {
+                const meta = getCategoryMeta(item.kategori);
 
-            return (
-              <ScrollReveal key={item.id} direction="up" delay={(index % 3) * 150}>
-                <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 flex flex-col h-full group transform hover:-translate-y-1.5">
-                  {/* Image Container */}
-                  <div className="h-56 overflow-hidden relative bg-slate-100 shrink-0">
-                    <img
-                      src={item.gambar_url || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'}
-                      alt={item.nama}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <span className={`absolute top-3 left-3 text-xs px-3.5 py-1.5 rounded-full font-bold tracking-wide shadow-md ${meta.badgeBg}`}>
-                      {meta.label}
-                    </span>
-                  </div>
+                return (
+                  <ScrollReveal key={item.id} direction="up" delay={(index % 3) * 150}>
+                    <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 flex flex-col h-full group transform hover:-translate-y-1.5">
+                      {/* Image Container */}
+                      <div className="h-56 overflow-hidden relative bg-slate-100 shrink-0">
+                        <img
+                          src={item.gambar_url || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'}
+                          alt={item.nama}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <span className={`absolute top-3 left-3 text-xs px-3.5 py-1.5 rounded-full font-bold tracking-wide shadow-md ${meta.badgeBg}`}>
+                          {meta.label}
+                        </span>
+                      </div>
 
-                  {/* Card Body */}
-                  <div className="p-6 flex flex-col flex-1 space-y-3">
-                    <h3 className="font-bold text-2xl text-slate-800 tracking-tight leading-snug group-hover:text-primary transition-colors">
-                      {item.nama}
-                    </h3>
-                    <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">
-                      {item.deskripsi}
-                    </p>
-                  </div>
-                </div>
-              </ScrollReveal>
-            );
-          })}
-        </div>
+                      {/* Card Body */}
+                      <div className="p-6 flex flex-col flex-1 space-y-3">
+                        <h3 className="font-bold text-2xl text-slate-800 tracking-tight leading-snug group-hover:text-primary transition-colors">
+                          {item.nama}
+                        </h3>
+                        <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">
+                          {item.deskripsi}
+                        </p>
+                      </div>
+                    </div>
+                  </ScrollReveal>
+                );
+              })}
+            </div>
 
-        {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          totalItems={filtered.length}
-          itemsPerPage={itemsPerPage}
-        />
+            {/* Pagination */}
+            <div className="mt-12">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                totalItems={filtered.length}
+                itemsPerPage={itemsPerPage}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

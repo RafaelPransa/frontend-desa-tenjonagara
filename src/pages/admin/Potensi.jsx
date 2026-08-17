@@ -19,7 +19,6 @@ const categories = [
   { key: 'all', label: 'Semua Kategori' },
   { key: 'pertanian', label: 'Pertanian & Perkebunan' },
   { key: 'umkm', label: 'UMKM & Kerajinan' },
-  { key: 'wisata', label: 'Wisata & Alam' },
   { key: 'perikanan', label: 'Perikanan & Peternakan' },
   { key: 'lainnya', label: 'Lainnya' },
 ];
@@ -110,8 +109,6 @@ export default function AdminPotensi() {
         return { label: 'Pertanian & Perkebunan', badgeClass: 'bg-emerald-100 text-emerald-900 border-emerald-200' };
       case 'umkm':
         return { label: 'UMKM & Kerajinan', badgeClass: 'bg-amber-100 text-amber-900 border-amber-200' };
-      case 'wisata':
-        return { label: 'Wisata & Alam', badgeClass: 'bg-teal-100 text-teal-900 border-teal-200' };
       case 'perikanan':
         return { label: 'Perikanan & Peternakan', badgeClass: 'bg-blue-100 text-blue-900 border-blue-200' };
       default:
@@ -130,7 +127,7 @@ export default function AdminPotensi() {
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Kelola Potensi Desa</h1>
-              <p className="text-xs sm:text-sm text-slate-500">Hasil perkebunan, produk UMKM warga, dan objek wisata lokal</p>
+              <p className="text-xs sm:text-sm text-slate-500">Hasil perkebunan, pertanian, peternakan, dan produk UMKM warga</p>
             </div>
           </div>
 

@@ -249,7 +249,7 @@ export default function Beranda() {
                 Potensi & Kekayaan Alami
               </span>
               <h2 className="font-serif text-3xl font-bold text-primary">Potensi Desa Tenjonagara</h2>
-              <p className="text-slate-600 text-sm mt-2">Sektor pertanian, UMKM warga, dan pesona wisata alam Cigalontang</p>
+              <p className="text-slate-600 text-sm mt-2">Sektor unggulan pertanian, perkebunan, peternakan, dan UMKM warga</p>
             </div>
           </ScrollReveal>
 

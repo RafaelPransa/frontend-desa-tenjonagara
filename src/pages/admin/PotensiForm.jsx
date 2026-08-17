@@ -14,7 +14,6 @@ import ImageUploader from '../../components/ImageUploader';
 const categoryOptions = [
   { value: 'pertanian', label: 'Pertanian & Perkebunan' },
   { value: 'umkm', label: 'UMKM & Produk Kerajinan Lokal' },
-  { value: 'wisata', label: 'Wisata Alam & Destinasi Komunitas' },
   { value: 'perikanan', label: 'Perikanan & Peternakan' },
   { value: 'lainnya', label: 'Kategori Lainnya' },
 ];
@@ -38,27 +37,22 @@ export default function PotensiForm() {
 
   useEffect(() => {
     if (isEdit) {
-      async function loadData() {
-        setFetching(true);
-        setError(null);
-        try {
-          const res = await getPotensiById(id);
-          const data = res.data?.data || res.data;
-          if (data) {
-            setFormData({
-              nama: data.nama || '',
-              kategori: data.kategori || 'pertanian',
-              deskripsi: data.deskripsi || '',
-              gambar_url: data.gambar_url || ''
-            });
-          }
-        } catch (err) {
-          setError('Gagal memuat detail potensi desa.');
-        } finally {
+      getPotensiById(id)
+        .then((res) => {
+          const data = res.data?.data || res.data || res;
+          setFormData({
+            nama: data.nama || '',
+            kategori: data.kategori || 'pertanian',
+            deskripsi: data.deskripsi || '',
+            gambar_url: data.gambar_url || ''
+          });
+        })
+        .catch((err) => {
+          setError('Gagal memuat data potensi.');
+        })
+        .finally(() => {
           setFetching(false);
-        }
-      }
-      loadData();
+        });
     }
   }, [id, isEdit]);
 
@@ -69,20 +63,9 @@ export default function PotensiForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(false);
-
-    if (!formData.nama.trim()) {
-      setError('Nama potensi desa wajib diisi.');
-      return;
-    }
-
-    if (!formData.deskripsi.trim()) {
-      setError('Deskripsi potensi desa wajib diisi.');
-      return;
-    }
-
     setLoading(true);
+    setError(null);
+
     try {
       if (isEdit) {
         await updatePotensi(id, formData);
@@ -92,7 +75,7 @@ export default function PotensiForm() {
       setSuccess(true);
       setTimeout(() => {
         navigate('/admin/potensi');
-      }, 1200);
+      }, 1500);
     } catch (err) {
       setError(err.message || 'Gagal menyimpan data potensi desa.');
     } finally {
@@ -103,12 +86,12 @@ export default function PotensiForm() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header Bar */}
-      <div className="flex items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-        <div className="flex items-center gap-3">
+      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
           <Link
             to="/admin/potensi"
             className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
-            title="Kembali ke Daftar Potensi"
+            title="Kembali"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
@@ -117,7 +100,7 @@ export default function PotensiForm() {
               {isEdit ? 'Edit Potensi Desa' : 'Tambah Potensi Desa Baru'}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500">
-              {isEdit ? `Mengubah potensi #${id}` : 'Isi formulir untuk mempublikasikan potensi komoditas/wisata desa'}
+              {isEdit ? `Mengubah potensi #${id}` : 'Isi formulir untuk mempublikasikan potensi komoditas desa'}
             </p>
           </div>
         </div>
@@ -196,7 +179,7 @@ export default function PotensiForm() {
             <textarea
               name="deskripsi"
               rows={6}
-              placeholder="Tuliskan deskripsi lengkap mengenai potensi desa, keunggulan produk, atau daya tarik wisata..."
+              placeholder="Tuliskan deskripsi lengkap mengenai potensi desa dan keunggulan produk..."
               value={formData.deskripsi}
               onChange={handleChange}
               className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm text-slate-800 leading-relaxed"
