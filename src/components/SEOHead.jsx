@@ -2,8 +2,8 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 const SITE_NAME = 'Desa Tenjonagara';
-const DEFAULT_TITLE = 'Website Resmi Profil Desa Tenjonagara | Kec. Cigalontang, Kab. Tasikmalaya';
-const DEFAULT_DESCRIPTION = 'Website resmi Desa Tenjonagara, Kecamatan Cigalontang, Kabupaten Tasikmalaya. Portal berita, informasi profil desa, statistik penduduk, potensi desa, dan pelayanan publik online.';
+const DEFAULT_TITLE = 'Website Profil Desa Tenjonagara | Kec. Cigalontang, Kab. Tasikmalaya';
+const DEFAULT_DESCRIPTION = 'Website Desa Tenjonagara, Kecamatan Cigalontang, Kabupaten Tasikmalaya. Portal berita, informasi profil desa, statistik penduduk, potensi desa, dan pelayanan publik online.';
 const DEFAULT_IMAGE = '/og-image.jpg';
 const FALLBACK_ORIGIN = 'https://tenjonagara.id';
 
@@ -15,7 +15,7 @@ export default function SEOHead({
   type = 'website',
   noIndex = false,
 }) {
-  const fullTitle = title 
+  const fullTitle = title
     ? (title.toLowerCase().includes('desa tenjonagara') ? title : `${title} | Desa Tenjonagara`)
     : DEFAULT_TITLE;
 

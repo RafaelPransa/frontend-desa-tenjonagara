@@ -152,7 +152,7 @@ Kini, Desa Tenjonagara dikenal sebagai desa yang mandiri, aktif, dan progresif, 
                 <ScrollReveal direction="up" delay={400}>
                   <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 hover:border-emerald-300 hover:shadow-md transition-all">
                     <ShieldCheck className="w-8 h-8 text-accent mx-auto mb-2" />
-                    <div className="text-2xl font-bold font-serif text-primary">{profil?.jumlah_rt || 2}</div>
+                    <div className="text-2xl font-bold font-serif text-primary">{profil?.jumlah_rt || 38}</div>
                     <div className="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">Rukun Tetangga (RT)</div>
                   </div>
                 </ScrollReveal>
