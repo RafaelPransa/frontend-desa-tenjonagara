@@ -52,7 +52,7 @@ export default function Login() {
         noIndex={true}
       />
       <div className="max-w-md w-full bg-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-slate-200 space-y-6">
-        
+
         <div className="text-center space-y-2">
           <div className="w-14 h-14 rounded-2xl bg-primary text-accent flex items-center justify-center mx-auto shadow-lg">
             <Lock className="w-7 h-7 text-accent" />
@@ -75,7 +75,7 @@ export default function Login() {
               <input
                 type="email"
                 name="email"
-                placeholder="admin@tenjonagara.id"
+                placeholder="Masukkan email anda"
                 value={credentials.email}
                 onChange={handleChange}
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm"
@@ -91,7 +91,7 @@ export default function Login() {
               <input
                 type="password"
                 name="password"
-                placeholder="••••••••"
+                placeholder="Masukkan password anda"
                 value={credentials.password}
                 onChange={handleChange}
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm"
