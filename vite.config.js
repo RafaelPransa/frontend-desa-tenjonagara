@@ -7,5 +7,19 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true
+  },
+  build: {
+    target: 'esnext',
+    minify: 'esbuild',
+    cssMinify: true,
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom', 'react-helmet-async'],
+          'vendor-icons': ['lucide-react']
+        }
+      }
+    }
   }
 })

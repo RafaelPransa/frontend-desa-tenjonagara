@@ -47,7 +47,7 @@ export default function Login() {
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
       <SEOHead
         title="Login Portal Administrator"
-        description="Portal otentikasi petugas dan administrator website resmi Desa Tenjonagara."
+        description="Portal otentikasi petugas dan administrator website Desa Tenjonagara."
         url="/login"
         noIndex={true}
       />

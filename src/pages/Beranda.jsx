@@ -44,8 +44,8 @@ export default function Beranda() {
   return (
     <div className="space-y-16 pb-20 relative">
       <SEOHead
-        title="Beranda — Portal Resmi Desa Tenjonagara"
-        description="Pusat informasi publik resmi, layanan administrasi digital warga, kabar berita terkini, dan potensi ekonomi lokal Kecamatan Cigalontang, Kabupaten Tasikmalaya."
+        title="Beranda — Portal Desa Tenjonagara"
+        description="Pusat informasi publik, layanan administrasi digital warga, kabar berita terkini, dan potensi ekonomi lokal Kecamatan Cigalontang, Kabupaten Tasikmalaya."
         url="/"
       />
 
@@ -58,7 +58,7 @@ export default function Beranda() {
             <ScrollReveal direction="down" delay={0}>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-accent backdrop-blur-md border border-white/20 text-xs font-bold uppercase tracking-widest shadow-lg">
                 <Sparkles className="w-4 h-4 text-accent animate-pulse" />
-                <span>Selamat Datang di Portal Resmi</span>
+                <span>Selamat Datang di Portal Desa</span>
               </div>
             </ScrollReveal>
 
