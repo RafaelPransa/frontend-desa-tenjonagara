@@ -254,7 +254,7 @@ export default function Statistik() {
             </div>
           </ScrollReveal>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <ScrollReveal direction="up" delay={100}>
               <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200 border-t-4 border-t-primary hover:shadow-2xl transition-all transform hover:-translate-y-1">
                 <div className="flex items-center justify-between">
@@ -262,7 +262,7 @@ export default function Statistik() {
                   <Users className="w-5 h-5 text-primary" />
                 </div>
                 <div className="text-3xl font-serif font-bold text-primary mt-2">
-                  {statTerbaru.jumlah_total ? Number(statTerbaru.jumlah_total).toLocaleString('id-ID') : '6,146'}
+                  {statTerbaru.jumlah_total ? Number(statTerbaru.jumlah_total).toLocaleString('id-ID') : '7,312'}
                 </div>
                 <div className="text-xs text-emerald-700 font-semibold mt-1">Jiwa Terdaftar</div>
               </div>
@@ -275,26 +275,13 @@ export default function Statistik() {
                   <Home className="w-5 h-5 text-secondary" />
                 </div>
                 <div className="text-3xl font-serif font-bold text-secondary mt-2">
-                  {statTerbaru.jumlah_kk ? Number(statTerbaru.jumlah_kk).toLocaleString('id-ID') : '2,262'}
+                  {statTerbaru.jumlah_kk ? Number(statTerbaru.jumlah_kk).toLocaleString('id-ID') : '2,553'}
                 </div>
                 <div className="text-xs text-slate-500 font-medium mt-1">Kepala Keluarga (KK)</div>
               </div>
             </ScrollReveal>
 
             <ScrollReveal direction="up" delay={300}>
-              <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200 border-t-4 border-t-accent hover:shadow-2xl transition-all transform hover:-translate-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Rata-rata Anggota</span>
-                  <Users className="w-5 h-5 text-accent-dark" />
-                </div>
-                <div className="text-3xl font-serif font-bold text-slate-800 mt-2">
-                  {statTerbaru.rata_anggota_keluarga || '2.7'}
-                </div>
-                <div className="text-xs text-amber-700 font-semibold mt-1">Jiwa per Kepala Keluarga</div>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal direction="up" delay={400}>
               <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200 border-t-4 border-t-emerald-600 hover:shadow-2xl transition-all transform hover:-translate-y-1">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Terdata Pendidikan</span>

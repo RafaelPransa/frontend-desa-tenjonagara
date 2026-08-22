@@ -1,24 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail, Clock, Activity } from 'lucide-react';
-import { checkHealth } from '../services/desaService';
+import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import logoPemkab from '../assets/logo-pemkab-tasikmalaya.png';
 
 export default function Footer() {
-  const [apiStatus, setApiStatus] = useState({ online: false, message: 'Memeriksa koneksi server...' });
-
-  useEffect(() => {
-    checkHealth()
-      .then((res) => {
-        if (res.success) {
-          setApiStatus({ online: true, message: 'Server API Connected' });
-        }
-      })
-      .catch(() => {
-        setApiStatus({ online: false, message: 'Server API Offline (Mode Lokal)' });
-      });
-  }, []);
-
   return (
     <footer className="bg-[#1A1C1A] text-slate-300 mt-auto border-t-4 border-accent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
@@ -37,14 +22,6 @@ export default function Footer() {
             <p className="text-sm text-slate-400 leading-relaxed">
               Website Pemerintah Desa Tenjonagara, Kecamatan Cigalontang, Kabupaten Tasikmalaya. Pusat transparansi informasi dan layanan publik warga desa.
             </p>
-            {/* Live API Health indicator */}
-            <div className="flex items-center gap-2 pt-2">
-              <span className={`w-2.5 h-2.5 rounded-full ${apiStatus.online ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`}></span>
-              <span className="text-xs font-mono text-slate-400 flex items-center gap-1">
-                <Activity className="w-3 h-3 text-accent" />
-                {apiStatus.message}
-              </span>
-            </div>
           </div>
 
           {/* Col 2: Quick Links */}
@@ -88,7 +65,7 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2.5">
                 <MapPin className="w-5 h-5 text-accent shrink-0 mt-0.5" />
-                <span>Jl. Raya Cigalontang No. 1, Desa Tenjonagara, Kec. Cigalontang, Kab. Tasikmalaya, Jawa Barat 46463</span>
+                <span>Jalan Raya Cigalontang KM.06, Kp. Cibangun, Kecamatan Cigalontang, Kabupaten Tasikmalaya, Jawa Barat 46463</span>
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-accent shrink-0" />
@@ -96,7 +73,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-accent shrink-0" />
-                <span>pemdes@tenjonagara.id</span>
+                <span>desatenjonagara112@gmail.com</span>
               </li>
             </ul>
           </div>

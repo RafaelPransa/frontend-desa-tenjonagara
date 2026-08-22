@@ -26,9 +26,9 @@ export default function DetailBerita() {
 
 Tujuan utama dari pelatihan ini adalah untuk memberikan wawasan teknis mengenai pemanfaatan media sosial dan e-commerce dalam memasarkan produk unggulan desa seperti kopi olahan Cigalontang, olahan singkong, serta kerajinan tangan lokal.
 
-Kepala Desa Tenjonagara, Asep Saepulloh, S.IP, menyampaikan bahwa program ini merupakan komitmen pemerintah desa dalam mendorong kemandirian ekonomi pemuda dan mengoptimalkan potensi potensi UMKM lokal menuju pasar digital yang lebih luas.
+Kepala Desa Tenjonagara, Heri Priana, menyampaikan bahwa program ini merupakan komitmen pemerintah desa dalam mendorong kemandirian ekonomi pemuda dan mengoptimalkan potensi potensi UMKM lokal menuju pasar digital yang lebih luas.
 
-"Kami berharap melalui pelatihan ini, produk-produk khas Desa Tenjonagara tidak hanya dikenal di tingkat kecamatan atau kabupaten, tetapi bisa menembus pasar nasional hingga ekspor," ujar Asep dalam sambutannya.`,
+"Kami berharap melalui pelatihan ini, produk-produk khas Desa Tenjonagara tidak hanya dikenal di tingkat kecamatan atau kabupaten, tetapi bisa menembus pasar nasional hingga ekspor," ujar Heri dalam sambutannya.`,
           gambar_url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80',
           created_at: new Date(),
           penulis: { nama: 'Administrator Desa Tenjonagara' }

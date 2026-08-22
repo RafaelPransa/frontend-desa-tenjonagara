@@ -289,7 +289,7 @@ export default function AdminStatistik() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">Laki-laki (Jiwa)</label>
                 <input
@@ -307,18 +307,6 @@ export default function AdminStatistik() {
                   type="number"
                   name="jumlah_perempuan"
                   value={formData.jumlah_perempuan}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm text-slate-800"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">Rata-rata Anggota / KK</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  name="rata_anggota_keluarga"
-                  value={formData.rata_anggota_keluarga}
                   onChange={handleChange}
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm text-slate-800"
                 />

@@ -94,13 +94,13 @@ export default function Beranda() {
             </ScrollReveal>
           </div>
 
-          {/* Quick Stats Cards (Data Terbaru with Staggered ScrollReveal) */}
-          <div className="lg:col-span-5 grid grid-cols-2 gap-4">
+          {/* Quick Stats Cards (Data Terbaru 3 Grid) */}
+          <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <ScrollReveal direction="up" delay={100}>
               <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 text-center hover:bg-white/20 transition-all transform hover:-translate-y-1 shadow-lg group">
                 <Users className="w-8 h-8 text-accent mx-auto mb-2 group-hover:scale-110 transition-transform" />
                 <div className="text-2xl font-bold font-serif text-white">
-                  {statistik?.jumlah_total ? Number(statistik.jumlah_total).toLocaleString('en-US') : '6,146'}
+                  {statistik?.jumlah_total ? Number(statistik.jumlah_total).toLocaleString('en-US') : '7,312'}
                 </div>
                 <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Jiwa Penduduk</div>
               </div>
@@ -110,35 +110,27 @@ export default function Beranda() {
               <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 text-center hover:bg-white/20 transition-all transform hover:-translate-y-1 shadow-lg group">
                 <Home className="w-8 h-8 text-accent mx-auto mb-2 group-hover:scale-110 transition-transform" />
                 <div className="text-2xl font-bold font-serif text-white">
-                  {statistik?.jumlah_kk ? Number(statistik.jumlah_kk).toLocaleString('en-US') : '2,262'}
+                  {statistik?.jumlah_kk ? Number(statistik.jumlah_kk).toLocaleString('en-US') : '2,553'}
                 </div>
                 <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Kepala Keluarga (KK)</div>
               </div>
             </ScrollReveal>
 
-            <ScrollReveal direction="up" delay={300}>
-              <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 text-center hover:bg-white/20 transition-all transform hover:-translate-y-1 shadow-lg group">
-                <Users className="w-8 h-8 text-accent mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                <div className="text-2xl font-bold font-serif text-white">
-                  {statistik?.rata_anggota_keluarga ? Number(statistik.rata_anggota_keluarga).toFixed(2) : '2.70'}
+            <ScrollReveal direction="up" delay={300} className="sm:col-span-2">
+              <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 text-center hover:bg-white/20 transition-all transform hover:-translate-y-1 shadow-lg group flex sm:flex-row flex-col items-center justify-center gap-3 sm:gap-6">
+                <GraduationCap className="w-8 h-8 text-accent group-hover:scale-110 transition-transform flex-shrink-0" />
+                <div className="text-center sm:text-left">
+                  <div className="text-2xl font-bold font-serif text-white leading-tight">
+                    {(() => {
+                      if (statistik?.pendidikan && Array.isArray(statistik.pendidikan)) {
+                        const total = statistik.pendidikan.reduce((acc, curr) => acc + (Number(curr.jumlah) || 0), 0);
+                        return total > 0 ? Number(total).toLocaleString('en-US') : '7,312';
+                      }
+                      return '7,312';
+                    })()}
+                  </div>
+                  <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Terdata Tingkat Pendidikan</div>
                 </div>
-                <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Rata-rata Anggota/KK</div>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal direction="up" delay={400}>
-              <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 text-center hover:bg-white/20 transition-all transform hover:-translate-y-1 shadow-lg group">
-                <GraduationCap className="w-8 h-8 text-accent mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                <div className="text-2xl font-bold font-serif text-white">
-                  {(() => {
-                    if (statistik?.pendidikan && Array.isArray(statistik.pendidikan)) {
-                      const total = statistik.pendidikan.reduce((acc, curr) => acc + (Number(curr.jumlah) || 0), 0);
-                      return total > 0 ? Number(total).toLocaleString('en-US') : '3,288';
-                    }
-                    return '3,288';
-                  })()}
-                </div>
-                <div className="text-xs text-emerald-200 uppercase tracking-wider font-medium">Terdata Pendidikan</div>
               </div>
             </ScrollReveal>
           </div>
@@ -155,7 +147,7 @@ export default function Beranda() {
               <div className="relative group">
                 <div className="w-56 h-64 sm:w-64 sm:h-72 rounded-2xl overflow-hidden shadow-2xl border-4 border-primary/20 transition-transform duration-300 group-hover:scale-[1.02]">
                   <img
-                    src={perangkatList[0]?.foto_url || "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80"}
+                    src={perangkatList[0]?.foto_url || "https://www.istockphoto.com/photos/placeholder"}
                     alt="Kepala Desa Tenjonagara"
                     className="w-full h-full object-cover"
                   />
@@ -172,7 +164,7 @@ export default function Beranda() {
                 Sambutan Kuwu / Kepala Desa
               </div>
               <h2 className="font-serif text-2xl sm:text-3xl font-bold text-primary">
-                {perangkatList[0]?.nama || 'Asep Saepulloh, S.IP'}
+                {perangkatList[0]?.nama || 'Heri Priana'}
               </h2>
               <p className="text-slate-600 leading-relaxed italic border-l-4 border-accent pl-4 py-1">
                 "Sampurasun warga Desa Tenjonagara. Selamat datang di portal desa kami. Website ini kami hadirkan sebagai bentuk transparansi tata kelola pemerintahan desa serta memudahkan seluruh warga dalam mendapatkan informasi dan layanan administrasi tanpa hambatan."

@@ -149,7 +149,7 @@ export default function PerangkatForm() {
               <input
                 type="text"
                 name="nama"
-                placeholder="Contoh: Asep Saepulloh, S.IP"
+                placeholder="Contoh: Heri Priana"
                 value={formData.nama}
                 onChange={handleChange}
                 className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-sm font-semibold text-slate-900"
