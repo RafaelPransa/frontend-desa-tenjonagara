@@ -128,40 +128,6 @@ export default function DetailBangunan() {
                 {bangunan.deskripsi}
               </p>
             </div>
-
-            {/* Google Maps Interactive Section */}
-            <div className="space-y-4 pt-4 border-t border-slate-200">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <h2 className="font-serif text-2xl font-bold text-primary flex items-center gap-2">
-                  <MapPin className="w-6 h-6 text-accent" />
-                  <span>Peta Lokasi Google Maps</span>
-                </h2>
-                <a
-                  href={`https://maps.google.com/?q=${encodeURIComponent(bangunan.nama + ' ' + bangunan.alamat)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-accent transition-colors"
-                >
-                  <span>Buka di Aplikasi Google Maps</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </div>
-
-              {/* Map Embed Frame */}
-              <div className="w-full h-80 sm:h-96 rounded-2xl overflow-hidden shadow-md border border-slate-300 relative bg-slate-100">
-                <iframe
-                  title={`Lokasi ${bangunan.nama}`}
-                  src={bangunan.maps_embed_url || 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15828.324912384917!2d108.064512345!3d-7.3456789!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6f56789abcdef%3A0x123456789abcdef!2sCigalontang%2C%20Tasikmalaya%20Regency%2C%20West%20Java!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid'}
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen=""
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                ></iframe>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
