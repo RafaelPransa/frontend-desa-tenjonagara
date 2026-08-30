@@ -89,66 +89,110 @@ export default function Berita() {
           </div>
         </ScrollReveal>
 
-        {/* Grid List Berita with ScrollReveal */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {paginatedBerita.map((item, index) => (
-            <ScrollReveal key={item.id} direction="up" delay={(index % 3) * 150}>
-              <article className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 flex flex-col group h-full transform hover:-translate-y-1.5">
-                <Link to={`/berita/${item.slug}`} className="h-52 overflow-hidden relative block">
-                  <img
-                    src={item.gambar_url || "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=600&q=80"}
-                    alt={item.judul}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span className="absolute top-3 left-3 bg-primary/90 backdrop-blur-md text-white text-xs px-3 py-1 rounded-lg font-bold shadow-md">
-                    Publikasi Resmi
-                  </span>
-                </Link>
-                <div className="p-6 flex flex-col flex-grow space-y-3">
-                  <div className="flex items-center gap-4 text-xs text-slate-400 font-medium">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5 text-accent" />
-                      {new Date(item.created_at || Date.now()).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <User className="w-3.5 h-3.5 text-accent" />
-                      {item.penulis?.nama || 'Admin Desa'}
-                    </span>
-                  </div>
+        {/* Content Area */}
+        {loading ? (
+          <div className="py-20 text-center space-y-4">
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p className="text-slate-500 font-medium text-sm">Memuat data berita...</p>
+          </div>
+        ) : filteredBerita.length === 0 ? (
+          <ScrollReveal direction="up" delay={150}>
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-12 text-center max-w-2xl mx-auto space-y-5">
+              <div className="w-20 h-20 bg-emerald-50 text-primary border border-emerald-100 rounded-3xl flex items-center justify-center mx-auto shadow-xs">
+                <Newspaper className="w-10 h-10 text-primary" />
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="text-xl sm:text-2xl font-serif font-bold text-slate-800">
+                  {search ? 'Berita Tidak Ditemukan' : 'Belum Ada Berita Diterbitkan'}
+                </h3>
+                <p className="text-slate-500 text-sm sm:text-base leading-relaxed">
+                  {search ? (
+                    <>
+                      Tidak ditemukan berita dengan kata kunci <span className="font-semibold text-slate-800">"{search}"</span>. Silakan coba kata kunci lain.
+                    </>
+                  ) : (
+                    'Saat ini belum ada artikel atau pengumuman berita yang dipublikasikan oleh Pemerintah Desa Tenjonagara.'
+                  )}
+                </p>
+              </div>
 
-                  <h2 className="font-bold text-lg text-slate-800 group-hover:text-primary transition-colors line-clamp-2">
-                    <Link to={`/berita/${item.slug}`}>
-                      {item.judul}
-                    </Link>
-                  </h2>
-                  
-                  <p className="text-slate-600 text-sm line-clamp-4 leading-relaxed">
-                    {item.konten}
-                  </p>
-
-                  <div className="pt-4 mt-auto border-t border-slate-100">
-                    <Link
-                      to={`/berita/${item.slug}`}
-                      className="text-primary font-bold text-sm flex items-center gap-1 group-hover:translate-x-1 transition-transform inline-flex"
-                    >
-                      <span>Baca Artikel Lengkap</span>
-                      <ChevronRight className="w-4 h-4 text-accent" />
-                    </Link>
-                  </div>
+              {search && (
+                <div className="pt-2">
+                  <button
+                    onClick={() => setSearch('')}
+                    className="px-6 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold text-sm transition-all shadow-md inline-flex items-center gap-2"
+                  >
+                    <span>Hapus Filter Pencarian</span>
+                  </button>
                 </div>
-              </article>
-            </ScrollReveal>
-          ))}
-        </div>
+              )}
+            </div>
+          </ScrollReveal>
+        ) : (
+          <>
+            {/* Grid List Berita with ScrollReveal */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {paginatedBerita.map((item, index) => (
+                <ScrollReveal key={item.id} direction="up" delay={(index % 3) * 150}>
+                  <article className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 flex flex-col group h-full transform hover:-translate-y-1.5">
+                    <Link to={`/berita/${item.slug}`} className="h-52 overflow-hidden relative block">
+                      <img
+                        src={item.gambar_url || "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=600&q=80"}
+                        alt={item.judul}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <span className="absolute top-3 left-3 bg-primary/90 backdrop-blur-md text-white text-xs px-3 py-1 rounded-lg font-bold shadow-md">
+                        Publikasi Resmi
+                      </span>
+                    </Link>
+                    <div className="p-6 flex flex-col flex-grow space-y-3">
+                      <div className="flex items-center gap-4 text-xs text-slate-400 font-medium">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5 text-accent" />
+                          {new Date(item.created_at || Date.now()).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <User className="w-3.5 h-3.5 text-accent" />
+                          {item.penulis?.nama || 'Admin Desa'}
+                        </span>
+                      </div>
 
-        {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          totalItems={filteredBerita.length}
-          itemsPerPage={itemsPerPage}
-        />
+                      <h2 className="font-bold text-lg text-slate-800 group-hover:text-primary transition-colors line-clamp-2">
+                        <Link to={`/berita/${item.slug}`}>
+                          {item.judul}
+                        </Link>
+                      </h2>
+                      
+                      <p className="text-slate-600 text-sm line-clamp-4 leading-relaxed">
+                        {item.konten}
+                      </p>
+
+                      <div className="pt-4 mt-auto border-t border-slate-100">
+                        <Link
+                          to={`/berita/${item.slug}`}
+                          className="text-primary font-bold text-sm flex items-center gap-1 group-hover:translate-x-1 transition-transform inline-flex"
+                        >
+                          <span>Baca Artikel Lengkap</span>
+                          <ChevronRight className="w-4 h-4 text-accent" />
+                        </Link>
+                      </div>
+                    </div>
+                  </article>
+                </ScrollReveal>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              totalItems={filteredBerita.length}
+              itemsPerPage={itemsPerPage}
+            />
+          </>
+        )}
       </div>
     </div>
   );

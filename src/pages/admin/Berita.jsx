@@ -204,12 +204,29 @@ export default function AdminBerita() {
             <p className="text-xs sm:text-sm font-medium">Memuat data berita...</p>
           </div>
         ) : filteredBerita.length === 0 ? (
-          <div className="p-12 text-center text-slate-500 space-y-3">
-            <Newspaper className="w-12 h-12 mx-auto text-slate-300" />
-            <p className="text-sm font-bold text-slate-700">Tidak ada data berita ditemukan</p>
-            <p className="text-xs text-slate-400 max-w-sm mx-auto">
-              {search ? 'Coba ubah kata kunci pencarian Anda.' : 'Belum ada berita yang ditambahkan.'}
-            </p>
+          <div className="p-12 text-center text-slate-500 space-y-4">
+            <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto border border-slate-200">
+              <Newspaper className="w-8 h-8 text-slate-400" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-base font-bold text-slate-800">
+                {search ? 'Tidak ada berita yang cocok' : 'Belum Ada Berita di Database'}
+              </p>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                {search ? 'Coba ubah kata kunci pencarian Anda atau reset filter.' : 'Mulai publikasikan kabar kegiatan atau pengumuman resmi desa pertama Anda.'}
+              </p>
+            </div>
+            {!search && (
+              <div className="pt-2">
+                <Link
+                  to="/admin/berita/tambah"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold text-xs shadow-md transition-all"
+                >
+                  <Plus className="w-4 h-4 text-accent" />
+                  <span>Tambah Berita Baru</span>
+                </Link>
+              </div>
+            )}
           </div>
         ) : (
           <div>

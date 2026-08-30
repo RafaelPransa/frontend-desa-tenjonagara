@@ -11,37 +11,59 @@ export default function DetailBerita() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
+    setError(false);
     getBeritaBySlug(slug)
       .then((res) => {
-        setBerita(res.data);
-        setLoading(false);
+        if (res.data) {
+          setBerita(res.data);
+        } else {
+          setError(true);
+        }
       })
       .catch(() => {
-        // Sample fallback if slug matches standard seed
-        setBerita({
-          id: 1,
-          judul: 'Pelatihan Kewirausahaan UMKM Pemuda Desa Tenjonagara',
-          slug: 'pelatihan-kewirausahaan-umkm-pemuda-desa-tenjonagara',
-          konten: `Pemerintah Desa Tenjonagara menggelar pelatihan digital marketing dan pengemasan produk UMKM lokal bagi generasi muda. Kegiatan ini diikuti oleh 40 peserta dari perwakilan karang taruna setiap dusun di Desa Tenjonagara.
-
-Tujuan utama dari pelatihan ini adalah untuk memberikan wawasan teknis mengenai pemanfaatan media sosial dan e-commerce dalam memasarkan produk unggulan desa seperti kopi olahan Cigalontang, olahan singkong, serta kerajinan tangan lokal.
-
-Kepala Desa Tenjonagara, Heri Priana, menyampaikan bahwa program ini merupakan komitmen pemerintah desa dalam mendorong kemandirian ekonomi pemuda dan mengoptimalkan potensi potensi UMKM lokal menuju pasar digital yang lebih luas.
-
-"Kami berharap melalui pelatihan ini, produk-produk khas Desa Tenjonagara tidak hanya dikenal di tingkat kecamatan atau kabupaten, tetapi bisa menembus pasar nasional hingga ekspor," ujar Heri dalam sambutannya.`,
-          gambar_url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80',
-          created_at: new Date(),
-          penulis: { nama: 'Administrator Desa Tenjonagara' }
-        });
+        setError(true);
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, [slug]);
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
+      <div className="max-w-4xl mx-auto px-4 py-24 text-center space-y-4">
         <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
         <p className="text-slate-500 font-medium">Memuat artikel berita...</p>
+      </div>
+    );
+  }
+
+  if (error || !berita) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-24 text-center space-y-6">
+        <SEOHead
+          title="Berita Tidak Ditemukan — Desa Tenjonagara"
+          description="Artikel berita yang Anda cari tidak ditemukan atau telah dihapus."
+          url={`/berita/${slug}`}
+        />
+        <div className="w-20 h-20 bg-rose-50 text-rose-500 border border-rose-100 rounded-3xl flex items-center justify-center mx-auto">
+          <Newspaper className="w-10 h-10" />
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-2xl font-serif font-bold text-slate-800">Berita Tidak Ditemukan</h1>
+          <p className="text-slate-500 text-sm leading-relaxed">
+            Maaf, artikel berita yang Anda tuju tidak ditemukan atau mungkin sudah dihapus oleh pengelola desa.
+          </p>
+        </div>
+        <div className="pt-2">
+          <Link
+            to="/berita"
+            className="px-6 py-3 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold text-sm transition-all shadow-md inline-flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4 text-accent" />
+            <span>Kembali ke Daftar Berita</span>
+          </Link>
+        </div>
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { TreePine, Users, Map, Landmark, ArrowRight, ShieldCheck, Sparkles, FileText, CheckCircle2, ChevronRight, Home, GraduationCap, PhoneCall } from 'lucide-react';
+import { TreePine, Users, Map, Landmark, ArrowRight, ShieldCheck, Sparkles, FileText, CheckCircle2, ChevronRight, Home, GraduationCap, PhoneCall, Newspaper } from 'lucide-react';
 import { getProfilDesa, getBerita, getPotensiDesa, getPerangkatDesa, getStatistikPenduduk } from '../services/desaService';
 import ScrollReveal from '../components/ScrollReveal';
 import CollaborationBanner from '../components/CollaborationBanner';
@@ -188,48 +188,64 @@ export default function Beranda() {
               <h2 className="font-serif text-2xl sm:text-3xl font-bold text-primary">Berita & Kabar Desa</h2>
               <p className="text-slate-500 text-sm mt-1">Informasi kegiatan dan kabar terbaru seputar Desa Tenjonagara</p>
             </div>
-            <Link to="/berita" className="hidden sm:flex items-center gap-1 text-primary font-semibold hover:text-accent transition-colors text-sm group">
-              <span>Lihat Semua Berita</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            {beritaList.length > 0 && (
+              <Link to="/berita" className="hidden sm:flex items-center gap-1 text-primary font-semibold hover:text-accent transition-colors text-sm group">
+                <span>Lihat Semua Berita</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            )}
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {beritaList.map((item, index) => (
-            <ScrollReveal key={item.id} direction="up" delay={index * 150}>
-              <article className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 border border-slate-200 flex flex-col group h-full transform hover:-translate-y-1.5">
-                <div className="h-48 overflow-hidden relative">
-                  <img
-                    src={item.gambar_url || "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=600&q=80"}
-                    alt={item.judul}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span className="absolute top-3 left-3 bg-primary/90 backdrop-blur-md text-white text-xs px-3 py-1 rounded-lg font-bold shadow-md">
-                    Kabar Desa
-                  </span>
-                </div>
-                <div className="p-6 flex flex-col flex-grow space-y-3">
-                  <span className="text-xs text-slate-400 font-medium">
-                    {new Date(item.created_at || Date.now()).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
-                  </span>
-                  <h3 className="font-bold text-lg text-slate-800 group-hover:text-primary transition-colors line-clamp-2">
-                    {item.judul}
-                  </h3>
-                  <p className="text-slate-600 text-sm line-clamp-3 leading-relaxed">
-                    {item.konten}
-                  </p>
-                  <div className="pt-4 mt-auto">
-                    <Link to={`/berita/${item.slug}`} className="text-primary font-semibold text-sm flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                      <span>Baca Selengkapnya</span>
-                      <ChevronRight className="w-4 h-4 text-accent" />
-                    </Link>
+        {beritaList.length === 0 ? (
+          <ScrollReveal direction="up" delay={150}>
+            <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-10 text-center max-w-xl mx-auto shadow-xs space-y-3">
+              <div className="w-14 h-14 bg-emerald-50 text-primary rounded-2xl flex items-center justify-center mx-auto border border-emerald-100">
+                <Newspaper className="w-7 h-7 text-primary" />
+              </div>
+              <h3 className="font-bold text-slate-800 text-base sm:text-lg">Belum Ada Berita Terbaru</h3>
+              <p className="text-slate-500 text-xs sm:text-sm leading-relaxed">
+                Saat ini belum ada artikel berita terbaru yang dirilis. Kunjungi kembali nanti untuk informasi dan kabar kegiatan desa.
+              </p>
+            </div>
+          </ScrollReveal>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {beritaList.map((item, index) => (
+              <ScrollReveal key={item.id} direction="up" delay={index * 150}>
+                <article className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 border border-slate-200 flex flex-col group h-full transform hover:-translate-y-1.5">
+                  <div className="h-48 overflow-hidden relative">
+                    <img
+                      src={item.gambar_url || "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=600&q=80"}
+                      alt={item.judul}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <span className="absolute top-3 left-3 bg-primary/90 backdrop-blur-md text-white text-xs px-3 py-1 rounded-lg font-bold shadow-md">
+                      Kabar Desa
+                    </span>
                   </div>
-                </div>
-              </article>
-            </ScrollReveal>
-          ))}
-        </div>
+                  <div className="p-6 flex flex-col flex-grow space-y-3">
+                    <span className="text-xs text-slate-400 font-medium">
+                      {new Date(item.created_at || Date.now()).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    </span>
+                    <h3 className="font-bold text-lg text-slate-800 group-hover:text-primary transition-colors line-clamp-2">
+                      {item.judul}
+                    </h3>
+                    <p className="text-slate-600 text-sm line-clamp-3 leading-relaxed">
+                      {item.konten}
+                    </p>
+                    <div className="pt-4 mt-auto">
+                      <Link to={`/berita/${item.slug}`} className="text-primary font-semibold text-sm flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                        <span>Baca Selengkapnya</span>
+                        <ChevronRight className="w-4 h-4 text-accent" />
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              </ScrollReveal>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* POTENSI UNGGULAN DESA */}
