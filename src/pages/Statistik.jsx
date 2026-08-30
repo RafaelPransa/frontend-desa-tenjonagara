@@ -1,28 +1,60 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart3, Users, Home, GraduationCap, Award, Briefcase, RefreshCw, Sparkles } from 'lucide-react';
-import { getStatistikPenduduk } from '../services/desaService';
+import {
+  BarChart3,
+  Users,
+  Home,
+  GraduationCap,
+  Award,
+  Briefcase,
+  RefreshCw,
+  Sparkles,
+  Coins,
+  TrendingUp,
+  Wallet,
+  ShieldCheck,
+  CheckCircle2
+} from 'lucide-react';
+import { getStatistikPenduduk, getApbdes } from '../services/desaService';
 import ScrollReveal from '../components/ScrollReveal';
 import SEOHead from '../components/SEOHead';
 
+// Format Rupiah Helper
+function formatRupiah(num) {
+  if (num === null || num === undefined || isNaN(num)) return 'Rp 0';
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0
+  }).format(num);
+}
+
 export default function Statistik() {
   const [statistik, setStatistik] = useState([]);
+  const [apbdesList, setApbdesList] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getStatistikPenduduk()
-      .then((res) => {
-        const payload = res.data || res;
-        const list = Array.isArray(payload)
-          ? payload
-          : payload?.data && Array.isArray(payload.data)
-          ? payload.data
-          : [payload];
-        setStatistik(list);
+    Promise.all([
+      getStatistikPenduduk().catch(() => ({ data: [] })),
+      getApbdes().catch(() => ({ data: [] }))
+    ])
+      .then(([resStat, resApbdes]) => {
+        const payloadStat = resStat.data || resStat;
+        const listStat = Array.isArray(payloadStat)
+          ? payloadStat
+          : payloadStat?.data && Array.isArray(payloadStat.data)
+          ? payloadStat.data
+          : [payloadStat];
+        setStatistik(listStat);
+
+        const payloadApb = resApbdes.data?.data || resApbdes.data || resApbdes;
+        setApbdesList(Array.isArray(payloadApb) ? payloadApb : []);
         setLoading(false);
       })
       .catch((err) => {
         console.error('Gagal memuat statistik:', err);
         setStatistik([]);
+        setApbdesList([]);
         setLoading(false);
       });
   }, []);
@@ -206,8 +238,8 @@ export default function Statistik() {
   return (
     <div className="space-y-16 pb-20">
       <SEOHead
-        title="Statistik & Demografi Penduduk Desa Tenjonagara"
-        description="Data statistik kependudukan resmi Desa Tenjonagara tahun 2026 — jumlah total 7.312 jiwa penduduk, 2.553 Kepala Keluarga (KK), diagram sebaran tingkat pendidikan, dan persentase mata pencaharian warga."
+        title="Statistik Kependudukan & APBDes Desa Tenjonagara"
+        description="Data statistik kependudukan resmi dan transparansi APBDes Desa Tenjonagara — demografi jiwa, pendidikan, pekerjaan, dan alokasi Dana Desa tahun 2025."
         url="/statistik"
       />
 
@@ -219,19 +251,19 @@ export default function Statistik() {
           <ScrollReveal direction="down" delay={0}>
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-accent backdrop-blur-md border border-white/20 text-xs font-bold uppercase tracking-widest">
               <Sparkles className="w-4 h-4 text-accent" />
-              Statistik Kependudukan
+              Statistik & Transparansi Desa
             </span>
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={100}>
             <h1 className="font-serif text-3xl sm:text-5xl font-extrabold tracking-tight">
-              Statistik Penduduk <span className="text-accent">Desa Tenjonagara</span>
+              Statistik & APBDes <span className="text-accent">Desa Tenjonagara</span>
             </h1>
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={200}>
             <p className="text-emerald-100 max-w-2xl mx-auto text-sm sm:text-base font-light">
-              Informasi demografi kependudukan, diagram batang tingkat pendidikan, dan profil mata pencaharian warga Desa Tenjonagara.
+              Informasi demografi kependudukan, tingkat pendidikan, mata pencaharian, serta transparansi alokasi APBDes Desa Tenjonagara.
             </p>
           </ScrollReveal>
         </div>
@@ -689,6 +721,131 @@ export default function Statistik() {
                 );
               })}
             </div>
+          </section>
+        </ScrollReveal>
+
+        {/* ── SEKSI 4: TRANSPARANSI ANGGARAN & APBDES ── */}
+        <ScrollReveal direction="up" delay={400}>
+          <section className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-sm space-y-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold shadow-xs shrink-0">
+                  <Coins className="w-6 h-6 text-emerald-700" />
+                </div>
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200/60 mb-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Akuntabilitas & Keterbukaan Publik</span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">
+                    Transparansi APBDes Tenjonagara
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-500">
+                    Anggaran Pendapatan & Belanja Desa untuk pembangunan serta pemberdayaan masyarakat
+                  </p>
+                </div>
+              </div>
+
+              {apbdesList.length > 0 && (
+                <div className="px-4 py-2 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 self-start md:self-center font-mono">
+                  Tahun Anggaran {apbdesList[0]?.tahun || new Date().getFullYear()}
+                </div>
+              )}
+            </div>
+
+            {apbdesList.length === 0 ? (
+              <div className="p-12 text-center text-slate-400 space-y-2">
+                <Coins className="w-12 h-12 mx-auto text-slate-300" />
+                <p className="text-sm font-bold text-slate-600">Belum ada rincian data APBDes yang dipublikasikan.</p>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                {/* Intro Narrative */}
+                <div className="p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 text-xs sm:text-sm text-slate-700 leading-relaxed space-y-2">
+                  <p>
+                    Pada tahun anggaran <strong className="text-emerald-900 font-bold">2025</strong>, Desa Tenjonagara menerima Dana Desa sejumlah{' '}
+                    <strong className="text-emerald-900 font-bold">Rp 1.334.722.000</strong>. Dana tersebut dialokasikan ke berbagai sektor kegiatan sesuai dengan prioritas nasional dan hasil Musyawarah Desa, dengan tetap mengacu pada asas transparansi, akuntabilitas, dan efektivitas penggunaan anggaran.
+                  </p>
+                </div>
+
+                {/* 3 Metric Cards */}
+                {(() => {
+                  const totalPagu = apbdesList.reduce((acc, curr) => acc + (Number(curr.pagu_anggaran) || 0), 0);
+                  const totalRealisasi = apbdesList.reduce((acc, curr) => acc + (Number(curr.realisasi) || 0), 0);
+                  const penyerapanPersen = totalPagu > 0 ? ((totalRealisasi / totalPagu) * 100).toFixed(1) : 0;
+
+                  return (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="p-5 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50/50 border border-blue-200/80 space-y-1">
+                        <div className="text-xs font-bold text-blue-700 uppercase tracking-wider">Total Pagu Anggaran</div>
+                        <div className="text-xl sm:text-2xl font-bold font-serif text-slate-900">{formatRupiah(totalPagu)}</div>
+                        <p className="text-[11px] text-slate-500">Target pagu APBDes tahun berjalan</p>
+                      </div>
+
+                      <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50/50 border border-emerald-200/80 space-y-1">
+                        <div className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Total Realisasi Belanja</div>
+                        <div className="text-xl sm:text-2xl font-bold font-serif text-emerald-800">{formatRupiah(totalRealisasi)}</div>
+                        <p className="text-[11px] text-slate-500">Dana kegiatan yang telah diserap</p>
+                      </div>
+
+                      <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200/80 space-y-1">
+                        <div className="text-xs font-bold text-amber-700 uppercase tracking-wider">Tingkat Penyerapan</div>
+                        <div className="text-xl sm:text-2xl font-bold font-serif text-amber-800">{penyerapanPersen}%</div>
+                        <div className="w-full bg-amber-200/60 h-2 rounded-full overflow-hidden mt-1.5">
+                          <div
+                            className="bg-amber-600 h-full rounded-full transition-all duration-700"
+                            style={{ width: `${Math.min(Number(penyerapanPersen), 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Progress Bars per Bidang */}
+                <div className="space-y-4 pt-2">
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                    Rincian Realisasi Penyerapan Anggaran per Bidang:
+                  </h3>
+
+                  <div className="space-y-4">
+                    {apbdesList.map((item, idx) => {
+                      const pagu = Number(item.pagu_anggaran) || 0;
+                      const real = Number(item.realisasi) || 0;
+                      const pct = pagu > 0 ? ((real / pagu) * 100).toFixed(1) : 0;
+
+                      return (
+                        <div
+                          key={item.id || idx}
+                          className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-all space-y-3"
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div className="font-bold text-slate-900 text-sm sm:text-base">
+                              {item.bidang}
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-xs font-mono font-semibold text-slate-600">
+                                Realisasi: <strong className="text-emerald-700">{formatRupiah(real)}</strong> dari {formatRupiah(pagu)}
+                              </span>
+                              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                {pct}%
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden p-0.5 border border-slate-200">
+                            <div
+                              className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 transition-all duration-700"
+                              style={{ width: `${Math.min(Number(pct), 100)}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
         </ScrollReveal>
       </div>

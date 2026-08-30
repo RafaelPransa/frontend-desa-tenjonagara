@@ -120,9 +120,31 @@ export const getAdminStatistik = () =>
 export const updateAdminStatistik = (id, data) =>
   api.put(`/statistik/penduduk/${id || 1}`, data, getAuthHeaders());
 
+// ── KELOLA PROFIL DESA ──
+export const getAdminProfil = () =>
+  api.get('/profil-desa');
+
+export const updateAdminProfil = (data) =>
+  api.put('/profil-desa', data, getAuthHeaders());
+
+// ── KELOLA APBDES ──
+export const getAdminApbdes = () =>
+  api.get('/statistik/apbdes');
+
+export const createAdminApbdes = (data) =>
+  api.post('/statistik/apbdes', data, getAuthHeaders());
+
+export const updateAdminApbdes = (id, data) =>
+  api.put(`/statistik/apbdes/${id}`, data, getAuthHeaders());
+
+export const deleteAdminApbdes = (id) =>
+  api.delete(`/statistik/apbdes/${id}`, getAuthHeaders());
+
 // ── KELOLA PESAN KONTAK ──
 export const getAdminKontak = () =>
   api.get('/kontak', getAuthHeaders());
 
 export const deleteAdminKontak = (id) =>
   api.delete(`/kontak/${id}`, getAuthHeaders());
+
+

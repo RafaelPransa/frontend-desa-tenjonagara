@@ -11,7 +11,8 @@ import {
   ShieldCheck,
   Plus,
   Clock,
-  Inbox
+  Inbox,
+  Landmark
 } from 'lucide-react';
 import {
   getBerita,
@@ -20,6 +21,7 @@ import {
   getLayanan,
   getPerangkatDesa
 } from '../../services/desaService';
+import { getAdminPengajuanLayanan } from '../../services/adminService';
 import ScrollReveal from '../../components/ScrollReveal';
 
 export default function Dashboard() {
@@ -29,6 +31,7 @@ export default function Dashboard() {
     potensi: 0,
     layanan: 0,
     perangkat: 0,
+    pengajuanPending: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -36,13 +39,19 @@ export default function Dashboard() {
     async function fetchStats() {
       setLoading(true);
       try {
-        const [beritaRes, bangunanRes, potensiRes, layananRes, perangkatRes] = await Promise.all([
+        const [beritaRes, bangunanRes, potensiRes, layananRes, perangkatRes, pengajuanRes] = await Promise.all([
           getBerita().catch(() => ({ data: [] })),
           getBangunanDesa().catch(() => ({ data: [] })),
           getPotensiDesa().catch(() => ({ data: [] })),
           getLayanan().catch(() => ({ data: [] })),
           getPerangkatDesa().catch(() => ({ data: [] })),
+          getAdminPengajuanLayanan().catch(() => ({ data: [] })),
         ]);
+
+        const pengajuanList = pengajuanRes.data?.data || pengajuanRes.data || [];
+        const pendingCount = Array.isArray(pengajuanList)
+          ? pengajuanList.filter((p) => p.status === 'pending').length
+          : 0;
 
         setStats({
           berita: Array.isArray(beritaRes.data) ? beritaRes.data.length : 0,
@@ -50,6 +59,7 @@ export default function Dashboard() {
           potensi: Array.isArray(potensiRes.data) ? potensiRes.data.length : 0,
           layanan: Array.isArray(layananRes.data) ? layananRes.data.length : 0,
           perangkat: Array.isArray(perangkatRes.data) ? perangkatRes.data.length : 0,
+          pengajuanPending: pendingCount
         });
       } catch (err) {
         console.error('Error fetching dashboard metrics', err);
@@ -127,19 +137,53 @@ export default function Dashboard() {
             <Plus className="w-5 h-5 text-primary" />
             <span>Aksi Cepat Manajemen Admin</span>
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             <Link
               to="/admin/pengajuan"
-              className="p-5 rounded-2xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3.5 group transform hover:-translate-y-1"
+              className={`p-5 rounded-2xl border transition-all flex items-center gap-3.5 group transform hover:-translate-y-1 ${
+                stats.pengajuanPending > 0
+                  ? 'border-amber-300 bg-amber-50/40 hover:bg-amber-50/80 shadow-xs'
+                  : 'border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50'
+              }`}
             >
-              <div className="p-3 rounded-xl bg-amber-100 text-amber-800 group-hover:bg-accent group-hover:text-primary-dark transition-colors shrink-0">
+              <div className={`p-3 rounded-xl transition-colors shrink-0 ${
+                stats.pengajuanPending > 0
+                  ? 'bg-amber-500 text-white'
+                  : 'bg-amber-100 text-amber-800 group-hover:bg-accent group-hover:text-primary-dark'
+              }`}>
                 <Inbox className="w-5 h-5" />
               </div>
               <div>
-                <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-primary transition-colors">
-                  Verifikasi Surat
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-primary transition-colors">
+                    Verifikasi Surat
+                  </span>
+                  {stats.pengajuanPending > 0 && (
+                    <span className="px-1.5 py-0.2 rounded-md bg-amber-500 text-white text-[10px] font-extrabold animate-pulse">
+                      {stats.pengajuanPending}
+                    </span>
+                  )}
                 </div>
-                <div className="text-[11px] text-slate-500">Cek permohonan warga</div>
+                <div className="text-[11px] text-slate-500">
+                  {stats.pengajuanPending > 0
+                    ? `${stats.pengajuanPending} menunggu diproses`
+                    : 'Cek permohonan warga'}
+                </div>
+              </div>
+            </Link>
+
+            <Link
+              to="/admin/profil"
+              className="p-5 rounded-2xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3.5 group transform hover:-translate-y-1"
+            >
+              <div className="p-3 rounded-xl bg-teal-100 text-teal-700 group-hover:bg-teal-600 group-hover:text-white transition-colors shrink-0">
+                <Landmark className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-teal-700 transition-colors">
+                  Profil Desa
+                </div>
+                <div className="text-[11px] text-slate-500">Edit visi, misi & wilayah</div>
               </div>
             </Link>
 
@@ -182,9 +226,9 @@ export default function Dashboard() {
               </div>
               <div>
                 <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-purple-700 transition-colors">
-                  Update Demografi
+                  Statistik & APBDes
                 </div>
-                <div className="text-[11px] text-slate-500">Perbarui data jiwa & KK</div>
+                <div className="text-[11px] text-slate-500">Demografi & Keuangan Desa</div>
               </div>
             </Link>
           </div>
