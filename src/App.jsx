@@ -20,6 +20,7 @@ const Login = lazy(() => import('./pages/Login'));
 
 // Admin Pages (Lazy Loaded)
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
+const AdminProfil = lazy(() => import('./pages/admin/Profil'));
 const AdminBerita = lazy(() => import('./pages/admin/Berita'));
 const BeritaForm = lazy(() => import('./pages/admin/BeritaForm'));
 const AdminBangunan = lazy(() => import('./pages/admin/Bangunan'));
@@ -75,6 +76,7 @@ export default function App() {
             }
           >
             <Route index element={<AdminDashboard />} />
+            <Route path="profil" element={<AdminProfil />} />
             <Route path="berita" element={<AdminBerita />} />
             <Route path="berita/tambah" element={<BeritaForm />} />
             <Route path="berita/:id" element={<BeritaForm />} />
