@@ -17,27 +17,41 @@ import {
   Calendar,
   Check,
   ChevronRight,
-  Trash2
+  Trash2,
+  Download,
+  Printer,
+  Filter,
+  CalendarDays,
+  SlidersHorizontal,
+  Building
 } from 'lucide-react';
 import {
   getAdminPengajuanLayanan,
   updateStatusPengajuanLayanan,
-  deletePengajuanLayanan
+  deletePengajuanLayanan,
+  getAdminLayanan
 } from '../../services/adminService';
 import ScrollReveal from '../../components/ScrollReveal';
 import Pagination from '../../components/Pagination';
 import ConfirmModal from '../../components/ConfirmModal';
+import logoPemkab from '../../assets/logo-pemkab-tasikmalaya.png';
 
 export default function AdminPengajuan() {
   const [pengajuanList, setPengajuanList] = useState([]);
+  const [layananList, setLayananList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [layananFilter, setLayananFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all'); // 'all' | 'today' | 'this_week' | 'this_month' | 'custom'
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [showCustomDate, setShowCustomDate] = useState(false);
+
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-
 
   // Selected item for Detail / Verification Modal
   const [selectedItem, setSelectedItem] = useState(null);
@@ -49,13 +63,20 @@ export default function AdminPengajuan() {
   // Image lightbox state
   const [previewMedia, setPreviewMedia] = useState(null); // { url, title }
 
+  // Print Report Modal State
+  const [showPrintModal, setShowPrintModal] = useState(false);
+
   const fetchPengajuan = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await getAdminPengajuanLayanan();
-      const list = res.data?.data || res.data || [];
+      const [resPengajuan, resLayanan] = await Promise.all([
+        getAdminPengajuanLayanan(),
+        getAdminLayanan().catch(() => ({ data: [] }))
+      ]);
+      const list = resPengajuan.data?.data || resPengajuan.data || [];
       setPengajuanList(Array.isArray(list) ? list : []);
+      setLayananList(resLayanan.data?.data || resLayanan.data || []);
     } catch (err) {
       setError('Gagal mengambil data pengajuan surat warga.');
     } finally {
@@ -117,7 +138,7 @@ export default function AdminPengajuan() {
     }
   };
 
-  // Filter List
+  // Filter List Logic
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
     setCurrentPage(1);
@@ -128,14 +149,59 @@ export default function AdminPengajuan() {
     setCurrentPage(1);
   };
 
+  const handleLayananFilterChange = (e) => {
+    setLayananFilter(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleDateFilterChange = (e) => {
+    const val = e.target.value;
+    setDateFilter(val);
+    setShowCustomDate(val === 'custom');
+    setCurrentPage(1);
+  };
+
   const filteredList = pengajuanList.filter((item) => {
+    // 1. Match Search
     const matchSearch =
       (item.nama_pemohon && item.nama_pemohon.toLowerCase().includes(search.toLowerCase())) ||
       (item.nik && item.nik.includes(search)) ||
       (item.layanan?.nama_layanan && item.layanan.nama_layanan.toLowerCase().includes(search.toLowerCase()));
 
+    // 2. Match Status
     const matchStatus = statusFilter === 'all' || item.status === statusFilter;
-    return matchSearch && matchStatus;
+
+    // 3. Match Layanan
+    const matchLayanan =
+      layananFilter === 'all' ||
+      String(item.layanan_id) === String(layananFilter) ||
+      item.layanan?.nama_layanan === layananFilter;
+
+    // 4. Match Date Filter
+    let matchDate = true;
+    if (dateFilter !== 'all' && item.created_at) {
+      const itemDate = new Date(item.created_at);
+      const now = new Date();
+
+      if (dateFilter === 'today') {
+        matchDate = itemDate.toDateString() === now.toDateString();
+      } else if (dateFilter === 'this_week') {
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(now.getDate() - 7);
+        matchDate = itemDate >= oneWeekAgo && itemDate <= now;
+      } else if (dateFilter === 'this_month') {
+        matchDate =
+          itemDate.getMonth() === now.getMonth() &&
+          itemDate.getFullYear() === now.getFullYear();
+      } else if (dateFilter === 'custom') {
+        const start = startDate ? new Date(startDate + 'T00:00:00') : null;
+        const end = endDate ? new Date(endDate + 'T23:59:59') : null;
+        if (start && itemDate < start) matchDate = false;
+        if (end && itemDate > end) matchDate = false;
+      }
+    }
+
+    return matchSearch && matchStatus && matchLayanan && matchDate;
   });
 
   const totalPages = Math.ceil(filteredList.length / itemsPerPage);
@@ -156,7 +222,6 @@ export default function AdminPengajuan() {
       const parsed = JSON.parse(dokumenUrlStr);
       if (Array.isArray(parsed)) return parsed;
     } catch (e) {
-      // Fallback jika berupa single URL string biasa
       if (typeof dokumenUrlStr === 'string' && dokumenUrlStr.startsWith('http')) {
         return [{ syarat: 'Dokumen Pendukung', url: dokumenUrlStr }];
       }
@@ -212,6 +277,70 @@ export default function AdminPengajuan() {
     }
   };
 
+  // ── EXPORT DATA KE CSV / EXCEL ──
+  const exportToCSV = () => {
+    if (filteredList.length === 0) {
+      alert('Tidak ada data pengajuan yang dapat diekspor.');
+      return;
+    }
+
+    const headers = [
+      'No',
+      'ID Pengajuan',
+      'Tanggal Pengajuan',
+      'Nama Pemohon',
+      'NIK',
+      'Tempat Lahir',
+      'Tanggal Lahir',
+      'Jenis Kelamin',
+      'Agama',
+      'Alamat',
+      'Jenis Layanan Surat',
+      'Status',
+      'Keperluan'
+    ];
+
+    const rows = filteredList.map((item, index) => [
+      index + 1,
+      item.id,
+      formatDate(item.created_at),
+      item.nama_pemohon || '-',
+      `'${item.nik || ''}`,
+      item.tempat_lahir || '-',
+      item.tanggal_lahir || '-',
+      item.jenis_kelamin || '-',
+      item.agama || '-',
+      item.alamat || '-',
+      item.layanan?.nama_layanan || 'Surat Keterangan',
+      item.status ? item.status.toUpperCase() : '-',
+      item.keterangan || '-'
+    ]);
+
+    const csvContent =
+      '\uFEFF' +
+      [
+        headers.map((h) => `"${String(h).replace(/"/g, '""')}"`).join(','),
+        ...rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      ].join('\r\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute(
+      'download',
+      `rekap-pengajuan-surat-tenjonagara-${new Date().toISOString().slice(0, 10)}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div className="space-y-6">
       {/* Header Section */}
@@ -223,7 +352,7 @@ export default function AdminPengajuan() {
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-900">Kelola Pengajuan Surat Warga</h1>
-              <p className="text-xs sm:text-sm text-slate-500">Verifikasi berkas persyaratan dan perbarui status pengurusan surat warga</p>
+              <p className="text-xs sm:text-sm text-slate-500">Verifikasi berkas persyaratan, filter arsip, dan ekspor data pengurusan surat</p>
             </div>
           </div>
 
@@ -245,7 +374,6 @@ export default function AdminPengajuan() {
         </div>
       </ScrollReveal>
 
-
       {/* Alert Messages */}
       {error && (
         <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center gap-3">
@@ -266,40 +394,155 @@ export default function AdminPengajuan() {
         </div>
       )}
 
-      {/* Filter & Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row gap-3 items-center justify-between">
-        <div className="relative w-full sm:w-80">
-          <input
-            type="text"
-            placeholder="Cari nama, NIK, atau jenis surat..."
-            value={search}
-            onChange={handleSearchChange}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-xs sm:text-sm"
-          />
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+      {/* Filter & Search Bar + Export Actions */}
+      <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+        <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="Cari nama pemohon, NIK 16 digit, atau jenis surat..."
+              value={search}
+              onChange={handleSearchChange}
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary text-xs sm:text-sm font-medium"
+            />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+          </div>
+
+          {/* Action Buttons: Export CSV & Print Rekap */}
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={exportToCSV}
+              disabled={filteredList.length === 0}
+              className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs disabled:opacity-50"
+              title="Unduh Data dalam Format CSV/Excel"
+            >
+              <Download className="w-4 h-4" />
+              <span>Export Excel (CSV)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowPrintModal(true)}
+              disabled={filteredList.length === 0}
+              className="px-4 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 disabled:opacity-50"
+              title="Pratinjau & Cetak Rekapitulasi Resmi"
+            >
+              <Printer className="w-4 h-4 text-slate-600" />
+              <span>Cetak Rekap</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={fetchPengajuan}
+              className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors shrink-0"
+              title="Refresh Data Pengajuan"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-end overflow-x-auto">
-          {/* Status Tabs Filter */}
-          <select
-            value={statusFilter}
-            onChange={handleStatusFilterChange}
-            className="px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold bg-white text-slate-800 focus:ring-2 focus:ring-primary"
-          >
-            <option value="all">Semua Status ({pengajuanList.length})</option>
-            <option value="pending">Pending ({countPending})</option>
-            <option value="diproses">Diproses ({countDiproses})</option>
-            <option value="selesai">Selesai ({countSelesai})</option>
-          </select>
+        {/* Dropdowns Filter Row */}
+        <div className="pt-3 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* Filter Status */}
+          <div className="space-y-1">
+            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Status Pengajuan
+            </label>
+            <select
+              value={statusFilter}
+              onChange={handleStatusFilterChange}
+              className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold bg-white text-slate-800 focus:ring-2 focus:ring-primary"
+            >
+              <option value="all">Semua Status ({pengajuanList.length})</option>
+              <option value="pending">🟡 Pending / Menunggu ({countPending})</option>
+              <option value="diproses">🔵 Sedang Diproses ({countDiproses})</option>
+              <option value="selesai">🟢 Selesai ({countSelesai})</option>
+            </select>
+          </div>
 
-          <button
-            onClick={fetchPengajuan}
-            className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors shrink-0"
-            title="Refresh Data Pengajuan"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
+          {/* Filter Jenis Layanan */}
+          <div className="space-y-1">
+            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Jenis Surat
+            </label>
+            <select
+              value={layananFilter}
+              onChange={handleLayananFilterChange}
+              className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold bg-white text-slate-800 focus:ring-2 focus:ring-primary truncate"
+            >
+              <option value="all">Semua Jenis Layanan Surat</option>
+              {layananList.map((lay) => (
+                <option key={lay.id} value={lay.id}>
+                  {lay.nama_layanan}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Filter Rentang Waktu */}
+          <div className="space-y-1">
+            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Periode Waktu
+            </label>
+            <select
+              value={dateFilter}
+              onChange={handleDateFilterChange}
+              className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold bg-white text-slate-800 focus:ring-2 focus:ring-primary"
+            >
+              <option value="all">Semua Waktu</option>
+              <option value="today">Hari Ini</option>
+              <option value="this_week">7 Hari Terakhir</option>
+              <option value="this_month">Bulan Ini</option>
+              <option value="custom">Pilih Rentang Tanggal...</option>
+            </select>
+          </div>
         </div>
+
+        {/* Custom Date Range Row (If selected) */}
+        {showCustomDate && (
+          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-center gap-3 animate-in fade-in duration-200">
+            <div className="flex-1 w-full space-y-1">
+              <span className="text-[11px] font-bold text-slate-500 uppercase block">Tanggal Mulai</span>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => {
+                  setStartDate(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
+              />
+            </div>
+            <div className="flex-1 w-full space-y-1">
+              <span className="text-[11px] font-bold text-slate-500 uppercase block">Tanggal Selesai</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => {
+                  setEndDate(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
+              />
+            </div>
+            {(startDate || endDate) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setStartDate('');
+                  setEndDate('');
+                  setCurrentPage(1);
+                }}
+                className="mt-4 px-3 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold transition-colors"
+              >
+                Reset Tanggal
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Pengajuan Table */}
@@ -314,7 +557,9 @@ export default function AdminPengajuan() {
             <Inbox className="w-12 h-12 mx-auto text-slate-300" />
             <p className="text-sm font-bold text-slate-700">Tidak ada pengajuan surat ditemukan</p>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
-              {search ? 'Coba ubah kata kunci pencarian Anda.' : 'Belum ada pengajuan surat online dari warga.'}
+              {search || statusFilter !== 'all' || dateFilter !== 'all' || layananFilter !== 'all'
+                ? 'Coba sesuaikan filter atau kata kunci pencarian Anda.'
+                : 'Belum ada pengajuan surat online dari warga.'}
             </p>
           </div>
         ) : (
@@ -353,59 +598,58 @@ export default function AdminPengajuan() {
                           </div>
                         </td>
 
-                        {/* Jenis Surat */}
+                        {/* Jenis Layanan */}
                         <td className="py-4 px-4">
-                          <div className="font-semibold text-slate-800 line-clamp-1 max-w-xs">
+                          <div className="font-semibold text-slate-800">
                             {item.layanan?.nama_layanan || 'Surat Keterangan'}
                           </div>
                           {item.keterangan && (
-                            <div className="text-[11px] text-slate-400 line-clamp-1 max-w-xs mt-0.5">
-                              {item.keterangan}
+                            <div className="text-[11px] text-slate-400 line-clamp-1 italic">
+                              "{item.keterangan}"
                             </div>
                           )}
                         </td>
 
                         {/* Tanggal */}
-                        <td className="py-4 px-4 hidden md:table-cell text-slate-500 text-xs">
-                          <div className="flex items-center gap-1.5 whitespace-nowrap">
-                            <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                            <span>{formatDate(item.created_at)}</span>
-                          </div>
+                        <td className="py-4 px-4 hidden md:table-cell whitespace-nowrap text-slate-500 text-xs">
+                          {formatDate(item.created_at)}
                         </td>
 
                         {/* Status */}
-                        <td className="py-4 px-4">
-                          {getStatusBadge(item.status)}
-                        </td>
+                        <td className="py-4 px-4 whitespace-nowrap">{getStatusBadge(item.status)}</td>
 
                         {/* Dokumen Count */}
-                        <td className="py-4 px-4 hidden sm:table-cell text-center">
-                          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${validDokumenCount > 0
-                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                              : 'bg-slate-100 text-slate-500 border border-slate-200'
-                            }`}>
-                            <ShieldCheck className="w-3.5 h-3.5" />
+                        <td className="py-4 px-4 hidden sm:table-cell text-center whitespace-nowrap">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${validDokumenCount > 0
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : 'bg-slate-100 text-slate-400'
+                              }`}
+                          >
+                            <FileCheck className="w-3.5 h-3.5" />
                             <span>{validDokumenCount} Berkas</span>
                           </span>
                         </td>
 
-                        {/* Aksi */}
-                        <td className="py-4 px-4 text-right pr-6">
+                        {/* Aksi Button */}
+                        <td className="py-4 px-4 text-right pr-6 whitespace-nowrap">
                           <div className="flex items-center justify-end gap-1.5">
                             <button
+                              type="button"
                               onClick={() => setSelectedItem(item)}
-                              className="px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-xs transition-all inline-flex items-center gap-1.5"
-                              title="Verifikasi Pengajuan"
+                              className="px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-colors inline-flex items-center gap-1.5 shadow-xs"
                             >
                               <Eye className="w-3.5 h-3.5" />
                               <span>Verifikasi</span>
                             </button>
+
                             <button
+                              type="button"
                               onClick={() => openDeleteModal(item)}
-                              className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 border border-rose-200 transition-all shadow-2xs"
-                              title="Hapus Pengajuan Surat"
+                              className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                              title="Hapus Pengajuan"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
                         </td>
@@ -416,304 +660,424 @@ export default function AdminPengajuan() {
               </table>
             </div>
 
-            {/* Pagination Footer */}
-            <div className="p-4 border-t border-slate-100">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-                totalItems={filteredList.length}
-                itemsPerPage={itemsPerPage}
-              />
-            </div>
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="p-4 border-t border-slate-100 flex items-center justify-between">
+                <span className="text-xs text-slate-500">
+                  Menampilkan {paginatedList.length} dari total {filteredList.length} data
+                </span>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={(page) => setCurrentPage(page)}
+                />
+              </div>
+            )}
           </div>
         )}
       </div>
 
-
-      {/* ── MODAL DETAIL & VERIFIKASI DOKUMEN ── */}
-      {selectedItem && createPortal(
-        <div
-          onClick={() => setSelectedItem(null)}
-          className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200"
-        >
+      {/* ── MODAL VERIFIKASI & DETAIL PENGAJUAN ── */}
+      {selectedItem &&
+        createPortal(
           <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden my-auto"
+            onClick={() => setSelectedItem(null)}
+            className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200"
           >
-
-            {/* Modal Header */}
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center font-bold shadow-xs">
-                  <FileText className="w-5 h-5 text-accent" />
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-8"
+            >
+              {/* Modal Header */}
+              <div className="p-6 bg-primary text-white flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-accent" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-serif font-bold text-white">Detail Permohonan Surat Warga</h2>
+                    <p className="text-xs text-emerald-200">ID Pengajuan #{selectedItem.id}</p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-lg font-bold text-slate-900">Verifikasi Pengajuan Surat #{selectedItem.id}</h2>
-                  <p className="text-xs text-slate-500">{selectedItem.layanan?.nama_layanan}</p>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedItem(null)}
+                  className="p-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
-              <button
-                onClick={() => setSelectedItem(null)}
-                className="p-2 rounded-xl bg-slate-200/80 hover:bg-slate-200 text-slate-600 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Modal Body (Scrollable) */}
-            <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs sm:text-sm">
-
-              {/* Applicant Info Box */}
-              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
-                <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-200/80">
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-primary" />
-                    <span className="font-bold text-slate-900 text-base">{selectedItem.nama_pemohon}</span>
-                  </div>
+              {/* Modal Body */}
+              <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+                {/* Status Bar */}
+                <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                  <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+                    Status Saat Ini:
+                  </span>
                   <div>{getStatusBadge(selectedItem.status)}</div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <span className="text-slate-400 block font-semibold uppercase text-[10px]">Nomor NIK</span>
-                    <span className="font-mono font-bold text-slate-800 text-sm">{selectedItem.nik}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 block font-semibold uppercase text-[10px]">Tanggal Pengajuan</span>
-                    <span className="font-medium text-slate-800">{formatDate(selectedItem.created_at)}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 block font-semibold uppercase text-[10px]">Tempat, Tanggal Lahir</span>
-                    <span className="font-medium text-slate-800">
-                      {selectedItem.tempat_lahir || '-'}, {selectedItem.tanggal_lahir ? formatDate(selectedItem.tanggal_lahir) : '-'}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 block font-semibold uppercase text-[10px]">Jenis Kelamin & Agama</span>
-                    <span className="font-medium text-slate-800">
-                      {selectedItem.jenis_kelamin || '-'} ({selectedItem.agama || '-'})
-                    </span>
-                  </div>
-                </div>
-
-                {selectedItem.alamat && (
-                  <div className="pt-2 border-t border-slate-200/60 text-xs">
-                    <span className="text-slate-400 block font-semibold uppercase text-[10px]">Alamat Lengkap Sesuai KTP</span>
-                    <p className="text-slate-800 font-medium mt-0.5 leading-relaxed bg-white p-2.5 rounded-xl border border-slate-200">
-                      {selectedItem.alamat}
-                    </p>
-                  </div>
-                )}
-
-                {selectedItem.keterangan && (
-                  <div className="pt-2 border-t border-slate-200/60 text-xs">
-                    <span className="text-slate-400 block font-semibold uppercase text-[10px]">Keperluan / Catatan Pemohon</span>
-                    <p className="text-slate-700 mt-0.5 leading-relaxed bg-white p-3 rounded-xl border border-slate-200">
-                      {selectedItem.keterangan}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Uploaded Documents List */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-primary" />
-                    <span>Berkas Dokumen Persyaratan yang Diunggah</span>
+                {/* Data Pemohon */}
+                <div className="space-y-3">
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <User className="w-4 h-4 text-primary" />
+                    <span>Identitas Pemohon</span>
                   </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+                    <div>
+                      <span className="text-slate-400 block text-[10px] uppercase font-semibold">Nama Lengkap</span>
+                      <span className="font-bold text-slate-800 text-sm">{selectedItem.nama_pemohon}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[10px] uppercase font-semibold">Nomor NIK</span>
+                      <span className="font-mono font-bold text-slate-800 text-sm">{selectedItem.nik}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[10px] uppercase font-semibold">
+                        Tempat, Tanggal Lahir
+                      </span>
+                      <span className="font-medium text-slate-700">
+                        {selectedItem.tempat_lahir || '-'}, {selectedItem.tanggal_lahir || '-'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[10px] uppercase font-semibold">
+                        Jenis Kelamin & Agama
+                      </span>
+                      <span className="font-medium text-slate-700">
+                        {selectedItem.jenis_kelamin || '-'} ({selectedItem.agama || '-'})
+                      </span>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <span className="text-slate-400 block text-[10px] uppercase font-semibold">Alamat Lengkap</span>
+                      <span className="font-medium text-slate-700 leading-relaxed block bg-white p-2.5 rounded-xl border border-slate-200 mt-1">
+                        {selectedItem.alamat || '-'}
+                      </span>
+                    </div>
+                    {selectedItem.keterangan && (
+                      <div className="sm:col-span-2">
+                        <span className="text-slate-400 block text-[10px] uppercase font-semibold">
+                          Keperluan / Catatan
+                        </span>
+                        <span className="italic text-slate-800 block bg-amber-50/60 p-2.5 rounded-xl border border-amber-200/60 mt-1">
+                          "{selectedItem.keterangan}"
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                {(() => {
-                  const docs = parseDokumen(selectedItem.dokumen_url);
-                  if (docs.length === 0) {
+                {/* Dokumen Lampiran */}
+                <div className="space-y-3">
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-primary" />
+                    <span>Berkas Persyaratan yang Diunggah</span>
+                  </h3>
+
+                  {(() => {
+                    const docs = parseDokumen(selectedItem.dokumen_url);
+                    if (docs.length === 0) {
+                      return (
+                        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center text-xs text-slate-400">
+                          Tidak ada berkas yang dilampirkan pemohon.
+                        </div>
+                      );
+                    }
+
                     return (
-                      <div className="p-6 text-center bg-slate-50 rounded-2xl border border-slate-200 text-slate-400 space-y-1">
-                        <FileText className="w-8 h-8 mx-auto text-slate-300" />
-                        <p className="text-xs font-semibold text-slate-600">Tidak ada berkas dokumen terlampir</p>
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <div className="space-y-3">
-                      {docs.map((doc, idx) => {
-                        const hasUrl = Boolean(doc.url && doc.url.trim());
-                        const isPdf = hasUrl && doc.url.toLowerCase().endsWith('.pdf');
-
-                        return (
+                      <div className="space-y-2">
+                        {docs.map((doc, idx) => (
                           <div
                             key={idx}
-                            className={`p-4 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${hasUrl
-                                ? 'bg-emerald-50/50 border-emerald-200'
-                                : 'bg-rose-50/50 border-rose-200'
-                              }`}
+                            className="p-3.5 rounded-2xl border border-slate-200 bg-white flex items-center justify-between gap-3 shadow-xs"
                           >
-                            <div className="space-y-1">
-                              <div className="font-bold text-slate-800 text-xs sm:text-sm flex items-center gap-2">
-                                <span>{doc.syarat || `Dokumen #${idx + 1}`}</span>
-                                {doc.is_optional && (
-                                  <span className="text-[10px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded-md font-normal">
-                                    Opsional
-                                  </span>
-                                )}
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+                                <FileCheck className="w-4 h-4 text-emerald-600" />
                               </div>
-
-                              {hasUrl ? (
-                                <p className="text-[11px] text-emerald-700 font-medium flex items-center gap-1">
-                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                                  <span>Dokumen terupload dan siap diverifikasi</span>
-                                </p>
-                              ) : (
-                                <p className="text-[11px] text-rose-600 font-medium flex items-center gap-1">
-                                  <AlertCircle className="w-3.5 h-3.5 text-rose-500" />
-                                  <span>Tidak diunggah (Kosong)</span>
-                                </p>
-                              )}
+                              <div className="min-w-0">
+                                <div className="text-xs font-bold text-slate-800 truncate">{doc.syarat}</div>
+                                <div className="text-[11px] text-slate-400 truncate">
+                                  {doc.url ? 'Dokumen siap ditinjau' : 'Belum diunggah'}
+                                </div>
+                              </div>
                             </div>
 
-                            {hasUrl && (
-                              <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
-                                {!isPdf && (
-                                  <button
-                                    type="button"
-                                    onClick={() => setPreviewMedia({ url: doc.url, title: doc.syarat })}
-                                    className="flex-1 sm:flex-none px-3 py-2 rounded-xl bg-white border border-emerald-300 text-emerald-800 text-xs font-bold hover:bg-emerald-100 transition-all flex items-center justify-center gap-1.5 shadow-xs"
-                                  >
-                                    <Eye className="w-3.5 h-3.5" />
-                                    <span>Pratinjau Foto</span>
-                                  </button>
-                                )}
-
+                            {doc.url ? (
+                              <div className="flex items-center gap-2 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => setPreviewMedia({ url: doc.url, title: doc.syarat })}
+                                  className="px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all flex items-center gap-1"
+                                >
+                                  <Eye className="w-3.5 h-3.5" />
+                                  <span>Pratinjau</span>
+                                </button>
                                 <a
                                   href={doc.url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex-1 sm:flex-none px-3 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs"
+                                  className="p-1.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 transition-colors"
+                                  title="Buka di Tab Baru"
                                 >
-                                  <span>Buka File</span>
                                   <ExternalLink className="w-3.5 h-3.5" />
                                 </a>
                               </div>
+                            ) : (
+                              <span className="text-xs text-rose-500 italic">Tidak ada file</span>
                             )}
                           </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })()}
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* Status Updater Actions */}
+                <div className="space-y-3 pt-4 border-t border-slate-100">
+                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    Ubah Status Pengajuan:
+                  </h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateStatus(selectedItem.id, 'pending')}
+                      disabled={selectedItem.status === 'pending'}
+                      className={`p-3 rounded-2xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${selectedItem.status === 'pending'
+                          ? 'bg-amber-500 text-white shadow-sm ring-2 ring-amber-300'
+                          : 'bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100'
+                        }`}
+                    >
+                      <Clock className="w-3.5 h-3.5" />
+                      <span>Pending</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateStatus(selectedItem.id, 'diproses')}
+                      disabled={selectedItem.status === 'diproses'}
+                      className={`p-3 rounded-2xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${selectedItem.status === 'diproses'
+                          ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-300'
+                          : 'bg-blue-50 text-blue-900 border border-blue-200 hover:bg-blue-100'
+                        }`}
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      <span>Diproses</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateStatus(selectedItem.id, 'selesai')}
+                      disabled={selectedItem.status === 'selesai'}
+                      className={`p-3 rounded-2xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${selectedItem.status === 'selesai'
+                          ? 'bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-300'
+                          : 'bg-emerald-50 text-emerald-900 border border-emerald-200 hover:bg-emerald-100'
+                        }`}
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Tandai Selesai</span>
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              {/* Status Update Action Box */}
-              <div className="bg-slate-100/80 p-5 rounded-2xl border border-slate-200 space-y-3">
-                <span className="block font-bold text-slate-800 text-xs uppercase tracking-wider">
-                  Ubah Status Pengajuan Surat
-                </span>
+              {/* Modal Footer */}
+              <div className="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => openDeleteModal(selectedItem)}
+                  className="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold text-xs transition-all inline-flex items-center gap-1.5"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Hapus Pengajuan Ini</span>
+                </button>
+                <button
+                  onClick={() => setSelectedItem(null)}
+                  className="px-5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs transition-all"
+                >
+                  Tutup
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+      {/* ── IMAGE LIGHTBOX PREVIEW MODAL ── */}
+      {previewMedia &&
+        createPortal(
+          <div
+            onClick={() => setPreviewMedia(null)}
+            className="fixed inset-0 z-[110] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-4xl w-full bg-slate-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col space-y-3 p-5 border border-white/10"
+            >
+              <div className="flex items-center justify-between text-white pb-3 border-b border-slate-800">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-accent" />
+                  <span className="font-bold text-base truncate">{previewMedia.title}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPreviewMedia(null)}
+                  className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white transition-colors flex items-center gap-1 text-xs font-semibold"
+                >
+                  <span>Tutup</span>
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="max-h-[75vh] flex items-center justify-center overflow-auto bg-black/60 rounded-2xl p-2 border border-slate-800">
+                <img
+                  src={previewMedia.url}
+                  alt={previewMedia.title}
+                  className="max-h-[70vh] w-auto object-contain rounded-xl shadow-lg"
+                />
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+      {/* ── MODAL PRATINJAU & CETAK REKAPITULASI LAPORAN ── */}
+      {showPrintModal &&
+        createPortal(
+          <div className="fixed inset-0 z-[105] bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+            <div className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+              {/* Header Modal */}
+              <div className="p-4 sm:p-5 bg-slate-800 text-white flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <Printer className="w-5 h-5 text-accent" />
+                  <h2 className="font-serif font-bold text-base sm:text-lg">
+                    Pratinjau Laporan Rekapitulasi Pengajuan Surat
+                  </h2>
+                </div>
+                <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => handleUpdateStatus(selectedItem.id, 'pending')}
-                    disabled={selectedItem.status === 'pending'}
-                    className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${selectedItem.status === 'pending'
-                        ? 'bg-amber-600 text-white shadow-md cursor-default ring-2 ring-amber-300'
-                        : 'bg-white text-slate-700 hover:bg-amber-50 border border-slate-300'
-                      }`}
+                    onClick={handlePrint}
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
                   >
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>Menunggu (Pending)</span>
+                    <Printer className="w-4 h-4" />
+                    <span>Cetak Dokumen</span>
                   </button>
-
                   <button
                     type="button"
-                    onClick={() => handleUpdateStatus(selectedItem.id, 'diproses')}
-                    disabled={selectedItem.status === 'diproses'}
-                    className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${selectedItem.status === 'diproses'
-                        ? 'bg-blue-600 text-white shadow-md cursor-default ring-2 ring-blue-300'
-                        : 'bg-white text-slate-700 hover:bg-blue-50 border border-slate-300'
-                      }`}
+                    onClick={() => setShowPrintModal(false)}
+                    className="p-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white"
                   >
-                    <RefreshCw className="w-3.5 h-3.5" />
-                    <span>Setujui & Proses</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleUpdateStatus(selectedItem.id, 'selesai')}
-                    disabled={selectedItem.status === 'selesai'}
-                    className={`py-2.5 px-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${selectedItem.status === 'selesai'
-                        ? 'bg-emerald-700 text-white shadow-md cursor-default ring-2 ring-emerald-300'
-                        : 'bg-white text-slate-700 hover:bg-emerald-50 border border-slate-300'
-                      }`}
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Tandai Selesai</span>
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
               </div>
 
-            </div>
+              {/* Printable Document Sheet */}
+              <div className="p-6 sm:p-10 overflow-y-auto bg-slate-50 space-y-6">
+                <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 text-slate-800 space-y-6 font-sans">
+                  {/* Kop Surat Desa */}
+                  <div className="flex items-center justify-center gap-5 pb-5 border-b-4 border-double border-slate-800 text-center">
+                    <img src={logoPemkab} alt="Logo" className="w-16 h-16 object-contain shrink-0" />
+                    <div>
+                      <div className="text-xs font-bold tracking-wider uppercase text-slate-600">
+                        Pemerintah Kabupaten Tasikmalaya
+                      </div>
+                      <div className="text-sm font-bold tracking-wider uppercase text-slate-700">
+                        Kecamatan Cigalontang
+                      </div>
+                      <div className="text-xl font-bold font-serif uppercase tracking-widest text-primary">
+                        Pemerintah Desa Tenjonagara
+                      </div>
+                      <div className="text-[11px] text-slate-500 mt-0.5">
+                        Jalan Raya Cigalontang KM.06, Kp. Cibangun, Kecamatan Cigalontang, Kabupaten Tasikmalaya, Jawa Barat 46463
+                      </div>
+                    </div>
+                  </div>
 
-            {/* Modal Footer */}
-            <div className="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => openDeleteModal(selectedItem)}
-                className="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold text-xs transition-all inline-flex items-center gap-1.5"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>Hapus Pengajuan Ini</span>
-              </button>
-              <button
-                onClick={() => setSelectedItem(null)}
-                className="px-5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs transition-all"
-              >
-                Tutup
-              </button>
-            </div>
+                  {/* Judul Laporan */}
+                  <div className="text-center space-y-1">
+                    <h3 className="font-bold text-base uppercase tracking-wider underline">
+                      Laporan Rekapitulasi Pengajuan Surat Warga
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Dicetak pada: {new Date().toLocaleDateString('id-ID', { dateStyle: 'full' })} | Total:{' '}
+                      {filteredList.length} Pengajuan
+                    </p>
+                  </div>
 
-          </div>
-        </div>,
-        document.body
-      )}
+                  {/* Summary Ringkasan */}
+                  <div className="grid grid-cols-3 gap-3 text-center text-xs">
+                    <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 font-semibold">
+                      Pending: {filteredList.filter((i) => i.status === 'pending').length}
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-blue-50 border border-blue-200 font-semibold">
+                      Diproses: {filteredList.filter((i) => i.status === 'diproses').length}
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 font-semibold">
+                      Selesai: {filteredList.filter((i) => i.status === 'selesai').length}
+                    </div>
+                  </div>
 
-      {/* ── IMAGE LIGHTBOX PREVIEW MODAL ── */}
-      {previewMedia && createPortal(
-        <div
-          onClick={() => setPreviewMedia(null)}
-          className="fixed inset-0 z-[110] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative max-w-4xl w-full bg-slate-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col space-y-3 p-5 border border-white/10"
-          >
-            <div className="flex items-center justify-between text-white pb-3 border-b border-slate-800">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-accent" />
-                <span className="font-bold text-base truncate">{previewMedia.title}</span>
+                  {/* Table Rekap */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse border border-slate-300 text-xs">
+                      <thead>
+                        <tr className="bg-slate-100 text-[11px] font-bold text-slate-700">
+                          <th className="border border-slate-300 p-2 text-center w-8">No</th>
+                          <th className="border border-slate-300 p-2">Tanggal</th>
+                          <th className="border border-slate-300 p-2">Nama Pemohon</th>
+                          <th className="border border-slate-300 p-2">NIK</th>
+                          <th className="border border-slate-300 p-2">Jenis Surat</th>
+                          <th className="border border-slate-300 p-2 text-center">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredList.map((item, idx) => (
+                          <tr key={item.id} className="border-b border-slate-200">
+                            <td className="border border-slate-300 p-2 text-center">{idx + 1}</td>
+                            <td className="border border-slate-300 p-2 whitespace-nowrap">
+                              {formatDate(item.created_at)}
+                            </td>
+                            <td className="border border-slate-300 p-2 font-bold">{item.nama_pemohon}</td>
+                            <td className="border border-slate-300 p-2 font-mono">{item.nik}</td>
+                            <td className="border border-slate-300 p-2">
+                              {item.layanan?.nama_layanan || 'Surat Keterangan'}
+                            </td>
+                            <td className="border border-slate-300 p-2 text-center uppercase font-bold text-[10px]">
+                              {item.status}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Kolom Tanda Tangan */}
+                  <div className="pt-8 flex justify-between text-xs text-center">
+                    <div className="w-48 space-y-16">
+                      <div>
+                        <div>Mengetahui,</div>
+                        <div className="font-bold">Kepala Desa Tenjonagara</div>
+                      </div>
+                      <div className="border-t border-slate-400 pt-1 font-bold">( ........................................ )</div>
+                    </div>
+
+                    <div className="w-48 space-y-16">
+                      <div>
+                        <div>Tenjonagara, {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                        <div className="font-bold">Petugas Operator Pelayanan</div>
+                      </div>
+                      <div className="border-t border-slate-400 pt-1 font-bold">( ........................................ )</div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setPreviewMedia(null)}
-                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white transition-colors flex items-center gap-1 text-xs font-semibold"
-              >
-                <span>Tutup</span>
-                <X className="w-5 h-5" />
-              </button>
             </div>
-            <div className="max-h-[75vh] flex items-center justify-center overflow-auto bg-black/60 rounded-2xl p-2 border border-slate-800">
-              <img
-                src={previewMedia.url}
-                alt={previewMedia.title}
-                className="max-h-[70vh] w-auto object-contain rounded-xl shadow-lg"
-              />
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body
+        )}
+
       {/* ── CONFIRM MODAL HAPUS PENGAJUAN ── */}
       <ConfirmModal
         isOpen={!!deleteTarget}
