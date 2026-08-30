@@ -15,6 +15,8 @@ export const getBangunanDesaById = (id) => api.get(`/bangunan-desa/${id}`);
 
 export const getLayanan = () => api.get('/layanan');
 export const submitPengajuanLayanan = (data) => api.post('/layanan/pengajuan', data);
+export const trackPengajuanLayanan = (nik) => api.post('/layanan/pengajuan/track', { nik });
+
 
 export const uploadDokumenPublik = (file) => {
   const formData = new FormData();
