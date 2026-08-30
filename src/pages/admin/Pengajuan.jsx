@@ -16,11 +16,17 @@ import {
   AlertCircle,
   Calendar,
   Check,
-  ChevronRight
+  ChevronRight,
+  Trash2
 } from 'lucide-react';
-import { getAdminPengajuanLayanan, updateStatusPengajuanLayanan } from '../../services/adminService';
+import {
+  getAdminPengajuanLayanan,
+  updateStatusPengajuanLayanan,
+  deletePengajuanLayanan
+} from '../../services/adminService';
 import ScrollReveal from '../../components/ScrollReveal';
 import Pagination from '../../components/Pagination';
+import ConfirmModal from '../../components/ConfirmModal';
 
 export default function AdminPengajuan() {
   const [pengajuanList, setPengajuanList] = useState([]);
@@ -35,6 +41,10 @@ export default function AdminPengajuan() {
 
   // Selected item for Detail / Verification Modal
   const [selectedItem, setSelectedItem] = useState(null);
+
+  // Delete Confirmation State
+  const [deleteTarget, setDeleteTarget] = useState(null); // { id, nama_pemohon, nama_layanan }
+  const [deleting, setDeleting] = useState(false);
 
   // Image lightbox state
   const [previewMedia, setPreviewMedia] = useState(null); // { url, title }
@@ -74,6 +84,36 @@ export default function AdminPengajuan() {
       }
     } catch (err) {
       setError(err.message || 'Gagal memperbarui status pengajuan.');
+    }
+  };
+
+  const openDeleteModal = (item) => {
+    setDeleteTarget({
+      id: item.id,
+      nama_pemohon: item.nama_pemohon,
+      nama_layanan: item.layanan?.nama_layanan || 'Surat Keterangan'
+    });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { id, nama_pemohon } = deleteTarget;
+    setDeleting(true);
+    setError(null);
+    setSuccessMsg(null);
+
+    try {
+      await deletePengajuanLayanan(id);
+      setSuccessMsg(`Pengajuan surat atas nama "${nama_pemohon}" berhasil dihapus.`);
+      setPengajuanList((prev) => prev.filter((item) => item.id !== id));
+      if (selectedItem && selectedItem.id === id) {
+        setSelectedItem(null);
+      }
+      setDeleteTarget(null);
+    } catch (err) {
+      setError(err.message || 'Gagal menghapus pengajuan layanan.');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -351,13 +391,23 @@ export default function AdminPengajuan() {
 
                         {/* Aksi */}
                         <td className="py-4 px-4 text-right pr-6">
-                          <button
-                            onClick={() => setSelectedItem(item)}
-                            className="px-3.5 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-xs transition-all inline-flex items-center gap-1.5"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                            <span>Verifikasi</span>
-                          </button>
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => setSelectedItem(item)}
+                              className="px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-xs transition-all inline-flex items-center gap-1.5"
+                              title="Verifikasi Pengajuan"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>Verifikasi</span>
+                            </button>
+                            <button
+                              onClick={() => openDeleteModal(item)}
+                              className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 border border-rose-200 transition-all shadow-2xs"
+                              title="Hapus Pengajuan Surat"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -607,10 +657,18 @@ export default function AdminPengajuan() {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end">
+            <div className="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => openDeleteModal(selectedItem)}
+                className="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold text-xs transition-all inline-flex items-center gap-1.5"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Hapus Pengajuan Ini</span>
+              </button>
               <button
                 onClick={() => setSelectedItem(null)}
-                className="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs transition-all"
+                className="px-5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs transition-all"
               >
                 Tutup
               </button>
@@ -656,6 +714,18 @@ export default function AdminPengajuan() {
         </div>,
         document.body
       )}
+      {/* ── CONFIRM MODAL HAPUS PENGAJUAN ── */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        title="Hapus Pengajuan Surat Warga"
+        message={`Apakah Anda yakin ingin menghapus data pengajuan ${deleteTarget?.nama_layanan} atas nama "${deleteTarget?.nama_pemohon}"? Data dan lampiran berkas yang dihapus tidak dapat dipulihkan kembali.`}
+        confirmText="Ya, Hapus Pengajuan"
+        cancelText="Batal"
+        variant="danger"
+        loading={deleting}
+      />
     </div>
   );
 }

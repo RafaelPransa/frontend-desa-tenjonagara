@@ -93,6 +93,9 @@ export const getAdminPengajuanLayanan = () =>
 export const updateStatusPengajuanLayanan = (id, status) =>
   api.patch(`/layanan/pengajuan/${id}/status`, { status }, getAuthHeaders());
 
+export const deletePengajuanLayanan = (id) =>
+  api.delete(`/layanan/pengajuan/${id}`, getAuthHeaders());
+
 
 // ── KELOLA PERANGKAT DESA ──
 export const getAdminPerangkat = () =>

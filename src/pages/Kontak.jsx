@@ -78,7 +78,7 @@ export default function Kontak() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
+
           {/* Info Side */}
           <div className="lg:col-span-5 space-y-6">
             <ScrollReveal direction="left" delay={100}>
@@ -94,9 +94,9 @@ export default function Kontak() {
                       <MapPin className="w-5 h-5 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-slate-800 text-sm">Alamat Alun-Alun Desa</h3>
+                      <h3 className="font-bold text-slate-800 text-sm">Alamat Kantor Desa</h3>
                       <p className="text-slate-600 text-xs mt-0.5 leading-relaxed">
-                        Jl. Raya Cigalontang No. 1, Desa Tenjonagara, Kec. Cigalontang, Kab. Tasikmalaya, Jawa Barat 46463
+                        Jalan Raya Cigalontang KM.06, Kp. Cibangun, Kecamatan Cigalontang, Kabupaten Tasikmalaya, Jawa Barat 46463
                       </p>
                     </div>
                   </div>
@@ -117,7 +117,7 @@ export default function Kontak() {
                     </div>
                     <div>
                       <h3 className="font-bold text-slate-800 text-sm">Email Resmi</h3>
-                      <p className="text-slate-600 text-xs mt-0.5 font-mono">pemdes@tenjonagara.id</p>
+                      <p className="text-slate-600 text-xs mt-0.5 font-mono">desatenjonagara112@gmail.com</p>
                     </div>
                   </div>
                 </div>
@@ -135,9 +135,8 @@ export default function Kontak() {
                 </div>
 
                 {statusMsg && (
-                  <div className={`p-4 rounded-2xl text-sm flex items-start gap-3 shadow-md animate-in fade-in duration-200 ${
-                    statusMsg.type === 'success' ? 'bg-emerald-50 text-emerald-800 border border-emerald-300' : 'bg-rose-50 text-rose-800 border border-rose-300'
-                  }`}>
+                  <div className={`p-4 rounded-2xl text-sm flex items-start gap-3 shadow-md animate-in fade-in duration-200 ${statusMsg.type === 'success' ? 'bg-emerald-50 text-emerald-800 border border-emerald-300' : 'bg-rose-50 text-rose-800 border border-rose-300'
+                    }`}>
                     {statusMsg.type === 'success' ? <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" /> : <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />}
                     <span>{statusMsg.text}</span>
                   </div>
