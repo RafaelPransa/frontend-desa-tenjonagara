@@ -10,6 +10,8 @@ import {
   Users,
   BarChart3,
   MessageSquare,
+  Landmark,
+  Bell,
   LogOut,
   Globe,
   Menu,
@@ -20,16 +22,18 @@ import {
 } from 'lucide-react';
 import logoPemkab from '../assets/logo-pemkab-tasikmalaya.png';
 import ConfirmModal from '../components/ConfirmModal';
+import { getAdminPengajuanLayanan } from '../services/adminService';
 
 const navItems = [
   { name: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
   { name: 'Pengajuan Surat', path: '/admin/pengajuan', icon: Inbox },
   { name: 'Master Layanan', path: '/admin/layanan', icon: FileText },
+  { name: 'Profil Desa', path: '/admin/profil', icon: Landmark },
   { name: 'Kelola Berita', path: '/admin/berita', icon: Newspaper },
   { name: 'Bangunan Desa', path: '/admin/bangunan', icon: Building2 },
   { name: 'Potensi Desa', path: '/admin/potensi', icon: Sparkles },
   { name: 'Perangkat Desa', path: '/admin/perangkat', icon: Users },
-  { name: 'Statistik Penduduk', path: '/admin/statistik', icon: BarChart3 },
+  { name: 'Statistik & APBDes', path: '/admin/statistik', icon: BarChart3 },
   { name: 'Pesan Kontak', path: '/admin/kontak', icon: MessageSquare },
 ];
 
@@ -37,8 +41,22 @@ export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [pendingPengajuanCount, setPendingPengajuanCount] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const fetchPendingCount = async () => {
+    try {
+      const res = await getAdminPengajuanLayanan();
+      const list = res.data?.data || res.data || [];
+      if (Array.isArray(list)) {
+        const pending = list.filter((item) => item.status === 'pending').length;
+        setPendingPengajuanCount(pending);
+      }
+    } catch (e) {
+      // ignore silently if token invalid / loading
+    }
+  };
 
   useEffect(() => {
     try {
@@ -49,7 +67,11 @@ export default function AdminLayout() {
     } catch (e) {
       console.error('Failed to parse user session', e);
     }
-  }, []);
+
+    fetchPendingCount();
+    const interval = setInterval(fetchPendingCount, 45000); // Check every 45s
+    return () => clearInterval(interval);
+  }, [location.pathname]);
 
   const handleLogout = () => {
     setShowLogoutModal(true);
@@ -95,7 +117,25 @@ export default function AdminLayout() {
             </Link>
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2.5 sm:gap-4">
+            {/* Notification Bell */}
+            <Link
+              to="/admin/pengajuan"
+              className="relative p-2 rounded-xl bg-white/10 hover:bg-white/20 text-emerald-100 hover:text-white transition-all border border-white/10 flex items-center justify-center"
+              title={
+                pendingPengajuanCount > 0
+                  ? `${pendingPengajuanCount} permohonan surat warga berstatus pending (perlu verifikasi)`
+                  : 'Tidak ada surat pending'
+              }
+            >
+              <Bell className="w-4 h-4 text-accent" />
+              {pendingPengajuanCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-amber-400 text-primary-dark text-[10px] font-extrabold rounded-full flex items-center justify-center border-2 border-primary shadow-sm animate-pulse">
+                  {pendingPengajuanCount > 99 ? '99+' : pendingPengajuanCount}
+                </span>
+              )}
+            </Link>
+
             <Link
               to="/"
               target="_blank"
@@ -156,6 +196,7 @@ export default function AdminLayout() {
                 ? location.pathname === item.path
                 : location.pathname.startsWith(item.path);
 
+              const isPengajuan = item.path === '/admin/pengajuan';
               const Icon = item.icon;
 
               return (
@@ -172,7 +213,22 @@ export default function AdminLayout() {
                     <Icon className={`w-4 h-4 ${isActive ? 'text-accent' : 'text-slate-400'}`} />
                     <span>{item.name}</span>
                   </div>
-                  {isActive && <ChevronRight className="w-4 h-4 text-accent" />}
+
+                  <div className="flex items-center gap-2">
+                    {isPengajuan && pendingPengajuanCount > 0 && (
+                      <span
+                        className={`px-2 py-0.5 text-[10px] font-extrabold rounded-full transition-all ${
+                          isActive
+                            ? 'bg-accent text-primary-dark shadow-xs'
+                            : 'bg-amber-500 text-white animate-pulse shadow-xs'
+                        }`}
+                        title={`${pendingPengajuanCount} surat berstatus pending`}
+                      >
+                        {pendingPengajuanCount} baru
+                      </span>
+                    )}
+                    {isActive && <ChevronRight className="w-4 h-4 text-accent" />}
+                  </div>
                 </Link>
               );
             })}
