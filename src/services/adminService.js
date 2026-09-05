@@ -147,4 +147,15 @@ export const getAdminKontak = () =>
 export const deleteAdminKontak = (id) =>
   api.delete(`/kontak/${id}`, getAuthHeaders());
 
+// ── KELOLA AKUN OPERATOR & GANTI PASSWORD ──
+export const getAdminMe = () =>
+  api.get('/auth/me', getAuthHeaders());
+
+export const changeAdminPassword = (data) =>
+  api.put('/auth/change-password', data, getAuthHeaders());
+
+export const updateAdminProfile = (data) =>
+  api.put('/auth/profile', data, getAuthHeaders());
+
+
 

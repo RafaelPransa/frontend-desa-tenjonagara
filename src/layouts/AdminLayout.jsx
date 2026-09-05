@@ -18,7 +18,8 @@ import {
   X,
   ShieldCheck,
   User,
-  ChevronRight
+  ChevronRight,
+  KeyRound
 } from 'lucide-react';
 import logoPemkab from '../assets/logo-pemkab-tasikmalaya.png';
 import ConfirmModal from '../components/ConfirmModal';
@@ -35,6 +36,7 @@ const navItems = [
   { name: 'Perangkat Desa', path: '/admin/perangkat', icon: Users },
   { name: 'Statistik & APBDes', path: '/admin/statistik', icon: BarChart3 },
   { name: 'Pesan Kontak', path: '/admin/kontak', icon: MessageSquare },
+  { name: 'Pengaturan Akun', path: '/admin/akun', icon: KeyRound },
 ];
 
 export default function AdminLayout() {
@@ -149,15 +151,21 @@ export default function AdminLayout() {
 
             <div className="h-6 w-px bg-white/20 hidden sm:block"></div>
 
-            <div className="flex items-center gap-2.5 bg-white/15 px-3 py-1.5 rounded-xl border border-white/10">
-              <div className="w-8 h-8 rounded-lg bg-accent text-primary flex items-center justify-center font-bold text-sm shadow-sm">
+            <Link
+              to="/admin/akun"
+              className="flex items-center gap-2.5 bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-xl border border-white/10 transition-colors cursor-pointer group"
+              title="Pengaturan Akun & Ganti Password"
+            >
+              <div className="w-8 h-8 rounded-lg bg-accent text-primary flex items-center justify-center font-bold text-sm shadow-sm group-hover:scale-105 transition-transform">
                 <User className="w-4 h-4 text-primary" />
               </div>
               <div className="hidden md:block text-left">
-                <div className="text-xs font-bold leading-tight text-white">{user?.nama || 'Administrator'}</div>
+                <div className="text-xs font-bold leading-tight text-white group-hover:text-accent transition-colors">
+                  {user?.nama || 'Administrator'}
+                </div>
                 <div className="text-[10px] text-emerald-200">{user?.email || 'admin@tenjonagara.id'}</div>
               </div>
-            </div>
+            </Link>
 
             <button
               onClick={handleLogout}

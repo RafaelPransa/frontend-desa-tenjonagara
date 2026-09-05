@@ -34,6 +34,7 @@ const AdminPerangkat = lazy(() => import('./pages/admin/Perangkat'));
 const PerangkatForm = lazy(() => import('./pages/admin/PerangkatForm'));
 const AdminStatistik = lazy(() => import('./pages/admin/Statistik'));
 const AdminKontak = lazy(() => import('./pages/admin/Kontak'));
+const AdminAkun = lazy(() => import('./pages/admin/Akun'));
 
 // Lightweight Loading Component
 function PageLoader() {
@@ -101,6 +102,7 @@ export default function App() {
 
             <Route path="statistik" element={<AdminStatistik />} />
             <Route path="kontak" element={<AdminKontak />} />
+            <Route path="akun" element={<AdminAkun />} />
           </Route>
         </Routes>
       </Suspense>

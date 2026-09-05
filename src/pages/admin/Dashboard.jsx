@@ -12,7 +12,8 @@ import {
   Plus,
   Clock,
   Inbox,
-  Landmark
+  Landmark,
+  KeyRound
 } from 'lucide-react';
 import {
   getBerita,
@@ -229,6 +230,21 @@ export default function Dashboard() {
                   Statistik & APBDes
                 </div>
                 <div className="text-[11px] text-slate-500">Demografi & Keuangan Desa</div>
+              </div>
+            </Link>
+
+            <Link
+              to="/admin/akun"
+              className="p-5 rounded-2xl border border-slate-200 hover:border-primary/50 hover:bg-emerald-50/50 transition-all flex items-center gap-3.5 group transform hover:-translate-y-1"
+            >
+              <div className="p-3 rounded-xl bg-amber-100 text-amber-800 group-hover:bg-amber-600 group-hover:text-white transition-colors shrink-0">
+                <KeyRound className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-amber-800 transition-colors">
+                  Pengaturan Akun
+                </div>
+                <div className="text-[11px] text-slate-500">Ganti password & profil</div>
               </div>
             </Link>
           </div>
